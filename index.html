@@ -7,10 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-title" content="UPRO V8.1">
+    <meta name="apple-mobile-web-app-title" content="UPRO V8.3">
     <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/bullish.png">
     
-    <title>UPRO V8.1 極致打磨版</title>
+    <title>UPRO V8.3 同步版</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -50,31 +50,15 @@
         
         /* Fixed Status Select */
         .status-select { 
-            background-color: #1e293b !important; /* Dark BG */
-            color: #f8fafc !important; /* White Text */
-            border: 1px solid #475569 !important; 
-            padding: 2px 6px !important; 
-            font-size: 10px !important; 
-            height: auto !important; 
-            width: auto !important;
-            border-radius: 4px !important;
-            cursor: pointer;
-            appearance: none; /* Remove default arrow to style custom if needed, but default is fine with colors */
-            -webkit-appearance: none;
-            text-align: center;
+            background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important; 
+            padding: 2px 6px !important; font-size: 10px !important; height: auto !important; width: auto !important;
+            border-radius: 4px !important; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center;
         }
-        /* Color coded borders for status */
         .status-select[data-status="Open"] { border-color: #3b82f6 !important; color: #93c5fd !important; }
         .status-select[data-status="Closed"] { border-color: #22c55e !important; color: #86efac !important; }
         .status-select[data-status="Expired"] { border-color: #22c55e !important; color: #86efac !important; }
         .status-select[data-status="Exercised"] { border-color: #f97316 !important; color: #fdba74 !important; }
-        
-        /* Ensure dropdown options are visible */
-        .status-select option {
-            background-color: #1e293b;
-            color: #ffffff;
-            padding: 8px;
-        }
+        .status-select option { background-color: #1e293b; color: #ffffff; padding: 8px; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -85,7 +69,7 @@
         <div class="flex justify-between items-center pb-4 sticky top-0 z-40 bg-[#0f172a]/90 backdrop-blur-xl border-b border-slate-800">
             <div>
                 <h1 class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500">
-                    UPRO V8.1 <span class="text-[10px] not-italic text-slate-400 font-normal ml-1 border border-slate-700 px-1.5 py-0.5 rounded-full bg-slate-800">Polished</span>
+                    UPRO V8.3 <span class="text-[10px] not-italic text-slate-400 font-normal ml-1 border border-slate-700 px-1.5 py-0.5 rounded-full bg-slate-800">Sync</span>
                 </h1>
             </div>
             <div class="flex items-center space-x-3">
@@ -175,12 +159,6 @@
                     </div>
                     <div id="heatmapGrid" class="heatmap-grid">
                         <!-- Cells injected by JS -->
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
-                        <div class="heatmap-cell bg-slate-800/50 skeleton"></div>
                     </div>
                 </div>
 
@@ -396,6 +374,27 @@
                 <button onclick="closeSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="space-y-6">
+                <!-- Sync Section -->
+                <div class="bg-indigo-900/30 p-4 rounded-lg border border-indigo-500/30">
+                    <label class="text-xs text-indigo-300 font-bold uppercase tracking-wider mb-2 block">☁️ 帳號同步 (多裝置)</label>
+                    
+                    <div class="mb-3">
+                        <p class="text-[10px] text-slate-400 mb-1">您的 ID (電腦端複製此碼):</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-700 text-slate-300 font-mono flex-1" readonly>
+                            <button onclick="copyUserId()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 rounded text-xs font-bold">複製</button>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t border-indigo-500/20">
+                        <p class="text-[10px] text-slate-400 mb-1">讀取外部 ID (手機端貼上):</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-indigo-500/50 text-white font-mono flex-1" placeholder="貼上電腦端的 ID">
+                            <button onclick="saveTargetUserId()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded text-xs font-bold">讀取</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div><label class="text-xs text-blue-400 font-bold uppercase tracking-wider mb-2 block">財富目標 (FIRE Goal)</label><div class="flex gap-2"><input type="number" id="fireGoalInput" class="border-blue-500/50" placeholder="1000000"><button onclick="saveGoal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 rounded-lg text-xs font-bold">儲存</button></div></div>
                 <div class="pt-2 border-t border-slate-700/50"><button onclick="toggleSimulator(); closeSettings()" class="w-full flex items-center justify-between p-3 rounded-lg bg-indigo-900/30 hover:bg-indigo-900/50 border border-indigo-500/30 text-indigo-300"><span class="font-bold flex items-center text-xs"><i data-lucide="flask-conical" class="w-4 h-4 mr-2"></i> 開啟模擬器</span><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
                 <div class="pt-2 border-t border-slate-700/50"><label class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2 block">數據備份</label><div class="grid grid-cols-2 gap-3"><button onclick="exportJson()" class="flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs"><i data-lucide="upload" class="w-5 h-5 mb-1"></i> 匯出 (JSON)</button><button onclick="document.getElementById('importFile').click()" class="flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs"><i data-lucide="download" class="w-5 h-5 mb-1"></i> 匯入</button><input type="file" id="importFile" class="hidden" accept=".json" onchange="importJson(this)"></div></div>
@@ -441,10 +440,12 @@
         const appId = 'my-upro-strategy';
         const initialAuthToken = null;
 
-        let db, auth, userId, calculatedSnapshot = null, deleteCandidateId = null, globalHistoryData = [], assetChartInstance = null, allocationChartInstance = null, hasInitialized = false, isPrivacyOn = false;
+        let db, auth, userId, realUserId;
+        let calculatedSnapshot = null, deleteCandidateId = null, globalHistoryData = [], assetChartInstance = null, allocationChartInstance = null, hasInitialized = false, isPrivacyOn = false;
         let fireGoal = 1000000; 
         let currentChartRange = 'ALL';
-        let chartMode = 'line'; // 'line' or 'stacked'
+        let chartMode = 'line';
+        let currentDataUserId = null; // The ID we are currently READING from
 
         const vibrate = () => { if(navigator.vibrate) navigator.vibrate(10); }
 
@@ -456,10 +457,38 @@
         const openModal = (id) => { vibrate(); const el = document.getElementById(id); if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } };
         const closeModal = (id) => { const el = document.getElementById(id); if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } };
 
-        // --- Settings & Goal ---
-        window.openSettings = () => { openModal('settingsModal'); document.getElementById('fireGoalInput').value = fireGoal; }
+        // --- Settings & Sync ---
+        window.openSettings = () => { 
+            openModal('settingsModal'); 
+            document.getElementById('fireGoalInput').value = fireGoal;
+            if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId;
+            // Load saved target ID
+            const savedTarget = localStorage.getItem('upro_target_uid');
+            if(savedTarget) document.getElementById('targetUserIdInput').value = savedTarget;
+        }
         window.closeSettings = () => closeModal('settingsModal');
         window.saveGoal = () => { const g = parseFloat(document.getElementById('fireGoalInput').value); if(g > 0) { fireGoal = g; localStorage.setItem('upro_fire_goal', fireGoal); calculateStrategy(); alert("目標已更新！"); closeSettings(); } }
+        
+        window.copyUserId = () => {
+            const uid = document.getElementById('myUserIdDisplay').value;
+            navigator.clipboard.writeText(uid).then(() => alert("ID 已複製，請傳送到手機貼上"));
+        }
+        
+        window.saveTargetUserId = () => {
+            const target = document.getElementById('targetUserIdInput').value.trim();
+            if(target) {
+                localStorage.setItem('upro_target_uid', target);
+                currentDataUserId = target; // Switch to this ID immediately
+                alert("已切換！正在讀取該帳號資料...");
+                loadHistory(); // Reload data from new path
+            } else {
+                // If empty, clear it to reset to own ID
+                localStorage.removeItem('upro_target_uid');
+                currentDataUserId = realUserId;
+                alert("已重置為本機帳號");
+                loadHistory();
+            }
+        }
 
         // --- Simulator ---
         window.toggleSimulator = () => { const m = document.getElementById('simModal'); if(m.classList.contains('hidden')) { openModal('simModal'); document.getElementById('simVoo').value = document.getElementById('vooClose').value; document.getElementById('simResult').classList.add('hidden'); } else { closeModal('simModal'); } }
@@ -467,10 +496,16 @@
         // --- Deletion ---
         window.showDeleteModal = (id) => { deleteCandidateId = id; openModal('deleteModal'); }
         window.closeDeleteModal = () => { deleteCandidateId = null; closeModal('deleteModal'); }
-        window.confirmDelete = async () => { if(deleteCandidateId) { await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/full_records`, deleteCandidateId)); closeDeleteModal(); } }
+        window.confirmDelete = async () => { 
+            if(deleteCandidateId) { 
+                // Use currentDataUserId to delete from the active view
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, deleteCandidateId)); 
+                closeDeleteModal(); 
+            } 
+        }
 
         // --- Option Lifecycle ---
-        window.updateRecordStatus = async (id, newStatus) => { vibrate(); try { await updateDoc(doc(db, `artifacts/${appId}/users/${userId}/full_records`, id), { optionStatus: newStatus }); } catch(e) { console.error(e); alert("更新失敗"); } }
+        window.updateRecordStatus = async (id, newStatus) => { vibrate(); try { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, id), { optionStatus: newStatus }); } catch(e) { console.error(e); alert("更新失敗"); } }
 
         // --- Core Logic ---
         window.runSimulation = () => {
@@ -541,7 +576,6 @@
                 setClass('athDisplay', `text-2xl font-black sens-data mt-1 ${dd===0?'text-green-400':'text-red-400'}`);
                 setStyle('athBar', 'width', `${Math.min(Math.abs(dd), 100)}%`);
                 
-                // FIRE Prediction
                 if (ytd > 0 && totalValue > 0) {
                     const monthsPassed = new Date().getMonth() + 1;
                     const annualRate = (ytd / 100) / monthsPassed * 12;
@@ -621,7 +655,7 @@
 
         // --- Other Utils ---
         window.handleInput = () => { debouncedCalculate(); saveDraft(); }
-        function saveDraft() { const d = {}; document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); localStorage.setItem('upro_v6_draft', JSON.stringify(d)); }
+        function saveDraft() { const d = {}; document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); localStorage.setItem('upro_v6_draft', JSON.stringify(d)); }
         function restoreDraft() { const d = JSON.parse(localStorage.getItem('upro_v6_draft')); if(d) Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; }); calculateStrategy(); }
         window.switchView = (v) => { vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
         window.addTag = (tag) => { const area = document.getElementById('recordNote'); area.value = area.value ? area.value + ` #${tag}` : `#${tag}`; vibrate(); }
@@ -633,33 +667,43 @@
             else { document.querySelectorAll('.sens-data').forEach(e=>e.classList.remove('privacy-blur')); document.querySelectorAll('.sens-data-input').forEach(e=>e.type='number'); icon.setAttribute('data-lucide', 'eye'); }
             lucide.createIcons();
         }
-        window.shareReport = () => { vibrate(); if(!calculatedSnapshot) return alert("無數據"); const s = calculatedSnapshot; navigator.clipboard.writeText(`🚀 *UPRO V8.1* (${s.manualDate})\n🔹 Status: ${s.riskStatus}\n💰 NW: $${Math.round(s.totalValue).toLocaleString()}\n🎯 UPRO: ${s.targetUproPct.toFixed(0)}%\n⚡ Act: ${s.rebalanceText.replace(/<[^>]*>?/gm, ' ')}`).then(()=>alert("Copied")); }
+        window.shareReport = () => { vibrate(); if(!calculatedSnapshot) return alert("無數據"); const s = calculatedSnapshot; navigator.clipboard.writeText(`🚀 *UPRO V8.3* (${s.manualDate})\n🔹 Status: ${s.riskStatus}\n💰 NW: $${Math.round(s.totalValue).toLocaleString()}\n🎯 UPRO: ${s.targetUproPct.toFixed(0)}%\n⚡ Act: ${s.rebalanceText.replace(/<[^>]*>?/gm, ' ')}`).then(()=>alert("Copied")); }
         window.exportJson = () => { if(!globalHistoryData.length) return alert("無資料"); const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"})); a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
-        window.importJson = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${userId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
+        window.importJson = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
         window.exportToCsv = () => { if(!globalHistoryData.length) return alert("No Data"); const csv = "Date,Total,Risk\n"+globalHistoryData.map(d=>`${d.manualDate},${d.totalValue},${d.riskStatus}`).join("\n"); const a = document.createElement("a"); a.href="data:text/csv;charset=utf-8,"+encodeURI(csv); a.download="upro.csv"; a.click(); }
         window.setChartRange = (range) => { currentChartRange = range; document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active')); document.getElementById(`btn-${range}`).classList.add('active'); renderAssetHistoryChart(); }
         window.toggleChartMode = () => { chartMode = chartMode === 'line' ? 'stacked' : 'line'; document.getElementById('chartToggleBtn').textContent = chartMode === 'line' ? '📉 淨值 (Line)' : '📊 堆疊 (Stacked)'; renderAssetHistoryChart(); }
         window.downloadChart = () => { const a = document.createElement('a'); a.href = document.getElementById('assetChart').toDataURL('image/png'); a.download = 'upro_chart.png'; a.click(); }
 
         // --- Firebase ---
-        async function initFirebase() { if (Object.keys(firebaseConfig).length === 0) return; const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); onAuthStateChanged(auth, u => { if(u){ userId=u.uid; loadHistory(); } }); }
+        async function initFirebase() { if (Object.keys(firebaseConfig).length === 0) return; const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); onAuthStateChanged(auth, u => { 
+            if(u){ 
+                realUserId = u.uid; 
+                // Check for saved target ID override
+                const savedTarget = localStorage.getItem('upro_target_uid');
+                currentDataUserId = savedTarget || realUserId;
+                if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId;
+                loadHistory(); 
+            } 
+        }); }
         window.fillLatestData = (force) => { vibrate(); if(globalHistoryData.length && (force || !document.getElementById('vooClose').value)) { const l = globalHistoryData[0]; const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; set('vooClose',l.vooClose); set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); document.getElementById('newHigh').checked=l.isNewHigh; set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); set('cashAmount',l.cashAmount); set('totalOptionsIncomeInput',l.optionsIncome); calculateStrategy(); if(force && window.innerWidth<1024) switchView('inputs'); } }
         
         window.saveRecord = async () => {
             vibrate();
-            if(!userId || !calculatedSnapshot) return alert("資料不完整");
+            if(!userId) return alert("資料庫未連線"); // Use initialized variable
+            if(!calculatedSnapshot) return alert("資料不完整");
             const did = document.getElementById('editDocId').value;
             const ot = document.getElementById('optType').value;
             let stat = 'Open'; if(ot.includes('Buy/Sell') || ot === '') stat = '';
             
             const dt = { ...calculatedSnapshot, manualDate: document.getElementById('recordDate').value, optionDetails: ot ? `${ot} $${document.getElementById('optPremium').value}` : "", note: document.getElementById('recordNote').value, optType: ot, optStatus: stat, timestamp: serverTimestamp() };
             try {
-                const ref = collection(db, `artifacts/${appId}/users/${userId}/full_records`);
+                const ref = collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`);
                 did ? await updateDoc(doc(db, ref.path, did), dt) : await addDoc(ref, dt);
                 document.getElementById('recordNote').value=""; document.getElementById('optType').value=""; document.getElementById('optPremium').value="";
                 localStorage.removeItem('upro_v6_draft');
                 alert("已儲存"); switchView('history');
-            } catch(e) { console.error(e); alert("Error"); }
+            } catch(e) { console.error(e); alert("Error: " + e.message); }
         }
 
         // --- Chart & History Render ---
@@ -723,7 +767,7 @@
                             data: dsTotal,
                             borderColor: '#3b82f6',
                             borderWidth: 2,
-                            pointRadius: 0,
+                            pointRadius: 2, // V8.2 Fix: Ensure points are visible
                             tension: 0.4,
                             fill: true,
                             backgroundColor: (c) => {
@@ -752,12 +796,12 @@
                     if(pct > 5) colorClass = 'bg-green-500'; else if(pct > 2) colorClass = 'bg-green-600'; else if(pct > 0) colorClass = 'bg-green-800'; else if(pct > -2) colorClass = 'bg-red-900'; else if(pct > -5) colorClass = 'bg-red-700'; else colorClass = 'bg-red-600';
                 } else { val = 'Start'; }
                 const date = new Date(d.manualDate); const month = date.toLocaleString('default', { month: 'short' });
-                const cell = document.createElement('div'); cell.className = `heatmap-cell ${colorClass}`; cell.title = `Date: ${d.manualDate}\nValue: $${Math.round(d.totalValue).toLocaleString()}`; cell.innerHTML = `<span>${month}</span><span class="heatmap-val">${val}</span>`; grid.appendChild(cell);
+                const cell = document.createElement('div'); cell.className = `heatmap-cell ${colorClass}`; cell.innerHTML = `<span>${month}</span><span class="heatmap-val">${val}</span>`; grid.appendChild(cell);
             });
         }
 
         function loadHistory() {
-            onSnapshot(query(collection(db, `artifacts/${appId}/users/${userId}/full_records`), orderBy('timestamp','desc')), snap => {
+            onSnapshot(query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('timestamp','desc')), snap => {
                 const list = document.getElementById('historyList'); list.innerHTML=''; globalHistoryData=[];
                 if(snap.empty) { list.innerHTML='<tr><td colspan="6" class="text-center py-6 text-slate-500">無資料</td></tr>'; return; }
                 snap.forEach(d => {

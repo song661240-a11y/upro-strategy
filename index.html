@@ -757,6 +757,9 @@
                     alert("紀錄已新增");
                 }
                 
+                // Clear draft so next time it loads fresh from DB (newest record)
+                localStorage.removeItem('upro_v6_draft');
+
                 // Reset inputs and switch view
                 document.getElementById('recordNote').value = '';
                 document.getElementById('optType').value = '';
@@ -794,7 +797,35 @@
                 loadHistory(); 
             } 
         }); }
-        window.fillLatestData = (force) => { vibrate(); if(globalHistoryData.length && (force || !document.getElementById('vooClose').value)) { const l = globalHistoryData[0]; const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; set('vooClose',l.vooClose); set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); document.getElementById('newHigh').checked=l.isNewHigh; set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); set('cashAmount',l.cashAmount); set('totalOptionsIncomeInput',l.optionsIncome); calculateStrategy(); if(force && window.innerWidth<1024) switchView('inputs'); } }
+        window.fillLatestData = (force) => { 
+            vibrate(); 
+            if(globalHistoryData.length && (force || !document.getElementById('vooClose').value)) { 
+                const l = globalHistoryData[0]; 
+                const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
+                
+                // Do NOT overwrite date if it's already today (which is set on load)
+                // Only overwrite date if forced (e.g. "Bring in old data" button)
+                if(force) set('recordDate',l.manualDate);
+                
+                set('vooClose',l.vooClose); 
+                set('wema20',l.wema20); 
+                set('wema12',l.wema12); 
+                set('wema5',l.wema5); 
+                set('vixIndex',l.vix); 
+                set('dailyRsi',l.dailyRsi); 
+                document.getElementById('newHigh').checked=l.isNewHigh; 
+                set('uproShares',l.uproShares); 
+                set('uproPrice',l.uproPrice); 
+                set('sgovShares',l.sgovShares); 
+                set('sgovPrice',l.sgovPrice); 
+                set('ibitShares',l.ibitShares); 
+                set('ibitPrice',l.ibitPrice); 
+                set('cashAmount',l.cashAmount); 
+                set('totalOptionsIncomeInput',l.optionsIncome); 
+                calculateStrategy(); 
+                if(force && window.innerWidth<1024) switchView('inputs'); 
+            } 
+        }
         
         function renderAllocationChart(data, total) {
             const ctx = document.getElementById('allocationChart').getContext('2d');
@@ -880,7 +911,11 @@
                 });
                 const footerRow = document.createElement('tr'); footerRow.innerHTML = `<td colspan="6" class="p-3 text-center text-xs text-slate-500 border-t border-slate-700">總筆數: ${globalHistoryData.length}</td>`; list.appendChild(footerRow);
                 renderAssetHistoryChart(); renderHeatmap();
-                if(!hasInitialized) { if(localStorage.getItem('upro_v6_draft')) restoreDraft(); else fillLatestData(); hasInitialized=true; }
+                if(!hasInitialized) { 
+                    if(localStorage.getItem('upro_v6_draft')) restoreDraft(); 
+                    else fillLatestData(); // Auto fill if no draft
+                    hasInitialized=true; 
+                }
                 if(localStorage.getItem('upro_fire_goal')) fireGoal = parseFloat(localStorage.getItem('upro_fire_goal'));
                 if(isPrivacyOn) document.querySelectorAll('.sens-data').forEach(e => e.classList.add('privacy-blur'));
                 lucide.createIcons();

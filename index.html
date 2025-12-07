@@ -85,8 +85,8 @@
             <!-- Dashboard -->
             <div id="view-dashboard" class="mobile-view active lg:col-span-8 space-y-5 order-2 lg:order-1">
                 
-                <!-- 1. KPI Cards (Alpha & Income) -->
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                <!-- 1. KPI Cards (Alpha ONLY) -->
+                <div class="grid grid-cols-2 gap-3">
                     <!-- Total Alpha -->
                     <div class="card p-4 flex flex-col justify-between relative overflow-hidden group">
                         <div class="absolute right-0 top-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="crown" class="w-12 h-12 text-yellow-400"></i></div>
@@ -101,14 +101,6 @@
                         <span class="text-[10px] text-slate-400 font-bold uppercase">Alpha (今年)</span>
                         <div id="alphaYtdDisplay" class="text-2xl font-black text-white sens-data mt-1 skeleton">--%</div>
                         <div class="text-[9px] text-slate-500 mt-1 sens-data">Jan 1st Reset</div>
-                    </div>
-
-                    <!-- Income -->
-                    <div class="card p-4 flex flex-col justify-between relative overflow-hidden group lg:col-span-1 col-span-2">
-                        <div class="absolute right-0 top-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="coins" class="w-12 h-12 text-green-400"></i></div>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase">收租總計</span>
-                        <div id="incomeDisplay" class="text-2xl font-black text-white sens-data mt-1 skeleton">$0</div>
-                        <div class="text-[9px] text-green-400 mt-1 sens-data">Cash Flow</div>
                     </div>
                 </div>
 
@@ -289,7 +281,6 @@
                             <div><label class="text-[10px] text-slate-400 ml-1">市價</label><input type="number" id="ibitPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
                         </div>
                         <div class="pt-2"><label class="text-[10px] text-slate-400 ml-1">現金餘額 ($)</label><input type="number" id="cashAmount" inputmode="decimal" step="0.01" oninput="handleInput()" class="sens-data-input"></div>
-                        <div><label class="text-[10px] text-slate-400 ml-1">選擇權收益 (本次)</label><input type="number" id="totalOptionsIncomeInput" inputmode="decimal" oninput="handleInput()" class="sens-data-input"></div>
                     </div>
                 </div>
                 <div class="card p-5 border-t-4 border-pink-500">
@@ -297,7 +288,11 @@
                     <div class="flex gap-2 mb-3">
                         <div class="relative flex-1">
                             <select id="optType" class="text-sm bg-slate-900 border-slate-700 focus:border-pink-500 h-11 appearance-none w-full pl-3 pr-8 rounded-lg">
-                                <option value="">一般紀錄</option><option value="Buy/Sell Assets">倉位調整</option><option value="Sell Call">Sell Call</option><option value="Sell Put">Sell Put</option><option value="Buy VIX Spread">VIX 避險</option>
+                                <option value="">一般紀錄</option>
+                                <option value="Sell Call">SELL CALL</option>
+                                <option value="Sell Put">SELL PUT</option>
+                                <option value="Buy Call">BUY CALL</option>
+                                <option value="Buy Put">BUY PUT</option>
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-slate-500 pointer-events-none"></i>
                         </div>
@@ -418,6 +413,7 @@
         let currentChartRange = 'ALL';
         let chartMode = 'line';
         let currentDataUserId = null;
+        let calculationTimer = null; // New timer variable to avoid window.t collision
         
         // --- Strategy Text Defaults ---
         const defaultStrategyText = {
@@ -503,8 +499,8 @@
             const sf = (id) => parseFloat(document.getElementById(id).value)||0;
             const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
             if(!vooClose || !wema20) return;
-            const uproVal = sf('uproShares') * sf('uproPrice'), sgovVal = sf('sgovShares') * sf('sgovPrice'), ibitVal = sf('ibitShares') * sf('ibitPrice'), cash = sf('cashAmount'), optIncome = sf('totalOptionsIncomeInput');
-            const totalValue = uproVal + sgovVal + ibitVal + cash + optIncome;
+            const uproVal = sf('uproShares') * sf('uproPrice'), sgovVal = sf('sgovShares') * sf('sgovPrice'), ibitVal = sf('ibitShares') * sf('ibitPrice'), cash = sf('cashAmount');
+            const totalValue = uproVal + sgovVal + ibitVal + cash;
             setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`);
             document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton', 'text-transparent'));
             renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
@@ -516,10 +512,7 @@
                 // --- Alpha Calculation (Total & YTD) ---
                 const firstRecord = globalHistoryData[globalHistoryData.length - 1];
                 const currentYear = new Date().getFullYear().toString();
-                // Find first record of current year: look for last record that matches year
-                let ytdStartRecord = globalHistoryData.find(d => d.manualDate.startsWith(currentYear)); // Finds newest of year
-                // Since data is sorted desc, we need the oldest of the year. 
-                // Let's filter and get last
+                let ytdStartRecord = globalHistoryData.find(d => d.manualDate.startsWith(currentYear)); 
                 const recordsThisYear = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
                 ytdStartRecord = recordsThisYear.length > 0 ? recordsThisYear[recordsThisYear.length - 1] : firstRecord;
 
@@ -546,9 +539,6 @@
                 } else {
                      setTxt('alphaYtdDisplay', '--%');
                 }
-
-                // Income Display
-                setTxt('incomeDisplay', `$${Math.round(optIncome).toLocaleString()}`);
             }
 
             const bias = ((vooClose - wema20)/wema20)*100, riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
@@ -601,7 +591,6 @@
             setHTML('rebalanceAction', acts.length ? acts.join(" | ") : "<span class='text-slate-400'>無需操作</span>");
             
             // --- Strategy GPS Logic ---
-            // 1. Update text content from custom settings
             const gps = document.getElementById('strategyGPS');
             if(gps) {
                 gps.querySelector('#gps-risk-off .strategy-text').textContent = strategyText.risk_off;
@@ -689,7 +678,7 @@
             calculatedSnapshot = { 
                 vooClose, wema20, wema12, wema5, vix, dailyRsi: rsi, isNewHigh: document.getElementById('newHigh').checked,
                 uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
-                cashAmount: sf('cashAmount'), optionsIncome: sf('totalOptionsIncomeInput'),
+                cashAmount: sf('cashAmount'),
                 totalValue, riskStatus, bias, targetUproPct: tU, targetSgovPct: tS, targetIbitPct: 10,
                 rebalanceText: document.getElementById('rebalanceAction').innerText,
                 optType: document.getElementById('optType').value, optStatus: 'Open'
@@ -715,15 +704,27 @@
             const sgovVal = sf('sgovShares') * sf('sgovPrice');
             const ibitVal = sf('ibitShares') * sf('ibitPrice');
             const cash = sf('cashAmount');
-            const optIncome = sf('totalOptionsIncomeInput');
-            const totalValue = uproVal + sgovVal + ibitVal + cash + optIncome;
+            const totalValue = uproVal + sgovVal + ibitVal + cash; // Income removed from total value logic
             
             const riskStatus = document.getElementById('riskState').innerText; 
             
             const note = document.getElementById('recordNote').value;
             const optType = document.getElementById('optType').value;
-            const optPremium = sf('optPremium');
+            let optPremium = sf('optPremium'); // Use premium from this transaction
             
+            // Determine sign based on Buy/Sell
+            // Buy Call/Put is an expense (negative)
+            // Sell Call/Put is income (positive)
+            if (optType && (optType.toLowerCase().includes('buy'))) {
+                optPremium = -Math.abs(optPremium); // Force negative for buys
+            } else {
+                optPremium = Math.abs(optPremium); // Force positive for sells/others
+            }
+
+            // Use optPremium as the income for this record (for chart tracking)
+            // If it's a Buy, income is negative. If Sell, income is positive.
+            const optionsIncome = optPremium !== 0 ? optPremium : 0;
+
             const data = {
                 manualDate,
                 vooClose, wema5: sf('wema5'), wema12: sf('wema12'), wema20,
@@ -731,11 +732,12 @@
                 uproShares: sf('uproShares'), uproPrice: sf('uproPrice'),
                 sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'),
                 ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
-                cashAmount: cash, optionsIncome: optIncome,
+                cashAmount: cash, 
+                optionsIncome: optionsIncome, // Save premium for chart
                 totalValue, riskStatus,
                 note,
                 optType, optPremium,
-                optionDetails: optType ? `${optType} (+$${optPremium})` : '',
+                optionDetails: optType ? `${optType} (${optPremium >= 0 ? '+' : '-'}$${Math.abs(optPremium)})` : '',
                 optionStatus: optType ? 'Open' : null
             };
 
@@ -803,8 +805,6 @@
                 const l = globalHistoryData[0]; 
                 const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
                 
-                // Do NOT overwrite date if it's already today (which is set on load)
-                // Only overwrite date if forced (e.g. "Bring in old data" button)
                 if(force) set('recordDate',l.manualDate);
                 
                 set('vooClose',l.vooClose); 
@@ -821,7 +821,7 @@
                 set('ibitShares',l.ibitShares); 
                 set('ibitPrice',l.ibitPrice); 
                 set('cashAmount',l.cashAmount); 
-                set('totalOptionsIncomeInput',l.optionsIncome); 
+                // Removed options income input fill
                 calculateStrategy(); 
                 if(force && window.innerWidth<1024) switchView('inputs'); 
             } 
@@ -871,9 +871,72 @@
 
         // New Income Chart (V9.0)
         function renderIncomeChart() {
-            // Need a dedicated place for this? Maybe replace heatmap or add below?
-            // Actually let's just make sure we have a placeholder if we want it.
-            // For now, let's skip a separate chart to keep UI clean, the KPI card is enough.
+            if (!globalHistoryData.length) return;
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            if (incomeChartInstance) incomeChartInstance.destroy();
+
+            // 1. Sort data by date (oldest to newest)
+            const sortedData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
+
+            // 2. Calculate cumulative income
+            let cumulative = 0;
+            const labels = [];
+            const data = [];
+
+            sortedData.forEach(d => {
+                const inc = parseFloat(d.optionsIncome) || 0;
+                cumulative += inc;
+                labels.push(d.manualDate.slice(5)); // "MM-DD"
+                data.push(cumulative);
+            });
+
+            // 3. Render Chart
+            incomeChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '累積權利金',
+                        data: data,
+                        borderColor: '#22c55e', // Green-500
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                            gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
+                            gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)');
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: (context) => `累積收入: $${context.parsed.y.toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            display: true,
+                            position: 'right',
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#475569', font: { size: 9 }, callback: (val) => '$' + val }
+                        }
+                    },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                }
+            });
         }
 
         function renderHeatmap() {
@@ -905,13 +968,15 @@
                     if (isOption) {
                         const status = data.optionStatus || 'Open';
                         const noteText = data.note ? `<div class="text-[9px] text-slate-400 mt-0.5 border-t border-slate-700/50 pt-0.5">${data.note}</div>` : '';
-                        noteContent = `<div class="flex flex-col gap-1"><span class="text-[9px] text-pink-300">${data.optionDetails}</span><select onchange="updateRecordStatus('${data.id}', this.value)" class="status-select" data-status="${status}"><option value="Open" ${status==='Open'?'selected':''}>持倉</option><option value="Closed" ${status==='Closed'?'selected':''}>平倉</option><option value="Exercised" ${status==='Exercised'?'selected':''}>行權</option><option value="Expired" ${status==='Expired'?'selected':''}>作廢</option></select>${noteText}</div>`;
+                        noteContent = `<div class="flex flex-col gap-1"><span class="text-[9px] ${data.optionsIncome < 0 ? 'text-red-400' : 'text-green-400'}">${data.optionDetails}</span><select onchange="updateRecordStatus('${data.id}', this.value)" class="status-select" data-status="${status}"><option value="Open" ${status==='Open'?'selected':''}>持倉</option><option value="Closed" ${status==='Closed'?'selected':''}>平倉</option><option value="Exercised" ${status==='Exercised'?'selected':''}>行權</option><option value="Expired" ${status==='Expired'?'selected':''}>作廢</option></select>${noteText}</div>`;
                     } else if (data.optionDetails) { noteContent = `<span class="text-[9px] text-slate-400">${data.optionDetails}</span><br>${noteContent}`; }
                     row.innerHTML=`<td class="p-3 text-xs font-mono text-slate-400">${data.manualDate.slice(5)}</td><td class="p-3 text-xs font-bold text-slate-200">$${data.vooClose}</td><td class="p-3 text-[10px] ${data.riskStatus==='ON' || data.riskStatus==='RISK ON'?'text-green-400':'text-red-400'}">${data.riskStatus}</td><td class="p-3 text-xs font-bold text-yellow-500 sens-data">$${Math.round(data.totalValue/1000)}k</td><td class="p-3 text-[10px] text-slate-300 truncate max-w-[120px]">${noteContent}</td><td class="p-3 text-right"><button onclick="showDeleteModal('${data.id}')" class="text-slate-500 hover:text-red-400 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
                     list.appendChild(row);
                 });
                 const footerRow = document.createElement('tr'); footerRow.innerHTML = `<td colspan="6" class="p-3 text-center text-xs text-slate-500 border-t border-slate-700">總筆數: ${globalHistoryData.length}</td>`; list.appendChild(footerRow);
-                renderAssetHistoryChart(); renderHeatmap();
+                renderAssetHistoryChart(); 
+                renderIncomeChart(); // Now implemented!
+                renderHeatmap();
                 if(!hasInitialized) { 
                     if(localStorage.getItem('upro_v6_draft')) restoreDraft(); 
                     else fillLatestData(); // Auto fill if no draft
@@ -923,7 +988,7 @@
             });
         }
 
-        window.debouncedCalculate = () => { clearTimeout(window.t); window.t = setTimeout(calculateStrategy, 300); };
+        window.debouncedCalculate = () => { clearTimeout(calculationTimer); calculationTimer = setTimeout(calculateStrategy, 300); };
         document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
         initFirebase(); lucide.createIcons();
     </script>

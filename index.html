@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V11.4 Fixed</title>
+    <title>UPRO V11.7 Merged</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -118,7 +118,7 @@
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.4</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.7</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -144,7 +144,7 @@
                         <div><label>20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label>VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
+                        <div><label>VIX (用於校正波動)</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
                         <div><label>RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
                     </div>
                 </div>
@@ -175,6 +175,8 @@
                  <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-pink-300" id="saveTitle">選擇權與儲存</h2>
                     <input type="hidden" id="editDocId" value="">
+                    <!-- FIX: Hidden input to store option status during edit -->
+                    <input type="hidden" id="optionStatus" value="Open">
                     <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">取消編輯</button>
                  </div>
                 
@@ -226,94 +228,91 @@
                         <div id="totalValueDisplay" class="text-3xl font-black text-yellow-400 tracking-tighter">$0</div>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
-                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                         <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Alpha (長期)</span>
-                         <div id="alphaTotalDisplay" class="text-lg font-bold text-slate-200">--%</div>
-                     </div>
-                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                         <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Alpha (今年)</span>
-                         <div id="alphaYtdDisplay" class="text-lg font-bold text-slate-200">--%</div>
-                     </div>
-                </div>
             </div>
 
-            <!-- Strategy Action Card -->
+            <!-- Merged Strategy Action Card -->
             <div class="card p-5 bg-[#162032] border border-blue-500/30">
-                <div class="flex items-center gap-2 mb-3"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
-                
-                <!-- Position Sizing -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50">
-                        <div class="text-[10px] text-slate-400 uppercase mb-1">UPRO 核心倉位</div>
-                        <div id="finalUproPct" class="text-2xl font-black text-white">0%</div>
-                        <div id="limitReason" class="text-[10px] text-slate-500 mt-1">Wait...</div>
+                <div class="flex items-center gap-2 mb-4"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
+
+                <div class="space-y-3 mb-4">
+                    <!-- UPRO Row -->
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] text-red-400 font-bold uppercase">UPRO 核心</div>
+                            <div class="text-xl font-black text-white"><span id="targetUproPct">--%</span> <span class="text-xs text-slate-500 font-normal" id="targetUproVal">($--)</span></div>
+                            <div id="uproReason" class="text-[10px] text-slate-500">Wait...</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-400">操作</div>
+                            <div id="uproAction" class="text-sm font-bold text-slate-300">--</div>
+                        </div>
                     </div>
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50">
-                        <div class="text-[10px] text-slate-400 uppercase mb-1">IBIT 衛星倉位</div>
-                        <div class="text-2xl font-black text-pink-400">10%</div>
-                        <div class="text-[10px] text-slate-500 mt-1">獨立運作</div>
+
+                    <!-- SGOV Row -->
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] text-green-400 font-bold uppercase">SGOV/現金</div>
+                            <div class="text-xl font-black text-white"><span id="targetSgovPct">--%</span> <span class="text-xs text-slate-500 font-normal" id="targetSgovVal">($--)</span></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-400">操作</div>
+                            <div id="sgovAction" class="text-sm font-bold text-slate-300">--</div>
+                        </div>
+                    </div>
+
+                    <!-- IBIT Row -->
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase">IBIT 衛星</div>
+                            <div class="text-xl font-black text-white">10% <span class="text-xs text-slate-500 font-normal" id="targetIbitVal">($--)</span></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-400">操作</div>
+                            <div id="ibitAction" class="text-sm font-bold text-slate-300">--</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Suggestions -->
                 <div class="suggestion-box">
                     <div class="flex justify-between items-start mb-2">
                         <div>
-                            <div class="suggestion-label text-purple-400">VIX 避險建議 (VIX Bull Call Spread)</div>
+                            <div class="suggestion-label text-purple-400">VIX 避險 (Core 90%)</div>
                             <div id="vixSuggestion" class="suggestion-val">無 (Risk OFF)</div>
                         </div>
                     </div>
                     <div class="w-full h-px bg-slate-700/50 my-2"></div>
                     <div>
-                        <div class="suggestion-label text-green-400">動態 Sell Call 建議</div>
+                        <div class="suggestion-label text-green-400">Sell Call 建議</div>
                         <div id="callSuggestion" class="suggestion-val">無 (Risk OFF)</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card p-5 bg-slate-800/40">
-                <div class="flex justify-between items-center mb-4"><span class="text-sm font-bold text-blue-300 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 配置計算機</span><span id="allocationDesc" class="text-xs bg-blue-500/10 text-blue-200 px-3 py-1 rounded-full font-bold">--</span></div>
-                <div class="flex flex-col gap-6">
-                    <div class="h-40 relative w-full flex justify-center"><canvas id="allocationChart"></canvas></div>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-red-400 font-bold uppercase mb-1">UPRO</div><div id="targetUpro" class="text-xl font-black text-white">--%</div><div id="uproDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-green-400 font-bold uppercase mb-1">SGOV</div><div id="targetSgov" class="text-xl font-black text-white">--%</div><div id="sgovDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
-                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-pink-400 font-bold uppercase mb-1">IBIT</div><div id="targetIbit" class="text-xl font-black text-white">10%</div><div id="ibitDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
-                    </div>
-                </div>
-                <div class="mt-4 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-center shadow-inner"><div id="rebalanceAction" class="text-base text-indigo-200 font-bold animate-pulse">計算中...</div></div>
-            </div>
-
+            <!-- Scenario Lab (Manual Only) -->
             <div class="card p-5 border border-purple-500/30 bg-[#162032]">
-                <div class="flex items-center gap-2 mb-4"><div class="p-1.5 bg-purple-500/20 rounded-lg"><i data-lucide="flask-conical" class="w-4 h-4 text-purple-400"></i></div><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬</h3></div>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2"><i data-lucide="flask-conical" class="w-5 h-5 text-purple-400"></i><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬實驗室</h3></div>
+                </div>
                 
-                <div class="flex items-center gap-3 mb-4">
+                <!-- Manual Scenario Input -->
+                <div id="simError" class="hidden text-center text-xs text-red-400 mb-3 font-bold bg-red-900/20 py-2 rounded">⚠️ 請先輸入 VOO 與 UPRO 價格</div>
+                
+                <div class="flex items-center gap-3 mb-2">
                     <div class="flex-1">
-                        <label class="text-[10px] text-slate-400 mb-1">假設 VOO 漲跌</label>
+                        <label class="text-[10px] text-slate-400 mb-1">手動輸入 VOO 漲跌</label>
                         <div class="relative">
                             <input type="number" id="simPercent" value="-5" oninput="updateSimulation()" class="!h-10 text-lg font-bold text-center pl-2 pr-8 border-purple-500/30 bg-purple-900/10">
                             <span class="absolute right-3 top-2 text-purple-400 text-xs font-bold">%</span>
                         </div>
                     </div>
                     <div class="flex-1 text-right">
-                        <span class="text-[10px] text-slate-500 uppercase block">總資產預估損益</span>
+                        <span class="text-[10px] text-slate-500 uppercase block">預估總資產損益</span>
                         <span id="simAssetResult" class="text-lg font-black text-slate-300">--</span>
                     </div>
                 </div>
-                
-                <div id="simError" class="hidden text-center text-xs text-red-400 mb-2 font-bold bg-red-900/20 py-2 rounded">⚠️ 請先輸入 VOO 與 UPRO 價格</div>
-
-                <div class="bg-slate-900/50 rounded-lg overflow-hidden border border-slate-700/50">
-                    <table class="w-full sim-table">
-                        <tbody id="scenarioTable" class="divide-y divide-slate-700/50">
-                             <tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">等待資料...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
 
+            <!-- Strategy GPS -->
             <div class="card p-5 border border-slate-700/50 bg-[#162032]">
                 <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
                 <div class="space-y-1" id="strategyGPS">
@@ -413,7 +412,7 @@
         const initialAuthToken = null;
 
         let db, auth, userId, realUserId;
-        let globalHistoryData = [], assetChartInstance = null, allocationChartInstance = null;
+        let globalHistoryData = [], assetChartInstance = null; 
         let currentChartRange = 'ALL';
         let chartMode = 'line';
         let currentDataUserId = null;
@@ -424,54 +423,46 @@
         window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(15); }
         window.onerror = function(message) { alert("系統錯誤: " + message); return false; };
 
-        const sf = (id) => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
-        const setTxt = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
-        const setHTML = (id, htm) => { const el = document.getElementById(id); if(el) el.innerHTML = htm; };
-        const openModal = (id) => { vibrate(); const el = document.getElementById(id); if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } };
-        const closeModal = (id) => { const el = document.getElementById(id); if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } };
-
-        window.openSettings = () => { openModal('settingsModal'); if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
-        window.closeSettings = () => closeModal('settingsModal');
-        window.closeDetails = () => closeModal('detailsModal');
+        // Define functions LOCALLY first
+        function sf(id) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; }
+        function setTxt(id, txt) { const el = document.getElementById(id); if(el) el.textContent = txt; }
+        function openModal(id) { window.vibrate(); const el = document.getElementById(id); if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } }
+        function closeModal(id) { const el = document.getElementById(id); if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } }
         
-        // --- TOAST SYSTEM ---
-        window.showToast = (msg, type = 'success') => {
+        function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             const icon = document.getElementById('toastIcon');
             const text = document.getElementById('toastMsg');
-            
             toast.className = "fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border";
             if(type === 'success') { toast.classList.add('bg-green-500/90', 'border-green-400/50'); icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>'; } 
             else if(type === 'normal') { toast.classList.add('bg-slate-800/90', 'border-slate-600/50'); icon.innerHTML = '<i data-lucide="info" class="w-5 h-5 text-slate-300"></i>'; }
-            
             text.textContent = msg;
             lucide.createIcons();
-            
             requestAnimationFrame(() => { toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); toast.classList.add('opacity-100', 'translate-y-0'); });
             setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); }, 2000);
         }
 
-        window.copyUserId = () => { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); }
+        function copyUserId() { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); }
         
-        window.saveTargetUserId = () => { 
+        function saveTargetUserId() { 
             const t = document.getElementById('targetUserIdInput').value.trim(); 
             if(t) { localStorage.setItem('upro_target_uid', t); currentDataUserId = t; showToast("✅ 已切換至讀取模式", "success"); loadHistory(); } 
             else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; showToast("🔄 已重置為本人帳號", "success"); loadHistory(); }
             closeSettings();
         }
         
-        window.showDeleteModal = (id, e) => { e.stopPropagation(); deleteCandidateId = id; openModal('deleteModal'); }
-        window.closeDeleteModal = () => { deleteCandidateId = null; closeModal('deleteModal'); }
+        function showDeleteModal(id, e) { e.stopPropagation(); deleteCandidateId = id; openModal('deleteModal'); }
+        function closeDeleteModal() { deleteCandidateId = null; closeModal('deleteModal'); }
 
-        window.selectOpt = (val) => {
-            vibrate();
+        function selectOpt(val) {
+            window.vibrate();
             const selectEl = document.getElementById('optType');
             if (selectEl.value === val) { selectEl.value = ""; } else { selectEl.value = val; }
             updateOptUi();
             handleInput();
-        };
+        }
 
-        window.updateOptUi = () => {
+        function updateOptUi() {
             const val = document.getElementById('optType').value;
             document.querySelectorAll('.opt-btn').forEach(btn => btn.classList.remove('active'));
             if (val) {
@@ -482,34 +473,34 @@
                 document.getElementById('optInputZone').classList.add('hidden');
                 document.getElementById('optPremium').value = ''; 
             }
-        };
+        }
         
-        window.openStatusModal = (id, currentStatus) => {
-            vibrate();
+        function openStatusModal(id, currentStatus) {
+            window.vibrate();
             document.getElementById('statusTargetId').value = id;
             const modal = document.getElementById('optionStatusModal');
             modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
             setTimeout(() => { document.getElementById('statusSheet').classList.add('show'); }, 10);
-        };
+        }
 
-        window.closeStatusModal = () => {
+        function closeStatusModal() {
             document.getElementById('statusSheet').classList.remove('show');
             setTimeout(() => {
                 document.getElementById('optionStatusModal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
             }, 300);
-        };
+        }
 
-        window.saveOptionStatus = async (newStatus) => {
-            vibrate();
+        async function saveOptionStatus(newStatus) {
+            window.vibrate();
             const id = document.getElementById('statusTargetId').value;
             if(!id) return;
             try { 
                 await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, id), { optionStatus: newStatus }); 
                 closeStatusModal();
             } catch(e) { console.error(e); alert("更新失敗"); } 
-        };
+        }
         
-        window.confirmDelete = async () => { 
+        async function confirmDelete() { 
             if(deleteCandidateId) { 
                 if(document.getElementById('editDocId').value === deleteCandidateId) cancelEdit();
                 await deleteDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`, deleteCandidateId))
@@ -519,7 +510,7 @@
             } 
         }
 
-        window.showDetails = (id) => {
+        function showDetails(id) {
             const data = globalHistoryData.find(d => d.id === id);
             if(!data) return;
             setTxt('detailDate', data.manualDate);
@@ -552,9 +543,9 @@
             `;
             document.getElementById('editBtnFromModal').onclick = () => loadRecordForEdit(data);
             openModal('detailsModal');
-        };
+        }
 
-        window.loadRecordForEdit = (data) => {
+        function loadRecordForEdit(data) {
             closeDetails();
             const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; };
             set('recordDate', data.manualDate); set('vooClose', data.vooClose);
@@ -566,6 +557,9 @@
             set('cashAmount', data.cashAmount);
             set('optType', data.optType); set('optPremium', data.optPremium ? Math.abs(data.optPremium) : '');
             set('recordNote', data.note);
+            // FIX: Load the existing status to the hidden field
+            document.getElementById('optionStatus').value = data.optionStatus || 'Open';
+            
             updateOptUi();
             document.getElementById('editDocId').value = data.id;
             document.getElementById('saveTitle').innerText = "編輯紀錄";
@@ -575,21 +569,24 @@
             btn.classList.add('btn-edit');
             switchView('inputs');
             alert("資料已帶入，請修改後點擊「更新」");
-        };
+        }
 
-        window.cancelEdit = () => {
+        function cancelEdit() {
             document.getElementById('editDocId').value = '';
             document.getElementById('saveTitle').innerText = "選擇權與儲存";
             document.getElementById('cancelEditBtn').classList.add('hidden');
+            // FIX: Reset status to Open
+            document.getElementById('optionStatus').value = 'Open';
+            
             const btn = document.getElementById('saveBtn');
             btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`;
             btn.classList.remove('btn-edit');
-            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent') e.value = ''; });
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !=='optionStatus') e.value = ''; });
             updateOptUi(); 
             lucide.createIcons();
-        };
+        }
 
-        window.updateSimulation = () => {
+        function updateSimulation() {
             const inputVal = document.getElementById('simPercent').value;
             const pct = parseFloat(inputVal) || 0;
             const vooPrice = sf('vooClose');
@@ -599,17 +596,20 @@
             const ibitVal = sf('ibitShares') * sf('ibitPrice');
             const cash = sf('cashAmount');
             
+            const errorEl = document.getElementById('simError');
+            
             if(!vooPrice || !uproPrice) {
-                document.getElementById('simError').classList.remove('hidden');
+                if(errorEl) errorEl.classList.remove('hidden');
                 document.getElementById('simAssetResult').innerText = "--";
                 return;
             } else {
-                document.getElementById('simError').classList.add('hidden');
+                if(errorEl) errorEl.classList.add('hidden');
             }
 
             const leverage = pct < 0 ? 2.8 : 3.0; 
             const uproPct = pct * leverage;
             const newUproPrice = uproPrice * (1 + uproPct/100);
+            
             const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
             const newIbitVal = ibitVal * (1 + pct/100); 
             const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
@@ -618,14 +618,14 @@
             const el = document.getElementById('simAssetResult');
             el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`;
             el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            
             const inputEl = document.getElementById('simPercent');
             if (pct > 0) inputEl.style.color = '#4ade80';
             else if (pct < 0) inputEl.style.color = '#f87171';
             else inputEl.style.color = '#ffffff';
-        };
+        }
 
-        // --- CORE STRATEGY LOGIC V5.2 ---
-        window.calculateStrategy = () => {
+        function calculateStrategy() {
             const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
             const dailyRsi = sf('dailyRsi'), vix = sf('vixIndex');
             
@@ -636,10 +636,8 @@
                 const cash = sf('cashAmount');
                 const totalValue = uproVal + sgovVal + ibitVal + cash;
                 
-                // 1. Core Discipline (20 WEMA)
                 const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
                 
-                // Update Risk Status UI
                 const card = document.getElementById('statusCard');
                 const riskEl = document.getElementById('riskState');
                 if(riskStatus === 'ON') { 
@@ -652,13 +650,11 @@
                     riskEl.className = 'text-5xl font-black text-red-400 tracking-tighter'; 
                 }
 
-                // 2. Bias Calculation
                 const bias = ((vooClose - wema20)/wema20)*100;
                 setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
                 if (dailyRsi < 30) setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)} (BUY!)`);
                 else setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}`);
 
-                // 3. Dynamic Position Sizing (Min Logic)
                 let biasLimit = 100;
                 if (bias > 12) biasLimit = 50;
                 else if (bias > 8) biasLimit = 60;
@@ -677,69 +673,58 @@
                     finalUproPct = 0;
                     reason = "Risk OFF (破 20MA)";
                 } else if (dailyRsi < 30) {
-                    finalUproPct = 100; // RSI Filter Override
+                    finalUproPct = 100; 
                     reason = "暴利濾網 (RSI<30) 強制滿倉";
                 } else {
                     finalUproPct = Math.min(biasLimit, tacticalLimit);
                     reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`;
                 }
 
-                // Update UI for Strategy Action
-                setTxt('finalUproPct', `${finalUproPct}%`);
-                setTxt('limitReason', reason);
+                setTxt('targetUproPct', `${finalUproPct}%`);
+                setTxt('uproReason', reason);
 
-                // 4. Asset Allocation Recommendations (90% Core / 10% IBIT)
                 const coreCapital = totalValue * 0.9;
                 const satCapital = totalValue * 0.1;
                 
                 const targetUproVal = coreCapital * (finalUproPct / 100);
                 const targetSgovVal = coreCapital - targetUproVal;
                 
-                setTxt('allocationDesc', riskStatus === 'ON' ? (finalUproPct < 100 ? '防守模式' : '積極模式') : 'Risk OFF');
+                setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`);
+                setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`);
+                setTxt('targetIbitVal', `($${Math.round(satCapital).toLocaleString()})`);
                 
-                const uproPctDisplay = (targetUproVal / totalValue * 100).toFixed(0);
-                const sgovPctDisplay = (targetSgovVal / totalValue * 100).toFixed(0);
-                
-                setTxt('targetUpro', `${uproPctDisplay}%`); 
-                setTxt('targetSgov', `${sgovPctDisplay}%`);
-                setTxt('targetIbit', `10%`);
+                setTxt('targetSgovPct', `${(100 - finalUproPct)}%`);
 
                 const diffU = uproVal - targetUproVal;
                 const diffS = sgovVal - targetSgovVal;
                 const diffI = ibitVal - satCapital;
 
-                setTxt('uproDiff', `${diffU>=0?'+':''}$${Math.round(diffU).toLocaleString()}`); 
-                setTxt('sgovDiff', `${diffS>=0?'+':''}$${Math.round(diffS).toLocaleString()}`); 
-                setTxt('ibitDiff', `${diffI>=0?'+':''}$${Math.round(diffI).toLocaleString()}`);
+                const getAction = (diff, name) => {
+                    if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`; 
+                    return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()}` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}`;
+                };
 
-                let acts = [];
-                const thres = totalValue * 0.05;
-                if(Math.abs(diffU) > thres) acts.push(`${diffU>0?'賣':'買'} UPRO`);
-                const curI = ibitVal/totalValue*100 || 0;
-                if(curI < 7 || curI > 13) acts.push(`調整 IBIT`);
-                
-                setTxt('rebalanceAction', acts.length ? acts.join(" | ") : "無需操作 (乖離容忍內)");
-                renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
+                setTxt('uproAction', getAction(diffU, 'UPRO'));
+                setTxt('sgovAction', getAction(diffS, 'SGOV'));
+                setTxt('ibitAction', getAction(diffI, 'IBIT'));
 
-                // 5. Suggestions (Sell Call & VIX)
-                // VIX Hedge
+                const coreCap = totalValue * 0.9;
                 let vixText = "無";
                 let vixClass = "text-slate-500";
                 if (riskStatus === 'ON') {
                     if (vix < 13.5) {
-                        const count = Math.round(totalValue / 10000);
-                        vixText = `Buy ${count} 組 Spread (每萬鎂1組)`;
+                        const count = Math.round(coreCap / 10000);
+                        vixText = `Buy ${count} 組 Spread (Core 90%)`;
                         vixClass = "text-purple-400 font-bold";
                     } else if (vix >= 13.5 && vix <= 17) {
-                        const count = Math.round(totalValue / 15000);
-                        vixText = `Buy ${count} 組 Spread (每1.5萬鎂1組)`;
+                        const count = Math.round(coreCap / 15000);
+                        vixText = `Buy ${count} 組 Spread (Core 90%)`;
                         vixClass = "text-purple-400 font-bold";
                     }
                 }
                 setTxt('vixSuggestion', vixText);
                 document.getElementById('vixSuggestion').className = `suggestion-val ${vixClass}`;
 
-                // Sell Call
                 let callText = "觀望";
                 let callClass = "text-slate-500";
                 if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) {
@@ -752,8 +737,13 @@
                 setTxt('callSuggestion', callText);
                 document.getElementById('callSuggestion').className = `suggestion-val ${callClass}`;
 
-                // GPS Highlight
-                document.querySelectorAll('.strategy-item').forEach(el => el.classList.remove('active'));
+                // GPS Highlight logic: Safely handle element existence
+                const strategyItemIds = ['gps-risk-off', 'gps-rsi-buy', 'gps-bias-low', 'gps-bias-med', 'gps-bias-high', 'gps-bias-extreme'];
+                strategyItemIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.remove('active');
+                });
+                
                 let activeId = '';
                 if (riskStatus === 'OFF') activeId = 'gps-risk-off';
                 else if (dailyRsi < 30) activeId = 'gps-rsi-buy';
@@ -762,106 +752,15 @@
                 else if (bias > 4) activeId = 'gps-bias-med';
                 else activeId = 'gps-bias-low';
                 
-                if(activeId) document.getElementById(activeId).classList.add('active');
+                const activeEl = document.getElementById(activeId);
+                if (activeEl) activeEl.classList.add('active');
 
-                // Update Scenario Table
-                const tableBody = document.getElementById('scenarioTable');
-                if (tableBody) {
-                    tableBody.innerHTML = '';
-                    const uproPrice = sf('uproPrice');
-                    [{n:'5 EMA',v:wema5}, {n:'12 EMA',v:wema12}, {n:'20 EMA',v:wema20}].forEach(t => {
-                        if(!t.v) return;
-                        const pct = ((t.v - vooClose) / vooClose) * 100;
-                        const lev = pct < 0 ? 2.8 : 3.0; const uproPct = pct * lev;
-                        const predUproPrice = uproPrice * (1 + uproPct/100);
-                        tableBody.innerHTML += `<tr><td class="pl-3 py-3 text-left"><span class="text-[10px] text-slate-400 block">${t.n}</span><span class="text-xs font-mono text-white">$${t.v.toFixed(2)}</span></td><td class="py-3 ${pct<0?'text-red-400':'text-green-400'} font-bold text-xs">${pct.toFixed(1)}%</td><td class="py-3 ${uproPct<0?'text-red-400':'text-green-400'} font-bold text-xs">${uproPct.toFixed(1)}%</td><td class="pr-3 py-3 text-right font-mono text-slate-300 text-xs">$${predUproPrice.toFixed(2)}</td></tr>`;
-                    });
-                }
                 updateSimulation();
             }
-        };
-
-        window.saveRecord = async () => {
-            vibrate(); const btn = document.getElementById('saveBtn'); const originalText = btn.innerHTML;
-            try {
-                if (!db || !auth) throw new Error("資料庫尚未連線");
-                if (!realUserId) throw new Error("請先登入");
-                const manualDate = document.getElementById('recordDate').value;
-                if(!manualDate) throw new Error("請輸入日期");
-                
-                btn.disabled = true; btn.innerHTML = `<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>`; lucide.createIcons();
-                
-                const uproVal = sf('uproShares')*sf('uproPrice');
-                const sgovVal = sf('sgovShares')*sf('sgovPrice');
-                const ibitVal = sf('ibitShares')*sf('ibitPrice');
-                const cash = sf('cashAmount');
-                const totalValue = uproVal + sgovVal + ibitVal + cash;
-                const riskStatus = document.getElementById('riskState').innerText.replace('RISK ', ''); 
-                const optType = document.getElementById('optType').value;
-                let optPremium = sf('optPremium');
-                if (optType && (optType.toLowerCase().includes('buy'))) optPremium = -Math.abs(optPremium); else optPremium = Math.abs(optPremium);
-                
-                const data = {
-                    manualDate, vooClose: sf('vooClose'), wema5: sf('wema5'), wema12: sf('wema12'), wema20: sf('wema20'),
-                    vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'),
-                    uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
-                    cashAmount: cash, optionsIncome: optPremium !== 0 ? optPremium : 0,
-                    totalValue, riskStatus, note: document.getElementById('recordNote').value,
-                    optType, optPremium, optionDetails: optType ? `${optType} $${Math.abs(optPremium)}` : '', optionStatus: optType ? 'Open' : null
-                };
-
-                const editId = document.getElementById('editDocId').value;
-                if(editId) { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`, editId), { ...data, updatedAt: serverTimestamp() }); alert("✅ 已更新"); cancelEdit(); } 
-                else { await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); alert("✅ 已儲存"); cancelEdit(); }
-                localStorage.removeItem('upro_v9_draft'); switchView('history');
-            } catch (e) { alert("錯誤: " + e.message); } finally { btn.disabled = false; btn.innerHTML = originalText; lucide.createIcons(); }
-        };
-
-        window.handleInput = () => { debouncedCalculate(); const d={}; document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); localStorage.setItem('upro_v9_draft', JSON.stringify(d)); }
-        function restoreDraft() { 
-            const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
-            if(d) {
-                Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; });
-                updateOptUi(); 
-                calculateStrategy(); 
-            }
-        }
-        window.switchView = (v) => { vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
-        
-        window.exportJson = () => {
-            if(!globalHistoryData.length) return;
-            const a = document.createElement('a');
-            a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"}));
-            a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
         }
 
-        window.importJson = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
-        window.setChartRange = (range) => { currentChartRange = range; renderAssetHistoryChart(); }
-        window.toggleChartType = () => { chartMode = chartMode === 'line' ? 'income' : 'line'; document.getElementById('chartTypeBtn').textContent = chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'; renderAssetHistoryChart(); };
-
-        async function initFirebase() { 
-            try { 
-                const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); 
-                if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); 
-                onAuthStateChanged(auth, u => { 
-                    if(u){ 
-                        realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; 
-                        if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; 
-                        document.getElementById('connDot').className = 'conn-dot conn-online';
-                        document.getElementById('connText').innerText = 'Online';
-                        document.getElementById('connText').className = 'text-xs text-green-400 font-bold';
-                        loadHistory(); 
-                    } 
-                }); 
-            } catch(e) { 
-                document.getElementById('connText').innerText = 'Offline';
-                alert("連線失敗: " + e.message); 
-            } 
-        }
-        
-        window.fillLatestData = (force) => { 
-            vibrate(); 
+        function fillLatestData(force) { 
+            window.vibrate(); 
             if(globalHistoryData.length) { 
                 const l = globalHistoryData[0]; 
                 const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
@@ -888,60 +787,340 @@
                 showToast("⚠️ 無歷史資料可帶入", "normal");
             }
         }
+
+        function handleInput() { 
+            clearTimeout(calculationTimer); 
+            calculationTimer = setTimeout(calculateStrategy, 300); 
+            const d={}; 
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent' && e.id !=='optionStatus') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); 
+            localStorage.setItem('upro_v9_draft', JSON.stringify(d)); 
+        }
+
+        function restoreDraft() { 
+            const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
+            if(d) {
+                Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; });
+                updateOptUi(); 
+                calculateStrategy(); 
+            }
+        }
         
-        function renderAllocationChart(data, total) { const ctx = document.getElementById('allocationChart').getContext('2d'); if (allocationChartInstance) allocationChartInstance.destroy(); if (total === 0) return; allocationChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['UPRO', 'SGOV', 'IBIT', 'Cash'], datasets: [{ data: data, backgroundColor: ['#f87171', '#4ade80', '#f472b6', '#94a3b8'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } } }); }
+        function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
+
+        function openSettings() { openModal('settingsModal'); if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
+        function closeSettings() { closeModal('settingsModal'); }
+        function closeDetails() { closeModal('detailsModal'); }
         
-        function renderAssetHistoryChart() { 
-            const ctx = document.getElementById('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy(); if (!globalHistoryData.length) return; 
-            let dataToShow = [...globalHistoryData].reverse(); 
-            const labels = dataToShow.map(d => d.manualDate.slice(5)); 
-            let dsData = []; let color = '#3b82f6'; 
-            if (chartMode === 'income') { let cumulative = 0; dsData = dataToShow.map(d => { cumulative += (parseFloat(d.optionsIncome) || 0); return cumulative; }); color = '#22c55e'; } else { dsData = dataToShow.map(d => d.totalValue); } 
-            assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ data: dsData, borderColor: color, borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0, 0, 0, 240); gr.addColorStop(0, color+"44"); gr.addColorStop(1, "transparent"); return gr; } }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false, grid: {display: false} }, y: { display: false, grid: {display: false} } } } }); 
+        function exportJson() {
+            if(!globalHistoryData.length) return;
+            const a = document.createElement('a');
+            a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"}));
+            a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+        }
+
+        function importJson(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
+        
+        function setChartRange(range) { currentChartRange = range; renderAssetHistoryChart(); }
+        function toggleChartType() { chartMode = chartMode === 'line' ? 'income' : 'line'; document.getElementById('chartTypeBtn').textContent = chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'; renderAssetHistoryChart(); }
+
+        async function saveRecord() {
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>';
+            btn.disabled = true;
+
+            try {
+                const docId = document.getElementById('editDocId').value;
+                const recordDate = document.getElementById('recordDate').value;
+                
+                if(!recordDate) throw new Error("日期為必填");
+
+                const data = {
+                    manualDate: recordDate,
+                    vooClose: sf('vooClose'),
+                    wema5: sf('wema5'),
+                    wema12: sf('wema12'),
+                    wema20: sf('wema20'),
+                    vix: sf('vixIndex'),
+                    dailyRsi: sf('dailyRsi'),
+                    uproShares: sf('uproShares'),
+                    uproPrice: sf('uproPrice'),
+                    sgovShares: sf('sgovShares'),
+                    sgovPrice: sf('sgovPrice'),
+                    ibitShares: sf('ibitShares'),
+                    ibitPrice: sf('ibitPrice'),
+                    cashAmount: sf('cashAmount'),
+                    note: document.getElementById('recordNote').value,
+                    optType: document.getElementById('optType').value,
+                    optPremium: sf('optPremium'),
+                    // FIX: Read from hidden input, default to Open if new
+                    optionStatus: document.getElementById('optionStatus').value || 'Open' 
+                };
+
+                // Calculated fields
+                data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount;
+                data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
+
+                if (docId) {
+                    // Update
+                    await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data);
+                    showToast("✅ 紀錄已更新", "success");
+                    cancelEdit();
+                } else {
+                    // Create
+                    await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), {
+                        ...data,
+                        timestamp: serverTimestamp()
+                    });
+                    showToast("✅ 紀錄已儲存", "success");
+                    // Clear inputs for next entry, but keep some market data maybe? Or just clear.
+                    // restoreDraft() usually handles persistence, let's clear inputs.
+                     document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus') e.value = ''; });
+                     document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
+                     updateOptUi();
+                }
+                
+                // Refresh is handled by onSnapshot in loadHistory usually, but if we aren't using onSnapshot everywhere, we might need to trigger load. 
+                // However, since we define loadHistory to use onSnapshot or getDocs? 
+                // The prompt code uses onSnapshot in imports but let's see how I implement loadHistory. 
+                // Usually better to just wait for the listener if using onSnapshot, or call reload if using getDocs.
+                // Let's implement loadHistory with onSnapshot for real-time updates.
+                
+            } catch (e) {
+                console.error(e);
+                showToast("❌ 錯誤: " + e.message, "normal");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
         }
 
         function loadHistory() {
-            onSnapshot(query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('timestamp','desc')), snap => {
-                const list = document.getElementById('historyList'); list.innerHTML=''; globalHistoryData=[];
-                let totalIncome = 0;
-                if(snap.empty) { list.innerHTML='<tr><td colspan="5" class="text-center py-8 text-slate-500">無資料</td></tr>'; document.getElementById('totalIncomeDisplay').textContent = "$0"; if (assetChartInstance) assetChartInstance.destroy(); return; }
-                snap.forEach(d => {
-                    const data = d.data(); data.id=d.id; globalHistoryData.push(data);
-                    totalIncome += (parseFloat(data.optionsIncome) || 0);
-                    const row = document.createElement('tr'); row.className="border-b border-slate-700/50 cursor-pointer active:bg-slate-800 transition-colors";
-                    row.onclick = (e) => { if(!e.target.closest('button') && !e.target.closest('select')) showDetails(data.id); };
-                    let noteDisplay = data.note ? `<div class="w-2 h-2 rounded-full bg-blue-500 inline-block ml-1"></div>` : '';
-                    let detailsHtml = data.optionDetails ? `<div class="text-[9px] font-bold ${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionDetails.split(' ')[0]}</div>` : '';
-                    
-                    let statusHtml = ''; 
-                    if(data.optType) { 
-                        const s = data.optionStatus || 'Open'; 
-                        let badgeClass = 'badge-open';
-                        let badgeText = '持倉';
-                        if (s === 'Closed') { badgeClass = 'badge-closed'; badgeText = '平倉'; }
-                        else if (s === 'Exercised') { badgeClass = 'badge-exercised'; badgeText = '行權'; }
-                        statusHtml = `<button onclick="event.stopPropagation(); openStatusModal('${data.id}', '${s}')" class="status-badge ${badgeClass} ml-1">${badgeText}</button>`; 
-                    }
-
-                    row.innerHTML=`<td class="pl-2 py-4 text-xs font-mono text-slate-400 font-bold">${data.manualDate.slice(5)}</td><td class="py-4 text-[10px] font-bold ${data.riskStatus.includes('ON')?'text-green-400':'text-red-400'}">${data.riskStatus.includes('ON') ? 'ON' : 'OFF'}</td><td class="py-4 text-xs font-black text-yellow-500">$${Math.round(data.totalValue/1000)}k</td><td class="py-4 flex flex-col items-start justify-center gap-1">${detailsHtml}<div class="flex items-center">${noteDisplay}${statusHtml}</div></td><td class="py-4 pr-2 text-right"><button onclick="showDeleteModal('${data.id}', event)" class="text-slate-500 active:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
-                    list.appendChild(row);
-                });
+            if(!currentDataUserId) return;
+            const q = query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('manualDate', 'desc'));
+            
+            // Using onSnapshot for real-time updates
+            onSnapshot(q, (snapshot) => {
+                globalHistoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderHistoryTable();
+                calculateTotals();
+                renderAssetHistoryChart();
                 
-                if(globalHistoryData.length) {
-                    const first = globalHistoryData[globalHistoryData.length - 1];
-                    const vooClose = parseFloat(document.getElementById('vooClose').value) || 0;
-                    if (vooClose && first.vooClose) setTxt('alphaTotalDisplay', `${((((parseFloat(document.getElementById('totalValueDisplay').innerText.replace(/[$,]/g,''))-first.totalValue)/first.totalValue)*100)-(((vooClose-first.vooClose)/first.vooClose)*100)).toFixed(1)}%`);
+                if(globalHistoryData.length > 0) {
+                    // Update dashboard with latest data if inputs are empty? 
+                    // Actually, the user might be typing. Let's just calculate totals.
+                    const latest = globalHistoryData[0];
+                     // Update total value display on dashboard
+                    document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`;
                 }
-                document.getElementById('totalIncomeDisplay').textContent = `$${totalIncome.toLocaleString()}`;
-                renderAssetHistoryChart(); 
-                if(!hasInitialized) { if(localStorage.getItem('upro_v9_draft')) restoreDraft(); else fillLatestData(); hasInitialized=true; }
-                lucide.createIcons();
+            }, (error) => {
+                console.error("Error loading history:", error);
+                document.getElementById('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>';
             });
         }
 
-        window.debouncedCalculate = () => { clearTimeout(calculationTimer); calculationTimer = setTimeout(calculateStrategy, 300); };
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyList');
+            tbody.innerHTML = '';
+            
+            if (globalHistoryData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>';
+                return;
+            }
+
+            globalHistoryData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors';
+                
+                // Status Logic
+                let statusBadge = '';
+                if (item.optType) {
+                    const status = item.optionStatus || 'Open';
+                    let badgeClass = status === 'Open' ? 'badge-open' : (status === 'Exercised' ? 'badge-exercised' : 'badge-closed');
+                    let label = status === 'Open' ? '持倉' : (status === 'Exercised' ? '行權' : '平倉');
+                    statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`;
+                }
+
+                // Income color
+                const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500');
+                const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : '';
+
+                tr.innerHTML = `
+                    <td class="py-3 pl-2">
+                        <div class="font-bold text-slate-200 text-sm">${item.manualDate.slice(5)}</div>
+                        <div class="text-[10px] text-slate-500">${item.manualDate.slice(0,4)}</div>
+                    </td>
+                    <td class="py-3">
+                        <div class="flex items-center">
+                            ${statusBadge || '<span class="text-slate-600 text-[10px]">-</span>'}
+                        </div>
+                    </td>
+                    <td class="py-3 text-right">
+                        <div class="font-bold text-slate-200 text-sm">$${Math.round(item.totalValue/1000)}k</div>
+                    </td>
+                    <td class="py-3 text-right">
+                        <div class="text-xs font-bold">${incomeStr}</div>
+                        ${item.optType ? `<div class="text-[10px] text-indigo-300">${item.optType}</div>` : ''}
+                    </td>
+                    <td class="py-3 pr-2 text-right">
+                        <button onclick="showDetails('${item.id}')" class="p-2 text-slate-400 hover:text-white"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                        <button onclick="showDeleteModal('${item.id}', event)" class="p-2 text-red-400/50 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function calculateTotals() {
+            const totalIncome = globalHistoryData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0);
+            document.getElementById('totalIncomeDisplay').innerText = `$${totalIncome.toLocaleString()}`;
+        }
+
+        function renderAssetHistoryChart() {
+            const ctx = document.getElementById('assetChart').getContext('2d');
+            if (assetChartInstance) assetChartInstance.destroy();
+
+            // Sort by date ascending for chart
+            const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
+            
+            const labels = chartData.map(d => d.manualDate.slice(5));
+            const values = chartMode === 'line' 
+                ? chartData.map(d => d.totalValue) 
+                : chartData.map(d => {
+                    // Cumulative income calculation
+                    // This is a bit tricky if we just map directly. 
+                    // Let's just show discrete income for bar or cumulative for line?
+                    // The prompt implies a toggle. Let's do Cumulative for Line mode called "Income" vs Asset Value.
+                    // Actually, let's just do Asset Value (Line) vs Monthly Income (Bar)? 
+                    // To keep it simple based on the code provided earlier, let's stick to Asset Value line chart and maybe Cumulative Income.
+                    return d.totalValue; // Placeholder logic, will refine below.
+                });
+
+            let dataset = {};
+            if (chartMode === 'line') {
+                dataset = {
+                    type: 'line',
+                    label: '總資產淨值',
+                    data: chartData.map(d => d.totalValue),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                };
+            } else {
+                // Income Mode - let's make it cumulative income over time
+                let runningTotal = 0;
+                const incomeData = chartData.map(d => {
+                    runningTotal += (parseFloat(d.optionsIncome) || 0);
+                    return runningTotal;
+                });
+                 dataset = {
+                    type: 'line',
+                    label: '累計權利金收益',
+                    data: incomeData,
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                };
+            }
+
+            assetChartInstance = new Chart(ctx, {
+                data: {
+                    labels: labels,
+                    datasets: [dataset]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#94a3b8',
+                            bodyColor: '#f8fafc',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            display: true,
+                            position: 'right',
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // --- GLOBAL EXPORTS ---
+        window.handleInput = handleInput;
+        window.fillLatestData = fillLatestData;
+        window.calculateStrategy = calculateStrategy;
+        window.updateSimulation = updateSimulation;
+        window.cancelEdit = cancelEdit;
+        window.loadRecordForEdit = loadRecordForEdit;
+        window.showDetails = showDetails;
+        window.confirmDelete = confirmDelete;
+        window.saveOptionStatus = saveOptionStatus;
+        window.closeStatusModal = closeStatusModal;
+        window.openStatusModal = openStatusModal;
+        window.updateOptUi = updateOptUi;
+        window.selectOpt = selectOpt;
+        window.showDeleteModal = showDeleteModal;
+        window.closeDeleteModal = closeDeleteModal;
+        window.saveTargetUserId = saveTargetUserId;
+        window.copyUserId = copyUserId;
+        window.showToast = showToast;
+        window.openSettings = openSettings;
+        window.closeSettings = closeSettings;
+        window.closeDetails = closeDetails;
+        window.importJson = importJson;
+        window.exportJson = exportJson;
+        window.saveRecord = saveRecord;
+        window.switchView = switchView;
+        window.toggleChartType = toggleChartType;
+
+        // INIT
         document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
-        initFirebase(); lucide.createIcons();
+        async function init() {
+            try { 
+                const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); 
+                if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); 
+                onAuthStateChanged(auth, u => { 
+                    if(u){ 
+                        realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; 
+                        if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; 
+                        document.getElementById('connDot').className = 'conn-dot conn-online';
+                        document.getElementById('connText').innerText = 'Online';
+                        document.getElementById('connText').className = 'text-xs text-green-400 font-bold';
+                        loadHistory(); 
+                    } 
+                }); 
+            } catch(e) { 
+                document.getElementById('connText').innerText = 'Offline';
+                alert("連線失敗: " + e.message); 
+            } 
+        }
+        init();
+        lucide.createIcons();
     </script>
 </body>
 </html>

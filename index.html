@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V10.8 Restore</title>
+    <title>UPRO V11.3 Toast</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -53,7 +53,6 @@
         .mobile-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Navigation Bar */
         .bottom-nav {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 92%; max-width: 400px;
@@ -75,6 +74,7 @@
         .strategy-item { opacity: 0.5; padding: 12px; border-left: 3px solid transparent; margin-bottom: 8px; background: rgba(15, 23, 42, 0.5); border-radius: 0.5rem; }
         .strategy-item.active { opacity: 1; background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         .strategy-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
+        .strategy-text { font-size: 12px; color: #e2e8f0; line-height: 1.4; }
         
         .modal-backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); transition: opacity 0.2s; }
         
@@ -82,7 +82,6 @@
         .btn-save { background: linear-gradient(135deg, #db2777, #e11d48); color: white; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4); }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
 
-        /* Option Buttons & Badges */
         .opt-btn { background: #334155; color: #94a3b8; border: 1px solid transparent; transition: all 0.2s; position: relative; overflow: hidden; }
         .opt-btn.active { background: #4f46e5; color: white; border-color: #818cf8; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); font-weight: 900; }
         .opt-btn:active { transform: scale(0.96); }
@@ -93,12 +92,19 @@
         .badge-closed { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); }
         .badge-exercised { background: rgba(168, 85, 247, 0.1); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
 
-        /* Action Sheet */
         .action-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; padding: 1.5rem; z-index: 200; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-top: 1px solid #334155; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
         .action-sheet.show { transform: translateY(0); }
         .sheet-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; background: #334155; color: white; font-weight: 700; text-align: left; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
         .sheet-btn:active { background: #475569; transform: scale(0.98); }
         .sheet-btn.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid #3b82f6; }
+
+        .suggestion-box { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 0.8rem; padding: 1rem; margin-top: 1rem; }
+        .suggestion-label { font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 4px; }
+        .suggestion-val { font-size: 14px; color: #e2e8f0; font-weight: 600; }
+
+        .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; }
+        .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+        .sim-table td:first-child { text-align: left; }
 
         @media (min-width: 1024px) { .mobile-view { display: block !important; } .bottom-nav { display: none; } body { padding-bottom: 2rem; } }
         
@@ -112,7 +118,7 @@
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V10.8</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.3</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -124,8 +130,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
 
         <div id="view-inputs" class="mobile-view active lg:col-span-4 lg:order-1">
-            <!-- FIXED: Moved button inside Card for visibility -->
-            
             <div class="card p-5 border-l-4 border-indigo-500">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2"><div class="p-2 bg-indigo-500/20 rounded-lg"><i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i></div><h3 class="text-base font-bold text-white">市場數據</h3></div>
@@ -133,15 +137,15 @@
                 </div>
                 <div class="space-y-4">
                     <div><label>日期</label><input type="date" id="recordDate" onchange="handleInput()" class="font-mono"></div>
-                    <div><label>VOO 收盤價</label><input type="number" id="vooClose" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-xl font-bold text-indigo-200 border-indigo-500/50 bg-indigo-900/20"></div>
+                    <div><label>VOO 收盤價 (週線)</label><input type="number" id="vooClose" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-xl font-bold text-indigo-200 border-indigo-500/50 bg-indigo-900/20"></div>
                     <div class="grid grid-cols-3 gap-3">
-                        <div><label>5 EMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        <div><label>12 EMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        <div><label>20 EMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                        <div><label>5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                        <div><label>12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                        <div><label>20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div><label>VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
-                        <div><label>RSI</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
+                        <div><label>RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
                     </div>
                 </div>
             </div>
@@ -222,7 +226,7 @@
                         <div id="totalValueDisplay" class="text-3xl font-black text-yellow-400 tracking-tighter">$0</div>
                     </div>
                 </div>
-                <!-- FIXED: Restored Full Alpha Display -->
+                
                 <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                      <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
                          <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Alpha (長期)</span>
@@ -235,8 +239,42 @@
                 </div>
             </div>
 
+            <!-- Strategy Action Card -->
+            <div class="card p-5 bg-[#162032] border border-blue-500/30">
+                <div class="flex items-center gap-2 mb-3"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
+                
+                <!-- Position Sizing -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 uppercase mb-1">UPRO 核心倉位</div>
+                        <div id="finalUproPct" class="text-2xl font-black text-white">0%</div>
+                        <div id="limitReason" class="text-[10px] text-slate-500 mt-1">Wait...</div>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 uppercase mb-1">IBIT 衛星倉位</div>
+                        <div class="text-2xl font-black text-pink-400">10%</div>
+                        <div class="text-[10px] text-slate-500 mt-1">獨立運作</div>
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="suggestion-box">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="suggestion-label text-purple-400">VIX 避險建議 (VIX Bull Call Spread)</div>
+                            <div id="vixSuggestion" class="suggestion-val">無 (Risk OFF)</div>
+                        </div>
+                    </div>
+                    <div class="w-full h-px bg-slate-700/50 my-2"></div>
+                    <div>
+                        <div class="suggestion-label text-green-400">動態 Sell Call 建議</div>
+                        <div id="callSuggestion" class="suggestion-val">無 (Risk OFF)</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card p-5 bg-slate-800/40">
-                <div class="flex justify-between items-center mb-4"><span class="text-sm font-bold text-blue-300 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 配置建議</span><span id="allocationDesc" class="text-xs bg-blue-500/10 text-blue-200 px-3 py-1 rounded-full font-bold">--</span></div>
+                <div class="flex justify-between items-center mb-4"><span class="text-sm font-bold text-blue-300 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 配置計算機</span><span id="allocationDesc" class="text-xs bg-blue-500/10 text-blue-200 px-3 py-1 rounded-full font-bold">--</span></div>
                 <div class="flex flex-col gap-6">
                     <div class="h-40 relative w-full flex justify-center"><canvas id="allocationChart"></canvas></div>
                     <div class="grid grid-cols-3 gap-2 text-center">
@@ -277,14 +315,14 @@
             </div>
 
             <div class="card p-5 border border-slate-700/50 bg-[#162032]">
-                <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">策略導航</h3></div>
+                <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
                 <div class="space-y-1" id="strategyGPS">
-                    <div class="strategy-item" id="gps-risk-off" data-state="risk-off"><div class="strategy-title">Risk OFF (20MA 下)</div><div class="strategy-text text-xs">趨勢轉空，保留現金/SGOV，等待站回。</div></div>
-                    <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy"><div class="strategy-title">RSI < 30 (超賣)</div><div class="strategy-text text-xs">超跌買點！無視乖離，短期 100% 抄底。</div></div>
-                    <div class="strategy-item" id="gps-bias-low" data-state="bias-low"><div class="strategy-title">Bias < 2% (起漲)</div><div class="strategy-text text-xs">趨勢確立，乖離小，100% UPRO 積極持有。</div></div>
-                    <div class="strategy-item" id="gps-bias-med" data-state="bias-med"><div class="strategy-title">Bias 2-5% (續漲)</div><div class="strategy-text text-xs">獲利回吐風險增加，降至 80% UPRO。</div></div>
-                    <div class="strategy-item" id="gps-bias-high" data-state="bias-high"><div class="strategy-title">Bias 5-8% (過熱)</div><div class="strategy-text text-xs">過熱訊號，降至 60% UPRO，準備避險。</div></div>
-                    <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias > 8% (極度貪婪)</div><div class="strategy-text text-xs">極度過熱，降至 50% UPRO，隨時準備大跌。</div></div>
+                    <div class="strategy-item" id="gps-risk-off" data-state="risk-off"><div class="strategy-title">Risk OFF (20MA 下)</div><div class="strategy-text text-xs">清倉 UPRO，保留現金/SGOV，等待站回 (需2週)。</div></div>
+                    <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy"><div class="strategy-title">暴利濾網 (RSI < 30)</div><div class="strategy-text text-xs">強制滿倉 UPRO (100%)，無視減碼訊號。</div></div>
+                    <div class="strategy-item" id="gps-bias-low" data-state="bias-low"><div class="strategy-title">Bias < 4% (全速)</div><div class="strategy-text text-xs">乖離護欄上限 100%。</div></div>
+                    <div class="strategy-item" id="gps-bias-med" data-state="bias-med"><div class="strategy-title">Bias 4-8% (微調)</div><div class="strategy-text text-xs">乖離護欄上限 80%。</div></div>
+                    <div class="strategy-item" id="gps-bias-high" data-state="bias-high"><div class="strategy-title">Bias 8-12% (警戒)</div><div class="strategy-text text-xs">乖離護欄上限 60%。</div></div>
+                    <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias > 12% (危險)</div><div class="strategy-text text-xs">乖離護欄上限 50%。</div></div>
                 </div>
             </div>
         </div>
@@ -310,6 +348,12 @@
         <button onclick="switchView('dashboard')" id="btn-dashboard" class="bottom-nav-btn"><i data-lucide="layout-dashboard"></i></button>
         <button onclick="switchView('history')" id="btn-history" class="bottom-nav-btn"><i data-lucide="history"></i></button>
     </nav>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border">
+        <div id="toastIcon"></div>
+        <div id="toastMsg" class="text-sm font-bold text-white"></div>
+    </div>
 
     <!-- Option Status Action Sheet Modal -->
     <div id="optionStatusModal" class="fixed inset-0 z-[150] hidden modal-backdrop opacity-0 pointer-events-none">
@@ -389,23 +433,70 @@
         window.openSettings = () => { openModal('settingsModal'); if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
         window.closeSettings = () => closeModal('settingsModal');
         window.closeDetails = () => closeModal('detailsModal');
-        window.copyUserId = () => { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => alert("ID 已複製")); }
-        window.saveTargetUserId = () => { const t = document.getElementById('targetUserIdInput').value.trim(); if(t) { localStorage.setItem('upro_target_uid', t); currentDataUserId = t; alert("已切換"); loadHistory(); } else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; alert("已重置"); loadHistory(); } }
+        
+        // --- TOAST SYSTEM ---
+        window.showToast = (msg, type = 'success') => {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastMsg');
+            
+            // Reset styles
+            toast.className = "fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border";
+            
+            if(type === 'success') {
+                toast.classList.add('bg-green-500/90', 'border-green-400/50');
+                icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>';
+            } else {
+                toast.classList.add('bg-slate-800/90', 'border-slate-600/50');
+                icon.innerHTML = '<i data-lucide="info" class="w-5 h-5 text-slate-300"></i>';
+            }
+            
+            text.textContent = msg;
+            lucide.createIcons();
+            
+            // Show animation
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            });
+
+            // Auto hide
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+            }, 2000);
+        }
+
+        window.copyUserId = () => { 
+            navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); 
+        }
+        
+        window.saveTargetUserId = () => { 
+            const t = document.getElementById('targetUserIdInput').value.trim(); 
+            if(t) { 
+                localStorage.setItem('upro_target_uid', t); 
+                currentDataUserId = t; 
+                showToast("✅ 已切換至讀取模式", "success");
+                loadHistory(); 
+            } else { 
+                localStorage.removeItem('upro_target_uid'); 
+                currentDataUserId = realUserId; 
+                showToast("🔄 已重置為本人帳號", "success");
+                loadHistory(); 
+            }
+            closeSettings();
+        }
+        // --------------------
         
         window.showDeleteModal = (id, e) => { e.stopPropagation(); deleteCandidateId = id; openModal('deleteModal'); }
         window.closeDeleteModal = () => { deleteCandidateId = null; closeModal('deleteModal'); }
 
-        // NEW: Option UI Logic
         window.selectOpt = (val) => {
             vibrate();
             const selectEl = document.getElementById('optType');
-            if (selectEl.value === val) {
-                selectEl.value = ""; // Toggle off
-            } else {
-                selectEl.value = val;
-            }
+            if (selectEl.value === val) { selectEl.value = ""; } else { selectEl.value = val; }
             updateOptUi();
-            handleInput(); // Trigger calculation and save draft
+            handleInput();
         };
 
         window.updateOptUi = () => {
@@ -421,16 +512,11 @@
             }
         };
         
-        // --- NEW STATUS MODAL LOGIC ---
         window.openStatusModal = (id, currentStatus) => {
             vibrate();
             document.getElementById('statusTargetId').value = id;
-            // Highlight current status
-            document.querySelectorAll('.sheet-btn').forEach(btn => btn.classList.remove('active'));
-            // You could add logic here to highlight the active one based on currentStatus
             const modal = document.getElementById('optionStatusModal');
             modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-            // Trigger animation
             setTimeout(() => { document.getElementById('statusSheet').classList.add('show'); }, 10);
         };
 
@@ -450,7 +536,6 @@
                 closeStatusModal();
             } catch(e) { console.error(e); alert("更新失敗"); } 
         };
-        // ------------------------------
         
         window.confirmDelete = async () => { 
             if(deleteCandidateId) { 
@@ -511,7 +596,6 @@
             set('recordNote', data.note);
             updateOptUi();
             document.getElementById('editDocId').value = data.id;
-            
             document.getElementById('saveTitle').innerText = "編輯紀錄";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             const btn = document.getElementById('saveBtn');
@@ -554,7 +638,6 @@
             const leverage = pct < 0 ? 2.8 : 3.0; 
             const uproPct = pct * leverage;
             const newUproPrice = uproPrice * (1 + uproPct/100);
-            
             const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
             const newIbitVal = ibitVal * (1 + pct/100); 
             const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
@@ -563,49 +646,169 @@
             const el = document.getElementById('simAssetResult');
             el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`;
             el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
-            
             const inputEl = document.getElementById('simPercent');
             if (pct > 0) inputEl.style.color = '#4ade80';
             else if (pct < 0) inputEl.style.color = '#f87171';
             else inputEl.style.color = '#ffffff';
         };
 
+        // --- CORE STRATEGY LOGIC V5.2 ---
         window.calculateStrategy = () => {
             const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
-            if(vooClose) {
-                const uproVal = sf('uproShares')*sf('uproPrice'), sgovVal = sf('sgovShares')*sf('sgovPrice'), ibitVal = sf('ibitShares')*sf('ibitPrice'), cash = sf('cashAmount');
+            const dailyRsi = sf('dailyRsi'), vix = sf('vixIndex');
+            
+            if(vooClose && wema20) {
+                const uproVal = sf('uproShares')*sf('uproPrice');
+                const sgovVal = sf('sgovShares')*sf('sgovPrice');
+                const ibitVal = sf('ibitShares')*sf('ibitPrice');
+                const cash = sf('cashAmount');
                 const totalValue = uproVal + sgovVal + ibitVal + cash;
-                setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`);
-                renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
-                const bias = ((vooClose - wema20)/wema20)*100, riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
-                const card = document.getElementById('statusCard');
-                if(riskStatus === 'ON') { card.classList.remove('status-off'); card.classList.add('status-on'); setTxt('riskState', 'RISK ON'); document.getElementById('riskState').className = 'text-5xl font-black text-green-400 tracking-tighter'; } else { card.classList.remove('status-on'); card.classList.add('status-off'); setTxt('riskState', 'RISK OFF'); document.getElementById('riskState').className = 'text-5xl font-black text-red-400 tracking-tighter'; }
-                setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
-                const rsi = sf('dailyRsi'); if(rsi < 30 && riskStatus === 'ON') setTxt('rsiBadge', "RSI<30 BUY"); else setTxt('rsiBadge', `RSI ${rsi.toFixed(0)}`);
-                const tU = (riskStatus==='ON'?(bias>=8?50:bias>5?60:bias>2?80:100):0)*0.9, tS = 90-tU;
-                setTxt('allocationDesc', riskStatus==='ON' ? (tU<90?'防守模式':'積極模式') : 'Risk Off');
-                setTxt('targetUpro', `${tU.toFixed(0)}%`); setTxt('targetSgov', `${tS.toFixed(0)}%`);
-                const diffU = uproVal-(totalValue*tU/100), diffS = sgovVal-(totalValue*tS/100), diffI = ibitVal-(totalValue*0.1);
-                setTxt('uproDiff', `${diffU>=0?'+':''}$${Math.round(diffU).toLocaleString()}`); setTxt('sgovDiff', `${diffS>=0?'+':''}$${Math.round(diffS).toLocaleString()}`); setTxt('ibitDiff', `${diffI>=0?'+':''}$${Math.round(diffI).toLocaleString()}`);
-                const thres = totalValue*0.05; let acts = []; if(Math.abs(diffU)>thres) acts.push(`${diffU>0?'賣':'買'} UPRO`); const curI = ibitVal/totalValue*100 || 0; if(curI<7 || curI>15) acts.push(`調整 IBIT`);
-                setTxt('rebalanceAction', acts.length ? acts.join(" | ") : "無需操作");
-                document.querySelectorAll('.strategy-item').forEach(el => el.classList.remove('active'));
-                let activeId = riskStatus === 'OFF' ? 'gps-risk-off' : (rsi < 30 ? 'gps-rsi-buy' : (bias >= 8 ? 'gps-bias-extreme' : (bias > 5 ? 'gps-bias-high' : (bias > 2 ? 'gps-bias-med' : 'gps-bias-low'))));
-                if(activeId) document.getElementById(activeId).classList.add('active');
                 
-                const tableBody = document.getElementById('scenarioTable'); tableBody.innerHTML = '';
-                const uproPrice = sf('uproPrice');
-                [{n:'5 EMA',v:wema5}, {n:'12 EMA',v:wema12}, {n:'20 EMA',v:wema20}].forEach(t => {
-                    if(!t.v) return;
-                    const pct = ((t.v - vooClose) / vooClose) * 100;
-                    const lev = pct < 0 ? 2.8 : 3.0; const uproPct = pct * lev;
-                    const predUproPrice = uproPrice * (1 + uproPct/100);
-                    tableBody.innerHTML += `<tr><td class="pl-3 py-3 text-left"><span class="text-[10px] text-slate-400 block">${t.n}</span><span class="text-xs font-mono text-white">$${t.v.toFixed(2)}</span></td><td class="py-3 ${pct<0?'text-red-400':'text-green-400'} font-bold text-xs">${pct.toFixed(1)}%</td><td class="py-3 ${uproPct<0?'text-red-400':'text-green-400'} font-bold text-xs">${uproPct.toFixed(1)}%</td><td class="pr-3 py-3 text-right font-mono text-slate-300 text-xs">$${predUproPrice.toFixed(2)}</td></tr>`;
-                });
+                // 1. Core Discipline (20 WEMA)
+                const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
+                
+                // Update Risk Status UI
+                const card = document.getElementById('statusCard');
+                const riskEl = document.getElementById('riskState');
+                if(riskStatus === 'ON') { 
+                    card.classList.remove('status-off'); card.classList.add('status-on'); 
+                    setTxt('riskState', 'RISK ON'); 
+                    riskEl.className = 'text-5xl font-black text-green-400 tracking-tighter'; 
+                } else { 
+                    card.classList.remove('status-on'); card.classList.add('status-off'); 
+                    setTxt('riskState', 'RISK OFF'); 
+                    riskEl.className = 'text-5xl font-black text-red-400 tracking-tighter'; 
+                }
+
+                // 2. Bias Calculation
+                const bias = ((vooClose - wema20)/wema20)*100;
+                setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
+                if (dailyRsi < 30) setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)} (BUY!)`);
+                else setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}`);
+
+                // 3. Dynamic Position Sizing (Min Logic)
+                let biasLimit = 100;
+                if (bias > 12) biasLimit = 50;
+                else if (bias > 8) biasLimit = 60;
+                else if (bias > 4) biasLimit = 80;
+                else biasLimit = 100;
+
+                let tacticalLimit = 100;
+                if (wema12 && vooClose < wema12) tacticalLimit = 50;
+                else if (wema5 && vooClose < wema5) tacticalLimit = 70;
+                else tacticalLimit = 100;
+
+                let finalUproPct = 0;
+                let reason = "";
+
+                if (riskStatus === 'OFF') {
+                    finalUproPct = 0;
+                    reason = "Risk OFF (破 20MA)";
+                } else if (dailyRsi < 30) {
+                    finalUproPct = 100; // RSI Filter Override
+                    reason = "暴利濾網 (RSI<30) 強制滿倉";
+                } else {
+                    finalUproPct = Math.min(biasLimit, tacticalLimit);
+                    reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`;
+                }
+
+                // Update UI for Strategy Action
+                setTxt('finalUproPct', `${finalUproPct}%`);
+                setTxt('limitReason', reason);
+
+                // 4. Asset Allocation Recommendations (90% Core / 10% IBIT)
+                const coreCapital = totalValue * 0.9;
+                const satCapital = totalValue * 0.1;
+                
+                const targetUproVal = coreCapital * (finalUproPct / 100);
+                const targetSgovVal = coreCapital - targetUproVal;
+                
+                setTxt('allocationDesc', riskStatus === 'ON' ? (finalUproPct < 100 ? '防守模式' : '積極模式') : 'Risk OFF');
+                
+                const uproPctDisplay = (targetUproVal / totalValue * 100).toFixed(0);
+                const sgovPctDisplay = (targetSgovVal / totalValue * 100).toFixed(0);
+                
+                setTxt('targetUpro', `${uproPctDisplay}%`); 
+                setTxt('targetSgov', `${sgovPctDisplay}%`);
+                setTxt('targetIbit', `10%`);
+
+                const diffU = uproVal - targetUproVal;
+                const diffS = sgovVal - targetSgovVal;
+                const diffI = ibitVal - satCapital;
+
+                setTxt('uproDiff', `${diffU>=0?'+':''}$${Math.round(diffU).toLocaleString()}`); 
+                setTxt('sgovDiff', `${diffS>=0?'+':''}$${Math.round(diffS).toLocaleString()}`); 
+                setTxt('ibitDiff', `${diffI>=0?'+':''}$${Math.round(diffI).toLocaleString()}`);
+
+                let acts = [];
+                const thres = totalValue * 0.05;
+                if(Math.abs(diffU) > thres) acts.push(`${diffU>0?'賣':'買'} UPRO`);
+                const curI = ibitVal/totalValue*100 || 0;
+                if(curI < 7 || curI > 13) acts.push(`調整 IBIT`);
+                
+                setTxt('rebalanceAction', acts.length ? acts.join(" | ") : "無需操作 (乖離容忍內)");
+                renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
+
+                // 5. Suggestions (Sell Call & VIX)
+                // VIX Hedge
+                let vixText = "無";
+                let vixClass = "text-slate-500";
+                if (riskStatus === 'ON') {
+                    if (vix < 13.5) {
+                        const count = Math.round(totalValue / 10000);
+                        vixText = `Buy ${count} 組 Spread (每萬鎂1組)`;
+                        vixClass = "text-purple-400 font-bold";
+                    } else if (vix >= 13.5 && vix <= 17) {
+                        const count = Math.round(totalValue / 15000);
+                        vixText = `Buy ${count} 組 Spread (每1.5萬鎂1組)`;
+                        vixClass = "text-purple-400 font-bold";
+                    }
+                }
+                setTxt('vixSuggestion', vixText);
+                document.getElementById('vixSuggestion').className = `suggestion-val ${vixClass}`;
+
+                // Sell Call
+                let callText = "觀望";
+                let callClass = "text-slate-500";
+                if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) {
+                    if (bias > 12) callText = "Sell Call Delta 0.30 (積極)";
+                    else if (bias > 8) callText = "Sell Call Delta 0.20-0.25 (標準)";
+                    else if (bias > 4) callText = "Sell Call Delta 0.15-0.20 (防守)";
+                    
+                    if (bias > 4) callClass = "text-green-400 font-bold";
+                }
+                setTxt('callSuggestion', callText);
+                document.getElementById('callSuggestion').className = `suggestion-val ${callClass}`;
+
+                // GPS Highlight
+                document.querySelectorAll('.strategy-item').forEach(el => el.classList.remove('active'));
+                let activeId = '';
+                if (riskStatus === 'OFF') activeId = 'gps-risk-off';
+                else if (dailyRsi < 30) activeId = 'gps-rsi-buy';
+                else if (bias > 12) activeId = 'gps-bias-extreme';
+                else if (bias > 8) activeId = 'gps-bias-high';
+                else if (bias > 4) activeId = 'gps-bias-med';
+                else activeId = 'gps-bias-low';
+                
+                if(activeId) document.getElementById(activeId).classList.add('active');
+
+                // Update Scenario Table
+                const tableBody = document.getElementById('scenarioTable');
+                if (tableBody) {
+                    tableBody.innerHTML = '';
+                    const uproPrice = sf('uproPrice');
+                    [{n:'5 EMA',v:wema5}, {n:'12 EMA',v:wema12}, {n:'20 EMA',v:wema20}].forEach(t => {
+                        if(!t.v) return;
+                        const pct = ((t.v - vooClose) / vooClose) * 100;
+                        const lev = pct < 0 ? 2.8 : 3.0; const uproPct = pct * lev;
+                        const predUproPrice = uproPrice * (1 + uproPct/100);
+                        tableBody.innerHTML += `<tr><td class="pl-3 py-3 text-left"><span class="text-[10px] text-slate-400 block">${t.n}</span><span class="text-xs font-mono text-white">$${t.v.toFixed(2)}</span></td><td class="py-3 ${pct<0?'text-red-400':'text-green-400'} font-bold text-xs">${pct.toFixed(1)}%</td><td class="py-3 ${uproPct<0?'text-red-400':'text-green-400'} font-bold text-xs">${uproPct.toFixed(1)}%</td><td class="pr-3 py-3 text-right font-mono text-slate-300 text-xs">$${predUproPrice.toFixed(2)}</td></tr>`;
+                    });
+                }
                 updateSimulation();
             }
-        }
-        
+        };
+
         window.saveRecord = async () => {
             vibrate(); const btn = document.getElementById('saveBtn'); const originalText = btn.innerHTML;
             try {
@@ -647,7 +850,7 @@
             const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
             if(d) {
                 Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; });
-                updateOptUi(); // Sync buttons with draft
+                updateOptUi(); 
                 calculateStrategy(); 
             }
         }
@@ -685,42 +888,44 @@
             } 
         }
         
-        window.fillLatestData = (force) => { vibrate(); if(globalHistoryData.length) { const l = globalHistoryData[0]; const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; if(force) set('recordDate',l.manualDate); set('vooClose',l.vooClose); set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); set('cashAmount',l.cashAmount); calculateStrategy(); if(force) switchView('inputs'); } }
+        window.fillLatestData = (force) => { 
+            vibrate(); 
+            if(globalHistoryData.length) { 
+                const l = globalHistoryData[0]; 
+                const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
+                if(force) set('recordDate',l.manualDate); 
+                set('vooClose',l.vooClose); 
+                set('wema20',l.wema20); 
+                set('wema12',l.wema12); 
+                set('wema5',l.wema5); 
+                set('vixIndex',l.vix); 
+                set('dailyRsi',l.dailyRsi); 
+                set('uproShares',l.uproShares); 
+                set('uproPrice',l.uproPrice); 
+                set('sgovShares',l.sgovShares); 
+                set('sgovPrice',l.sgovPrice); 
+                set('ibitShares',l.ibitShares); 
+                set('ibitPrice',l.ibitPrice); 
+                set('cashAmount',l.cashAmount); 
+                calculateStrategy(); 
+                if(force) {
+                    switchView('inputs'); 
+                    showToast("✅ 最新資料已帶入", "success");
+                }
+            } else {
+                showToast("⚠️ 無歷史資料可帶入", "normal");
+            }
+        }
         
         function renderAllocationChart(data, total) { const ctx = document.getElementById('allocationChart').getContext('2d'); if (allocationChartInstance) allocationChartInstance.destroy(); if (total === 0) return; allocationChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['UPRO', 'SGOV', 'IBIT', 'Cash'], datasets: [{ data: data, backgroundColor: ['#f87171', '#4ade80', '#f472b6', '#94a3b8'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } } }); }
         
-        // FIXED: Added VOO Benchmark Line
         function renderAssetHistoryChart() { 
-            const ctx = document.getElementById('assetChart').getContext('2d'); 
-            if (assetChartInstance) assetChartInstance.destroy(); 
-            if (!globalHistoryData.length) return; 
-            
+            const ctx = document.getElementById('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy(); if (!globalHistoryData.length) return; 
             let dataToShow = [...globalHistoryData].reverse(); 
             const labels = dataToShow.map(d => d.manualDate.slice(5)); 
-            
-            let datasets = [];
-            
-            if (chartMode === 'income') { 
-                let cumulative = 0; 
-                const dsData = dataToShow.map(d => { cumulative += (parseFloat(d.optionsIncome) || 0); return cumulative; }); 
-                datasets.push({ label: '收益', data: dsData, borderColor: '#22c55e', borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0,0,0,240); gr.addColorStop(0, "#22c55e44"); gr.addColorStop(1,"transparent"); return gr; } });
-            } else { 
-                const dsData = dataToShow.map(d => d.totalValue); 
-                datasets.push({ label: '淨值', data: dsData, borderColor: '#3b82f6', borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0,0,0,240); gr.addColorStop(0, "#3b82f644"); gr.addColorStop(1,"transparent"); return gr; } });
-                
-                // Add VOO Benchmark Line
-                if (dataToShow.length > 0 && dataToShow[0].vooClose && dataToShow[0].totalValue) {
-                    const startVoo = dataToShow[0].vooClose;
-                    const startVal = dataToShow[0].totalValue;
-                    const vooData = dataToShow.map(d => {
-                        if (!d.vooClose) return null;
-                        return (d.vooClose / startVoo) * startVal;
-                    });
-                    datasets.push({ label: 'VOO Benchmark', data: vooData, borderColor: '#64748b', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.3, fill: false });
-                }
-            } 
-            
-            assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false, grid: {display: false} }, y: { display: false, grid: {display: false} } } } }); 
+            let dsData = []; let color = '#3b82f6'; 
+            if (chartMode === 'income') { let cumulative = 0; dsData = dataToShow.map(d => { cumulative += (parseFloat(d.optionsIncome) || 0); return cumulative; }); color = '#22c55e'; } else { dsData = dataToShow.map(d => d.totalValue); } 
+            assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ data: dsData, borderColor: color, borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0, 0, 0, 240); gr.addColorStop(0, color+"44"); gr.addColorStop(1, "transparent"); return gr; } }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false, grid: {display: false} }, y: { display: false, grid: {display: false} } } } }); 
         }
 
         function loadHistory() {
@@ -735,49 +940,15 @@
                     row.onclick = (e) => { if(!e.target.closest('button') && !e.target.closest('select')) showDetails(data.id); };
                     let noteDisplay = data.note ? `<div class="w-2 h-2 rounded-full bg-blue-500 inline-block ml-1"></div>` : '';
                     let detailsHtml = data.optionDetails ? `<div class="text-[9px] font-bold ${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionDetails.split(' ')[0]}</div>` : '';
-                    
-                    let statusHtml = ''; 
-                    if(data.optType) { 
-                        const s = data.optionStatus || 'Open'; 
-                        let badgeClass = 'badge-open';
-                        let badgeText = '持倉';
-                        if (s === 'Closed') { badgeClass = 'badge-closed'; badgeText = '平倉'; }
-                        else if (s === 'Exercised') { badgeClass = 'badge-exercised'; badgeText = '行權'; }
-                        
-                        statusHtml = `<button onclick="event.stopPropagation(); openStatusModal('${data.id}', '${s}')" class="status-badge ${badgeClass} ml-1">${badgeText}</button>`; 
-                    }
-
+                    let statusHtml = ''; if(data.optType) { const s = data.optionStatus || 'Open'; statusHtml = `<select onchange="updateRecordStatus('${data.id}', this.value)" onclick="event.stopPropagation()" class="text-[10px] bg-slate-900 border border-slate-600 rounded px-1 text-slate-300 mt-1 max-w-[60px]" data-status="${s}"><option value="Open" ${s==='Open'?'selected':''}>Open</option><option value="Closed" ${s==='Closed'?'selected':''}>Shut</option></select>`; }
                     row.innerHTML=`<td class="pl-2 py-4 text-xs font-mono text-slate-400 font-bold">${data.manualDate.slice(5)}</td><td class="py-4 text-[10px] font-bold ${data.riskStatus.includes('ON')?'text-green-400':'text-red-400'}">${data.riskStatus.includes('ON') ? 'ON' : 'OFF'}</td><td class="py-4 text-xs font-black text-yellow-500">$${Math.round(data.totalValue/1000)}k</td><td class="py-4 flex flex-col items-start justify-center gap-1">${detailsHtml}<div class="flex items-center">${noteDisplay}${statusHtml}</div></td><td class="py-4 pr-2 text-right"><button onclick="showDeleteModal('${data.id}', event)" class="text-slate-500 active:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
                     list.appendChild(row);
                 });
-                
-                // FIXED: Calculate Alpha Displays
                 if(globalHistoryData.length) {
                     const first = globalHistoryData[globalHistoryData.length - 1];
-                    const year = new Date().getFullYear().toString();
-                    let ytdStart = globalHistoryData.find(d => d.manualDate.startsWith(year)) || first;
                     const vooClose = parseFloat(document.getElementById('vooClose').value) || 0;
-                    
-                    // Helper to get total value from string
-                    const currentTotal = parseFloat(document.getElementById('totalValueDisplay').innerText.replace(/[$,]/g,'')) || 0;
-
-                    if (vooClose && first.vooClose && currentTotal > 0) {
-                        const myReturn = ((currentTotal - first.totalValue) / first.totalValue) * 100;
-                        const vooReturn = ((vooClose - first.vooClose) / first.vooClose) * 100;
-                        const alpha = myReturn - vooReturn;
-                        setTxt('alphaTotalDisplay', `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`);
-                        document.getElementById('alphaTotalDisplay').className = `text-lg font-bold ${alpha >= 0 ? 'text-green-400' : 'text-red-400'}`;
-                    }
-                    
-                    if (vooClose && ytdStart.vooClose && currentTotal > 0) {
-                        const myReturn = ((currentTotal - ytdStart.totalValue) / ytdStart.totalValue) * 100;
-                        const vooReturn = ((vooClose - ytdStart.vooClose) / ytdStart.vooClose) * 100;
-                        const alpha = myReturn - vooReturn;
-                        setTxt('alphaYtdDisplay', `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`);
-                        document.getElementById('alphaYtdDisplay').className = `text-lg font-bold ${alpha >= 0 ? 'text-green-400' : 'text-red-400'}`;
-                    }
+                    if (vooClose && first.vooClose) setTxt('alphaTotalDisplay', `${((((parseFloat(document.getElementById('totalValueDisplay').innerText.replace(/[$,]/g,''))-first.totalValue)/first.totalValue)*100)-(((vooClose-first.vooClose)/first.vooClose)*100)).toFixed(1)}%`);
                 }
-                
                 document.getElementById('totalIncomeDisplay').textContent = `$${totalIncome.toLocaleString()}`;
                 renderAssetHistoryChart(); 
                 if(!hasInitialized) { if(localStorage.getItem('upro_v9_draft')) restoreDraft(); else fillLatestData(); hasInitialized=true; }

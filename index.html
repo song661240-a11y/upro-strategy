@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V11.3 Toast</title>
+    <title>UPRO V11.4 Fixed</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -118,7 +118,7 @@
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.3</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.4</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -440,53 +440,25 @@
             const icon = document.getElementById('toastIcon');
             const text = document.getElementById('toastMsg');
             
-            // Reset styles
             toast.className = "fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border";
-            
-            if(type === 'success') {
-                toast.classList.add('bg-green-500/90', 'border-green-400/50');
-                icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>';
-            } else {
-                toast.classList.add('bg-slate-800/90', 'border-slate-600/50');
-                icon.innerHTML = '<i data-lucide="info" class="w-5 h-5 text-slate-300"></i>';
-            }
+            if(type === 'success') { toast.classList.add('bg-green-500/90', 'border-green-400/50'); icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>'; } 
+            else if(type === 'normal') { toast.classList.add('bg-slate-800/90', 'border-slate-600/50'); icon.innerHTML = '<i data-lucide="info" class="w-5 h-5 text-slate-300"></i>'; }
             
             text.textContent = msg;
             lucide.createIcons();
             
-            // Show animation
-            requestAnimationFrame(() => {
-                toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-                toast.classList.add('opacity-100', 'translate-y-0');
-            });
-
-            // Auto hide
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-            }, 2000);
+            requestAnimationFrame(() => { toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); toast.classList.add('opacity-100', 'translate-y-0'); });
+            setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); }, 2000);
         }
 
-        window.copyUserId = () => { 
-            navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); 
-        }
+        window.copyUserId = () => { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); }
         
         window.saveTargetUserId = () => { 
             const t = document.getElementById('targetUserIdInput').value.trim(); 
-            if(t) { 
-                localStorage.setItem('upro_target_uid', t); 
-                currentDataUserId = t; 
-                showToast("✅ 已切換至讀取模式", "success");
-                loadHistory(); 
-            } else { 
-                localStorage.removeItem('upro_target_uid'); 
-                currentDataUserId = realUserId; 
-                showToast("🔄 已重置為本人帳號", "success");
-                loadHistory(); 
-            }
+            if(t) { localStorage.setItem('upro_target_uid', t); currentDataUserId = t; showToast("✅ 已切換至讀取模式", "success"); loadHistory(); } 
+            else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; showToast("🔄 已重置為本人帳號", "success"); loadHistory(); }
             closeSettings();
         }
-        // --------------------
         
         window.showDeleteModal = (id, e) => { e.stopPropagation(); deleteCandidateId = id; openModal('deleteModal'); }
         window.closeDeleteModal = () => { deleteCandidateId = null; closeModal('deleteModal'); }
@@ -940,10 +912,21 @@
                     row.onclick = (e) => { if(!e.target.closest('button') && !e.target.closest('select')) showDetails(data.id); };
                     let noteDisplay = data.note ? `<div class="w-2 h-2 rounded-full bg-blue-500 inline-block ml-1"></div>` : '';
                     let detailsHtml = data.optionDetails ? `<div class="text-[9px] font-bold ${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionDetails.split(' ')[0]}</div>` : '';
-                    let statusHtml = ''; if(data.optType) { const s = data.optionStatus || 'Open'; statusHtml = `<select onchange="updateRecordStatus('${data.id}', this.value)" onclick="event.stopPropagation()" class="text-[10px] bg-slate-900 border border-slate-600 rounded px-1 text-slate-300 mt-1 max-w-[60px]" data-status="${s}"><option value="Open" ${s==='Open'?'selected':''}>Open</option><option value="Closed" ${s==='Closed'?'selected':''}>Shut</option></select>`; }
+                    
+                    let statusHtml = ''; 
+                    if(data.optType) { 
+                        const s = data.optionStatus || 'Open'; 
+                        let badgeClass = 'badge-open';
+                        let badgeText = '持倉';
+                        if (s === 'Closed') { badgeClass = 'badge-closed'; badgeText = '平倉'; }
+                        else if (s === 'Exercised') { badgeClass = 'badge-exercised'; badgeText = '行權'; }
+                        statusHtml = `<button onclick="event.stopPropagation(); openStatusModal('${data.id}', '${s}')" class="status-badge ${badgeClass} ml-1">${badgeText}</button>`; 
+                    }
+
                     row.innerHTML=`<td class="pl-2 py-4 text-xs font-mono text-slate-400 font-bold">${data.manualDate.slice(5)}</td><td class="py-4 text-[10px] font-bold ${data.riskStatus.includes('ON')?'text-green-400':'text-red-400'}">${data.riskStatus.includes('ON') ? 'ON' : 'OFF'}</td><td class="py-4 text-xs font-black text-yellow-500">$${Math.round(data.totalValue/1000)}k</td><td class="py-4 flex flex-col items-start justify-center gap-1">${detailsHtml}<div class="flex items-center">${noteDisplay}${statusHtml}</div></td><td class="py-4 pr-2 text-right"><button onclick="showDeleteModal('${data.id}', event)" class="text-slate-500 active:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
                     list.appendChild(row);
                 });
+                
                 if(globalHistoryData.length) {
                     const first = globalHistoryData[globalHistoryData.length - 1];
                     const vooClose = parseFloat(document.getElementById('vooClose').value) || 0;

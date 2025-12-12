@@ -3,390 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-title" content="UPRO V9.0">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/bullish.png">
-    
-    <title>UPRO V9.0 阿爾法終極版</title>
+    <title>UPRO V10.8 Restore</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        :root { --safe-area-top: env(safe-area-inset-top); --safe-area-bottom: env(safe-area-inset-bottom); }
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; padding-top: max(1rem, var(--safe-area-top)); padding-bottom: max(90px, var(--safe-area-bottom)); -webkit-tap-highlight-color: transparent; user-select: none; }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1.2rem; }
-        input, select, textarea { background-color: #334155 !important; color: #ffffff !important; border: 1px solid #475569 !important; border-radius: 0.8rem !important; padding: 0.8rem !important; font-size: 16px !important; width: 100%; transition: all 0.2s; }
-        input:focus, textarea:focus { border-color: #3b82f6 !important; background-color: #1e293b !important; transform: translateY(-1px); outline: none; }
-        .privacy-blur { filter: blur(8px); transition: filter 0.3s; } .privacy-blur:hover { filter: blur(0px); }
-        .gauge-container { height: 8px; background: linear-gradient(90deg, #22c55e 0%, #22c55e 25%, #eab308 25%, #eab308 62.5%, #f97316 62.5%, #f97316 90%, #ef4444 100%); border-radius: 4px; position: relative; margin-top: 14px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.6); }
-        .gauge-marker { position: absolute; top: -6px; width: 4px; height: 20px; background: #fff; border: 1px solid #000; transform: translateX(-50%); box-shadow: 0 0 10px rgba(255,255,255,0.9); transition: left 0.8s; border-radius: 2px; z-index: 10; }
-        .goal-progress-bg { background-color: rgba(0,0,0,0.3); border-radius: 999px; height: 6px; overflow: hidden; }
-        .goal-progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); width: 0%; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
-        .mobile-view { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; } .mobile-view.active { display: block; opacity: 1; transform: translateY(0); }
-        @media (min-width: 1024px) { .mobile-view { display: block !important; opacity: 1 !important; transform: none !important; } body { padding-bottom: 2rem; } .bottom-nav { display: none; } .fab-btn { display: none; } }
-        .bottom-nav-btn { color: #64748b; transition: all 0.3s; position: relative; } .bottom-nav-btn.active { color: #3b82f6; transform: scale(1.05); }
-        .bottom-nav-btn.active::after { content: ''; position: absolute; top: 5px; right: 25%; width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; box-shadow: 0 0 8px #3b82f6; }
-        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-        .status-on-glow { border: 1px solid #22c55e; animation: pulse-ring 3s infinite; } .status-off-glow { border: 1px solid #ef4444; }
-        .modal-backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); transition: all 0.3s; }
-        .tag-btn { font-size: 10px; padding: 4px 8px; border-radius: 999px; background: rgba(51, 65, 85, 0.8); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); transition: all 0.2s; white-space: nowrap; }
-        .tag-btn:hover { background: #475569; color: white; transform: translateY(-1px); }
-        .tf-btn { font-size: 10px; padding: 4px 8px; border-radius: 6px; background: rgba(30, 41, 59, 0.5); color: #94a3b8; transition: all 0.2s; }
-        .tf-btn.active { background: #3b82f6; color: white; font-weight: bold; }
-        .fab-btn { position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); display: flex; align-items: center; justify-content: center; z-index: 40; transition: transform 0.2s; color: white; }
-        .fab-btn:active { transform: scale(0.9); }
-        .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; color: transparent !important; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .heatmap-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-        .heatmap-cell { aspect-ratio: 1; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; color: rgba(255,255,255,0.8); transition: transform 0.1s; cursor: default; }
-        .heatmap-cell:hover { transform: scale(1.1); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .heatmap-val { font-size: 8px; opacity: 0.8; }
-        .status-select { background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important; padding: 2px 6px !important; font-size: 10px !important; height: auto !important; width: auto !important; border-radius: 4px !important; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; }
-        .status-select[data-status="Open"] { border-color: #3b82f6 !important; color: #93c5fd !important; }
-        .status-select[data-status="Closed"] { border-color: #22c55e !important; color: #86efac !important; }
-        .status-select[data-status="Expired"] { border-color: #22c55e !important; color: #86efac !important; }
-        .status-select[data-status="Exercised"] { border-color: #f97316 !important; color: #fdba74 !important; }
-        .status-select option { background-color: #1e293b; color: #ffffff; padding: 8px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+        :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #0f172a; 
+            color: #f1f5f9; 
+            padding-top: max(1rem, var(--safe-top)); 
+            padding-bottom: calc(90px + var(--safe-bottom)); 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none; 
+        }
 
-        /* Strategy GPS Styles */
-        .strategy-item { opacity: 0.3; transition: all 0.5s; padding: 8px 12px; border-left: 2px solid transparent; }
-        .strategy-item.active { opacity: 1; background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent); border-left-color: #3b82f6; transform: translateX(4px); }
-        .strategy-title { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #94a3b8; margin-bottom: 2px; }
-        .strategy-text { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
-        .strategy-item.active .strategy-title { color: #60a5fa; }
-        .strategy-item.active .strategy-text { color: #ffffff; font-weight: 600; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        /* Special overrides for specific states */
-        .strategy-item[data-state="risk-off"].active { border-left-color: #ef4444; background: linear-gradient(90deg, rgba(239, 68, 68, 0.15), transparent); }
-        .strategy-item[data-state="risk-off"].active .strategy-title { color: #f87171; }
-        .strategy-item[data-state="rsi-buy"].active { border-left-color: #22c55e; background: linear-gradient(90deg, rgba(34, 197, 94, 0.15), transparent); }
-        .strategy-item[data-state="rsi-buy"].active .strategy-title { color: #4ade80; }
-        .strategy-item[data-state="rsi-buy"].active .strategy-text { text-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
+        /* Mobile Optimization: Inputs */
+        input, select, textarea { 
+            background-color: #1e293b !important; 
+            color: #ffffff !important; 
+            border: 1px solid #334155 !important; 
+            border-radius: 0.8rem !important;
+            padding: 0 1rem !important;
+            font-size: 16px !important;
+            height: 52px !important;
+            width: 100%; 
+            transition: all 0.2s; 
+            appearance: none;
+        }
+        textarea { height: auto !important; padding-top: 1rem !important; }
+        input:focus, textarea:focus { 
+            border-color: #60a5fa !important; 
+            background-color: #0f172a !important; 
+            outline: none; 
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); overflow: hidden; margin-bottom: 1.5rem; }
+        
+        .mobile-view { display: none; animation: fadeIn 0.2s ease-out; } 
+        .mobile-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Navigation Bar */
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 400px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 2rem;
+            display: flex; justify-content: space-between;
+            padding: 0.6rem 1.5rem;
+            z-index: 100;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
+        .bottom-nav-btn { color: #64748b; transition: all 0.2s; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
+        .bottom-nav-btn i { width: 24px; height: 24px; }
+        .bottom-nav-btn.active { color: #ffffff; background: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transform: translateY(-2px); }
+
+        .status-on { border-top: 4px solid #22c55e; } .status-off { border-top: 4px solid #ef4444; }
+
+        .strategy-item { opacity: 0.5; padding: 12px; border-left: 3px solid transparent; margin-bottom: 8px; background: rgba(15, 23, 42, 0.5); border-radius: 0.5rem; }
+        .strategy-item.active { opacity: 1; background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .strategy-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
+        
+        .modal-backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); transition: opacity 0.2s; }
+        
+        .btn-main { height: 56px; border-radius: 1rem; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; width: 100%; }
+        .btn-save { background: linear-gradient(135deg, #db2777, #e11d48); color: white; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+
+        /* Option Buttons & Badges */
+        .opt-btn { background: #334155; color: #94a3b8; border: 1px solid transparent; transition: all 0.2s; position: relative; overflow: hidden; }
+        .opt-btn.active { background: #4f46e5; color: white; border-color: #818cf8; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); font-weight: 900; }
+        .opt-btn:active { transform: scale(0.96); }
+
+        .status-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+        .status-badge:active { transform: scale(0.95); }
+        .badge-open { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+        .badge-closed { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); }
+        .badge-exercised { background: rgba(168, 85, 247, 0.1); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+
+        /* Action Sheet */
+        .action-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; padding: 1.5rem; z-index: 200; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-top: 1px solid #334155; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+        .action-sheet.show { transform: translateY(0); }
+        .sheet-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; background: #334155; color: white; font-weight: 700; text-align: left; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        .sheet-btn:active { background: #475569; transform: scale(0.98); }
+        .sheet-btn.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid #3b82f6; }
+
+        @media (min-width: 1024px) { .mobile-view { display: block !important; } .bottom-nav { display: none; } body { padding-bottom: 2rem; } }
+        
+        .conn-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .conn-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .conn-offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-6 max-w-lg mx-auto lg:max-w-6xl">
 
-    <div class="max-w-7xl mx-auto space-y-5">
-        <!-- Header -->
-        <div class="flex justify-between items-center pb-4 sticky top-0 z-40 bg-[#0f172a]/90 backdrop-blur-xl border-b border-slate-800">
-            <div><h1 class="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500">UPRO V9.0 <span class="text-[10px] not-italic text-slate-400 font-normal ml-1 border border-slate-700 px-1.5 py-0.5 rounded-full bg-slate-800">AlphaPrime</span></h1></div>
-            <div class="flex items-center space-x-3">
-                <button onclick="togglePrivacy()" class="p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-90 text-slate-300 transition-all border border-slate-700"><i id="privacyIcon" data-lucide="eye" class="w-5 h-5"></i></button>
-                <button onclick="openSettings()" class="p-2.5 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-90 text-slate-300 transition-all border border-slate-700"><i data-lucide="settings" class="w-5 h-5"></i></button>
+    <div class="flex justify-between items-center mb-6 px-1">
+        <div>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V10.8</span></h1>
+            <div class="flex items-center mt-1 opacity-60">
+                <div id="connDot" class="conn-dot conn-offline"></div>
+                <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
             </div>
         </div>
+        <button onclick="openSettings()" class="p-3 rounded-2xl bg-slate-800 text-slate-300 active:scale-95 transition-transform"><i data-lucide="settings" class="w-6 h-6"></i></button>
+    </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
-            <!-- Dashboard -->
-            <div id="view-dashboard" class="mobile-view active lg:col-span-8 space-y-5 order-2 lg:order-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
+
+        <div id="view-inputs" class="mobile-view active lg:col-span-4 lg:order-1">
+            <!-- FIXED: Moved button inside Card for visibility -->
+            
+            <div class="card p-5 border-l-4 border-indigo-500">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2"><div class="p-2 bg-indigo-500/20 rounded-lg"><i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i></div><h3 class="text-base font-bold text-white">市場數據</h3></div>
+                    <button onclick="fillLatestData(true)" class="flex items-center text-[10px] bg-indigo-600/90 backdrop-blur text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="copy" class="w-3 h-3 mr-1"></i> 帶入舊資料</button>
+                </div>
+                <div class="space-y-4">
+                    <div><label>日期</label><input type="date" id="recordDate" onchange="handleInput()" class="font-mono"></div>
+                    <div><label>VOO 收盤價</label><input type="number" id="vooClose" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-xl font-bold text-indigo-200 border-indigo-500/50 bg-indigo-900/20"></div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div><label>5 EMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                        <div><label>12 EMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                        <div><label>20 EMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label>VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
+                        <div><label>RSI</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-5 border-l-4 border-blue-500">
+                <div class="flex items-center gap-2 mb-4"><div class="p-2 bg-blue-500/20 rounded-lg"><i data-lucide="wallet" class="w-5 h-5 text-blue-400"></i></div><h3 class="text-base font-bold text-white">資產庫存</h3></div>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-red-400">UPRO 股數</label><input type="number" id="uproShares" inputmode="decimal" oninput="handleInput()"></div>
+                        <div><label class="text-slate-400">UPRO 價格</label><input type="number" id="uproPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-green-400">SGOV 股數</label><input type="number" id="sgovShares" inputmode="decimal" oninput="handleInput()"></div>
+                        <div><label class="text-slate-400">SGOV 價格</label><input type="number" id="sgovPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-pink-400">IBIT 股數</label><input type="number" id="ibitShares" inputmode="decimal" oninput="handleInput()"></div>
+                        <div><label class="text-slate-400">IBIT 價格</label><input type="number" id="ibitPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-700/50">
+                        <label>現金餘額 ($)</label><input type="number" id="cashAmount" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-xl font-bold text-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-5 border-t-4 border-pink-500" id="saveCard">
+                 <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold text-pink-300" id="saveTitle">選擇權與儲存</h2>
+                    <input type="hidden" id="editDocId" value="">
+                    <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">取消編輯</button>
+                 </div>
                 
-                <!-- 1. KPI Cards (Alpha ONLY) -->
-                <div class="grid grid-cols-2 gap-3">
-                    <!-- Total Alpha -->
-                    <div class="card p-4 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="crown" class="w-12 h-12 text-yellow-400"></i></div>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase">Alpha (長期)</span>
-                        <div id="alphaTotalDisplay" class="text-2xl font-black text-white sens-data mt-1 skeleton">--%</div>
-                        <div class="text-[9px] text-slate-500 mt-1 sens-data">Since Inception</div>
+                <div class="mb-5">
+                    <label class="mb-2 text-xs font-bold text-slate-400 uppercase tracking-wide">選擇權交易 (點擊切換)</label>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <button type="button" onclick="selectOpt('Sell Call')" id="btn-Sell Call" class="opt-btn p-3 rounded-xl text-xs font-bold shadow-sm">SELL CALL</button>
+                        <button type="button" onclick="selectOpt('Sell Put')" id="btn-Sell Put" class="opt-btn p-3 rounded-xl text-xs font-bold shadow-sm">SELL PUT</button>
+                        <button type="button" onclick="selectOpt('Buy Call')" id="btn-Buy Call" class="opt-btn p-3 rounded-xl text-xs font-bold shadow-sm">BUY CALL</button>
+                        <button type="button" onclick="selectOpt('Buy Put')" id="btn-Buy Put" class="opt-btn p-3 rounded-xl text-xs font-bold shadow-sm">BUY PUT</button>
                     </div>
                     
-                    <!-- YTD Alpha -->
-                    <div class="card p-4 flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity"><i data-lucide="calendar-check" class="w-12 h-12 text-blue-400"></i></div>
-                        <span class="text-[10px] text-slate-400 font-bold uppercase">Alpha (今年)</span>
-                        <div id="alphaYtdDisplay" class="text-2xl font-black text-white sens-data mt-1 skeleton">--%</div>
-                        <div class="text-[9px] text-slate-500 mt-1 sens-data">Jan 1st Reset</div>
+                    <select id="optType" class="hidden" onchange="handleInput()">
+                        <option value="">無選擇權交易</option>
+                        <option value="Sell Call">SELL CALL</option>
+                        <option value="Sell Put">SELL PUT</option>
+                        <option value="Buy Call">BUY CALL</option>
+                        <option value="Buy Put">BUY PUT</option>
+                    </select>
+
+                    <div id="optInputZone" class="hidden relative animate-[fadeIn_0.2s_ease-out]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><span class="text-slate-500 font-bold">$</span></div>
+                        <input id="optPremium" type="number" inputmode="decimal" placeholder="輸入權利金總額..." class="pl-8 text-white font-bold bg-slate-900 border-indigo-500/50">
                     </div>
                 </div>
 
-                <!-- 2. Status & Advisor -->
-                <div id="statusCard" class="card p-6 relative overflow-hidden transition-all duration-500 border-l-4 border-slate-600 group">
-                    <button onclick="shareReport()" class="absolute top-4 right-4 text-slate-500 hover:text-white p-2 active:scale-90 transition-transform z-20"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+                <label>備註</label>
+                <textarea id="recordNote" rows="2" placeholder="紀錄心情或筆記..." class="mb-4 bg-slate-900 border-slate-700 w-full rounded-xl"></textarea>
+                <button id="saveBtn" onclick="saveRecord()" class="btn-main btn-save active:scale-95 transition-transform"><i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span></button>
+            </div>
+        </div>
+        
+        <div id="view-dashboard" class="mobile-view lg:col-span-8 lg:order-2">
+            <h2 class="text-xl font-bold text-slate-200 lg:hidden px-1 mb-4">策略儀表板</h2>
 
-                    <div class="flex flex-col space-y-5">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-1">
-                                <h2 class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">策略狀態</h2>
-                                <div id="riskState" class="text-4xl font-black text-white tracking-tighter drop-shadow-2xl transition-all skeleton">--</div>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <div class="flex items-center text-xs font-bold px-2 py-0.5 rounded bg-black/40 text-slate-200 border border-white/5 backdrop-blur-sm"><span id="biasText" class="skeleton">Bias 0.00%</span></div>
-                                    <div id="rsiBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-slate-400 border border-white/5 backdrop-blur-sm skeleton">RSI --</div>
-                                </div>
-                            </div>
-                            <div class="text-right space-y-1">
-                                <h2 class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">總資產淨值</h2>
-                                <div id="totalValueDisplay" class="text-3xl font-black text-yellow-400 sens-data tracking-tight transition-all skeleton">$0</div>
-                                <div class="flex flex-col items-end gap-0.5">
-                                    <div id="plDisplay" class="text-xs font-bold text-slate-500 sens-data">Day: --</div>
-                                    <div id="goalLabel" class="text-[10px] text-slate-500 sens-data">Goal: 0%</div>
-                                </div>
-                            </div>
+            <div id="statusCard" class="card p-6 status-off transition-all relative overflow-hidden">
+                <div class="absolute right-0 top-0 p-3 opacity-10"><i data-lucide="activity" class="w-24 h-24"></i></div>
+                <div class="flex justify-between items-start mb-6 relative z-10">
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">當前策略狀態</div>
+                        <div id="riskState" class="text-5xl font-black text-red-400 tracking-tighter">OFF</div>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span id="biasText" class="text-xs font-mono font-bold text-slate-200 bg-slate-800/80 px-2 py-1.5 rounded-lg border border-slate-600">Bias 0.00%</span>
+                            <span id="rsiBadge" class="text-xs font-bold text-slate-400 bg-slate-800/80 px-2 py-1.5 rounded-lg border border-slate-600">RSI --</span>
                         </div>
-
-                        <!-- Gauge -->
-                        <div class="pb-1 pt-2">
-                            <div class="gauge-container">
-                                <div id="biasMarker" class="gauge-marker"></div>
-                                <div class="absolute top-0 bottom-0 border-r border-black/30 w-px" style="left: 25%"></div>
-                                <div class="absolute top-0 bottom-0 border-r border-black/30 w-px" style="left: 62.5%"></div>
-                                <div class="absolute top-0 bottom-0 border-r border-black/30 w-px" style="left: 90%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Advisors -->
-                        <div class="grid grid-cols-2 gap-3 mt-2 border-t border-white/10 pt-3">
-                            <div class="bg-blue-900/20 p-2 rounded border border-blue-500/20">
-                                <p class="text-[9px] text-blue-400 font-bold uppercase mb-1">Sell Call (收租)</p>
-                                <div id="sellCallAdvice" class="text-xs text-slate-300 font-bold sens-data">觀察中</div>
-                            </div>
-                            <div class="bg-purple-900/20 p-2 rounded border border-purple-500/20">
-                                <p class="text-[9px] text-purple-400 font-bold uppercase mb-1">VIX Hedge (避險)</p>
-                                <div id="vixHedgeAdvice" class="text-xs text-slate-300 font-bold sens-data">無需動作</div>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">總資產淨值</div>
+                        <div id="totalValueDisplay" class="text-3xl font-black text-yellow-400 tracking-tighter">$0</div>
                     </div>
                 </div>
-
-                <!-- Strategy GPS Card -->
-                <div class="card p-5 border border-slate-700/50 bg-[#162032]">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i data-lucide="compass" class="w-4 h-4 text-blue-400"></i>
-                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest">策略導航</h3>
-                    </div>
-                    <div class="space-y-1" id="strategyGPS">
-                        <!-- Items will be populated/updated via JS -->
-                        <div class="strategy-item" id="gps-risk-off" data-state="risk-off">
-                            <div class="strategy-title">Risk OFF (20MA 下)</div>
-                            <div class="strategy-text">趨勢轉空，保留現金/SGOV，等待站回。</div>
-                        </div>
-                        <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy">
-                            <div class="strategy-title">RSI < 30 (超賣)</div>
-                            <div class="strategy-text">超跌買點！無視乖離，短期 100% 抄底。</div>
-                        </div>
-                        <div class="strategy-item" id="gps-bias-low" data-state="bias-low">
-                            <div class="strategy-title">Bias < 2% (起漲)</div>
-                            <div class="strategy-text">趨勢確立，乖離小，100% UPRO 積極持有。</div>
-                        </div>
-                        <div class="strategy-item" id="gps-bias-med" data-state="bias-med">
-                            <div class="strategy-title">Bias 2-5% (續漲)</div>
-                            <div class="strategy-text">獲利回吐風險增加，降至 80% UPRO。</div>
-                        </div>
-                        <div class="strategy-item" id="gps-bias-high" data-state="bias-high">
-                            <div class="strategy-title">Bias 5-8% (過熱)</div>
-                            <div class="strategy-text">過熱訊號，降至 60% UPRO，準備避險。</div>
-                        </div>
-                        <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme">
-                            <div class="strategy-title">Bias > 8% (極度貪婪)</div>
-                            <div class="strategy-text">極度過熱，降至 50% UPRO，隨時準備大跌。</div>
-                        </div>
-                    </div>
+                <!-- FIXED: Restored Full Alpha Display -->
+                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
+                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                         <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Alpha (長期)</span>
+                         <div id="alphaTotalDisplay" class="text-lg font-bold text-slate-200">--%</div>
+                     </div>
+                     <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                         <span class="text-[10px] text-slate-500 font-bold uppercase block mb-1">Alpha (今年)</span>
+                         <div id="alphaYtdDisplay" class="text-lg font-bold text-slate-200">--%</div>
+                     </div>
                 </div>
-
-                <!-- NEW: Scenario Analysis Card -->
-                <div class="card p-5 border border-slate-700/50 bg-[#162032] mt-4">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i data-lucide="trending-down" class="w-4 h-4 text-purple-400"></i>
-                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-widest">均線情境推演 (若碰到...)</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="text-[10px] text-slate-500 uppercase border-b border-slate-700">
-                                <tr>
-                                    <th class="pb-2 pl-1">目標均線</th>
-                                    <th class="pb-2 text-right">VOO 幅度</th>
-                                    <th class="pb-2 text-right">UPRO 預估</th>
-                                    <th class="pb-2 text-right">資產波動 ($)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-800" id="scenarioTable">
-                                <!-- Populated by JS -->
-                                <tr><td colspan="4" class="py-2 text-center text-slate-600">等待計算...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mt-2 text-[9px] text-slate-500 text-right">
-                        *下跌用 2.8x 係數，上漲用 3.0x 係數估算
-                    </div>
-                </div>
-
-                <!-- 3. Allocation -->
-                <div class="card p-5 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-sm font-bold text-blue-300 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 配置與行動</span>
-                        <span id="allocationDesc" class="text-[10px] bg-blue-500/10 text-blue-200 px-2.5 py-1 rounded-full border border-blue-500/20 font-medium skeleton">--</span>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-6">
-                        <div class="w-full sm:w-1/3 flex justify-center items-center h-32 relative">
-                            <canvas id="allocationChart"></canvas>
-                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div class="text-center"><span class="text-[10px] text-slate-500 block">Total</span><span class="text-xs font-bold text-slate-300 sens-data" id="pieTotal">100%</span></div>
-                            </div>
-                        </div>
-                        <div class="w-full sm:w-2/3 grid grid-cols-3 gap-3 content-center">
-                            <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-center shadow-inner"><div class="text-[9px] text-red-400 font-bold mb-1 uppercase">UPRO</div><div id="targetUpro" class="text-xl font-black text-white skeleton">--%</div><div id="uproDiff" class="text-[9px] text-slate-500 sens-data">--</div></div>
-                            <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-center shadow-inner"><div class="text-[9px] text-green-400 font-bold mb-1 uppercase">SGOV</div><div id="targetSgov" class="text-xl font-black text-white skeleton">--%</div><div id="sgovDiff" class="text-[9px] text-slate-500 sens-data">--</div></div>
-                            <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-center shadow-inner"><div class="text-[9px] text-pink-400 font-bold mb-1 uppercase">IBIT</div><div id="targetIbit" class="text-xl font-black text-white">10%</div><div id="ibitDiff" class="text-[9px] text-slate-500 sens-data">--</div></div>
-                        </div>
-                    </div>
-                    <div class="bg-indigo-900/20 p-3.5 rounded-lg border border-indigo-500/20 flex items-start group hover:bg-indigo-900/30 transition-colors mt-4">
-                        <i data-lucide="zap" class="w-4 h-4 mr-3 text-indigo-400 mt-0.5 shrink-0"></i><div id="rebalanceAction" class="text-sm text-indigo-100 font-bold leading-relaxed sens-data skeleton">計算中...</div>
-                    </div>
-                </div>
-                <div class="h-6 lg:hidden"></div>
             </div>
 
-            <!-- Inputs -->
-            <div id="view-inputs" class="mobile-view lg:col-span-4 space-y-4 order-1 lg:order-2">
-                <div class="flex justify-between items-center lg:hidden px-1">
-                    <h2 class="text-lg font-bold text-slate-200">數據輸入</h2>
-                    <button onclick="fillLatestData(true)" class="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-full shadow-lg active:scale-95 flex items-center"><i data-lucide="rotate-ccw" class="w-3 h-3 mr-1"></i> 帶入舊資料</button>
-                </div>
-                <div class="card p-5 border-l-4 border-indigo-500">
-                    <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-widest mb-4">市場數據 (週線)</h3>
-                    <div class="space-y-4">
-                        <input type="date" id="recordDate" onchange="handleInput()">
-                        <div><label class="text-[10px] text-indigo-300 font-bold ml-1">VOO Close</label><input type="number" id="vooClose" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-lg font-bold border-indigo-500/50 bg-indigo-950/20"></div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div><label class="text-[10px] text-slate-400 ml-1">5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><label class="text-[10px] text-slate-400 ml-1">VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">RSI</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
-                        </div>
-                        <div class="flex items-center space-x-3 pt-2 px-1 bg-slate-900/50 p-2 rounded-lg">
-                            <input type="checkbox" id="newHigh" onchange="handleInput()" class="w-5 h-5 rounded bg-slate-700 border-slate-600 text-indigo-600 focus:ring-offset-0"><label class="text-xs text-slate-300 font-bold">創 52 週新高?</label>
-                        </div>
+            <div class="card p-5 bg-slate-800/40">
+                <div class="flex justify-between items-center mb-4"><span class="text-sm font-bold text-blue-300 flex items-center"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 配置建議</span><span id="allocationDesc" class="text-xs bg-blue-500/10 text-blue-200 px-3 py-1 rounded-full font-bold">--</span></div>
+                <div class="flex flex-col gap-6">
+                    <div class="h-40 relative w-full flex justify-center"><canvas id="allocationChart"></canvas></div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-red-400 font-bold uppercase mb-1">UPRO</div><div id="targetUpro" class="text-xl font-black text-white">--%</div><div id="uproDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-green-400 font-bold uppercase mb-1">SGOV</div><div id="targetSgov" class="text-xl font-black text-white">--%</div><div id="sgovDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="text-[10px] text-pink-400 font-bold uppercase mb-1">IBIT</div><div id="targetIbit" class="text-xl font-black text-white">10%</div><div id="ibitDiff" class="text-[10px] text-slate-500 mt-1">--</div></div>
                     </div>
                 </div>
-                <div class="card p-5 border-l-4 border-blue-500">
-                    <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest mb-4">資產庫存</h3>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3 bg-slate-800/30 p-2 rounded">
-                            <div><label class="text-[10px] text-red-400 ml-1">UPRO 股數</label><input type="number" id="uproShares" inputmode="decimal" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">市價</label><input type="number" id="uproPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 bg-slate-800/30 p-2 rounded">
-                            <div><label class="text-[10px] text-green-400 ml-1">SGOV 股數</label><input type="number" id="sgovShares" inputmode="decimal" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">市價</label><input type="number" id="sgovPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 bg-slate-800/30 p-2 rounded">
-                            <div><label class="text-[10px] text-pink-400 ml-1">IBIT 股數</label><input type="number" id="ibitShares" inputmode="decimal" oninput="handleInput()"></div>
-                            <div><label class="text-[10px] text-slate-400 ml-1">市價</label><input type="number" id="ibitPrice" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        </div>
-                        <div class="pt-2"><label class="text-[10px] text-slate-400 ml-1">現金餘額 ($)</label><input type="number" id="cashAmount" inputmode="decimal" step="0.01" oninput="handleInput()" class="sens-data-input"></div>
-                    </div>
-                </div>
-                <div class="card p-5 border-t-4 border-pink-500">
-                     <h2 class="text-sm font-bold mb-3 text-pink-300 flex items-center justify-between"><span>快速紀錄</span><input type="hidden" id="editDocId" value=""></h2>
-                    <div class="flex gap-2 mb-3">
-                        <div class="relative flex-1">
-                            <select id="optType" class="text-sm bg-slate-900 border-slate-700 focus:border-pink-500 h-11 appearance-none w-full pl-3 pr-8 rounded-lg">
-                                <option value="">一般紀錄</option>
-                                <option value="Sell Call">SELL CALL</option>
-                                <option value="Sell Put">SELL PUT</option>
-                                <option value="Buy Call">BUY CALL</option>
-                                <option value="Buy Put">BUY PUT</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-slate-500 pointer-events-none"></i>
-                        </div>
-                        <input id="optPremium" type="number" inputmode="decimal" placeholder="權利金 $" class="text-sm w-1/3 hidden bg-slate-900 border-slate-700 sens-data-input h-11 rounded-lg">
-                    </div>
-                    <div class="flex flex-wrap gap-2 mb-3"><button onclick="addTag('加碼')" class="tag-btn">💰 加碼</button><button onclick="addTag('減碼')" class="tag-btn">🔻 減碼</button><button onclick="addTag('再平衡')" class="tag-btn">⚖️ 再平衡</button><button onclick="addTag('領股息')" class="tag-btn">💵 領股息</button></div>
-                    <textarea id="recordNote" rows="1" placeholder="備註..." class="text-sm mb-3 bg-slate-900 border-slate-700 focus:border-pink-500 w-full rounded-lg min-h-[44px]"></textarea>
-                    <button onclick="saveRecord()" class="w-full h-12 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-pink-900/20 flex items-center justify-center active:scale-95 transition-all"><i data-lucide="save" class="w-4 h-4 mr-2"></i> 儲存紀錄</button>
-                </div>
-                 <div class="h-6 lg:hidden"></div>
+                <div class="mt-4 p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-center shadow-inner"><div id="rebalanceAction" class="text-base text-indigo-200 font-bold animate-pulse">計算中...</div></div>
             </div>
 
-            <!-- History -->
-            <div id="view-history" class="mobile-view lg:col-span-12 mt-4 lg:mt-0 lg:order-3">
-                <div class="card p-5">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center gap-2"><h2 class="text-lg font-bold text-slate-300">歷史紀錄</h2><button onclick="toggleChartMode()" id="chartToggleBtn" class="text-[10px] bg-slate-700 px-2 py-1 rounded text-slate-300 border border-slate-600 transition-colors hover:bg-slate-600">📉 淨值</button></div>
-                        <div class="flex gap-2"><button onclick="setChartRange('3M')" class="tf-btn" id="btn-3M">3M</button><button onclick="setChartRange('YTD')" class="tf-btn" id="btn-YTD">YTD</button><button onclick="setChartRange('ALL')" class="tf-btn active" id="btn-ALL">ALL</button></div>
+            <div class="card p-5 border border-purple-500/30 bg-[#162032]">
+                <div class="flex items-center gap-2 mb-4"><div class="p-1.5 bg-purple-500/20 rounded-lg"><i data-lucide="flask-conical" class="w-4 h-4 text-purple-400"></i></div><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬</h3></div>
+                
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="flex-1">
+                        <label class="text-[10px] text-slate-400 mb-1">假設 VOO 漲跌</label>
+                        <div class="relative">
+                            <input type="number" id="simPercent" value="-5" oninput="updateSimulation()" class="!h-10 text-lg font-bold text-center pl-2 pr-8 border-purple-500/30 bg-purple-900/10">
+                            <span class="absolute right-3 top-2 text-purple-400 text-xs font-bold">%</span>
+                        </div>
                     </div>
-                    <div class="chart-container mb-6 bg-slate-900/40 rounded-xl p-3 border border-slate-700/30 h-72 relative"><canvas id="assetChart"></canvas></div>
-                    
-                    <!-- NEW Income Chart -->
-                    <div class="mt-6 border-t border-slate-700 pt-4">
-                         <h3 class="text-xs font-bold text-green-400 mb-2 uppercase">累積權利金收入</h3>
-                         <div class="h-32 w-full"><canvas id="incomeChart"></canvas></div>
+                    <div class="flex-1 text-right">
+                        <span class="text-[10px] text-slate-500 uppercase block">總資產預估損益</span>
+                        <span id="simAssetResult" class="text-lg font-black text-slate-300">--</span>
                     </div>
-
-                    <div class="overflow-x-auto max-h-[50vh] mt-4"><table class="w-full history-table text-sm text-left"><thead class="sticky top-0 bg-slate-800/90 backdrop-blur z-10"><tr class="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700"><th class="p-3">日期</th><th class="p-3">VOO</th><th class="p-3">狀態</th><th class="p-3">淨值</th><th class="p-3">備註/選擇權</th><th class="p-3 text-right">管理</th></tr></thead><tbody id="historyList"><tr><td colspan="6" class="text-center py-6 text-slate-500">載入中...</td></tr></tbody><tfoot class="bg-slate-800/50 text-xs text-slate-400 border-t border-slate-700"><tr><td colspan="6" class="p-2 text-center" id="historySummary">總筆數: 0</td></tr></tfoot></table></div>
                 </div>
-                 <div class="h-6 lg:hidden"></div>
+                
+                <div id="simError" class="hidden text-center text-xs text-red-400 mb-2 font-bold bg-red-900/20 py-2 rounded">⚠️ 請先輸入 VOO 與 UPRO 價格</div>
+
+                <div class="bg-slate-900/50 rounded-lg overflow-hidden border border-slate-700/50">
+                    <table class="w-full sim-table">
+                        <tbody id="scenarioTable" class="divide-y divide-slate-700/50">
+                             <tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">等待資料...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card p-5 border border-slate-700/50 bg-[#162032]">
+                <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">策略導航</h3></div>
+                <div class="space-y-1" id="strategyGPS">
+                    <div class="strategy-item" id="gps-risk-off" data-state="risk-off"><div class="strategy-title">Risk OFF (20MA 下)</div><div class="strategy-text text-xs">趨勢轉空，保留現金/SGOV，等待站回。</div></div>
+                    <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy"><div class="strategy-title">RSI < 30 (超賣)</div><div class="strategy-text text-xs">超跌買點！無視乖離，短期 100% 抄底。</div></div>
+                    <div class="strategy-item" id="gps-bias-low" data-state="bias-low"><div class="strategy-title">Bias < 2% (起漲)</div><div class="strategy-text text-xs">趨勢確立，乖離小，100% UPRO 積極持有。</div></div>
+                    <div class="strategy-item" id="gps-bias-med" data-state="bias-med"><div class="strategy-title">Bias 2-5% (續漲)</div><div class="strategy-text text-xs">獲利回吐風險增加，降至 80% UPRO。</div></div>
+                    <div class="strategy-item" id="gps-bias-high" data-state="bias-high"><div class="strategy-title">Bias 5-8% (過熱)</div><div class="strategy-text text-xs">過熱訊號，降至 60% UPRO，準備避險。</div></div>
+                    <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias > 8% (極度貪婪)</div><div class="strategy-text text-xs">極度過熱，降至 50% UPRO，隨時準備大跌。</div></div>
+                </div>
             </div>
         </div>
 
-        <!-- FAB -->
-        <button onclick="switchView('inputs'); vibrate();" class="fab-btn lg:hidden"><i data-lucide="plus" class="w-8 h-8"></i></button>
-
-        <!-- Nav -->
-        <nav class="fixed bottom-0 left-0 w-full bg-[#0f172a]/80 backdrop-blur-xl border-t border-slate-800 flex justify-around p-2 pb-[max(20px,env(safe-area-inset-bottom))] z-50 lg:hidden bottom-nav shadow-2xl">
-            <button onclick="switchView('dashboard')" id="btn-dashboard" class="bottom-nav-btn active flex flex-col items-center w-1/3 p-2"><i data-lucide="layout-dashboard" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">首頁</span></button>
-            <button onclick="switchView('inputs')" id="btn-inputs" class="bottom-nav-btn flex flex-col items-center w-1/3 p-2"><i data-lucide="edit-3" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">輸入</span></button>
-            <button onclick="switchView('history')" id="btn-history" class="bottom-nav-btn flex flex-col items-center w-1/3 p-2"><i data-lucide="history" class="w-6 h-6 mb-1"></i><span class="text-[10px] font-medium">紀錄</span></button>
-        </nav>
-    </div>
-
-    <!-- Modals -->
-    <div id="settingsModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="card p-6 w-full max-w-sm border border-slate-600 shadow-2xl transform scale-95 transition-all duration-300 bg-[#0f172a] h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-3 sticky top-0 bg-[#1e293b] z-10 pt-2"><h3 class="text-lg font-bold text-white flex items-center"><i data-lucide="settings" class="w-5 h-5 mr-2 text-slate-400"></i> 設定</h3><button onclick="closeSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button></div>
-            <div class="space-y-6 pb-6">
-                <!-- Custom Strategy Text -->
-                <div class="bg-blue-900/10 p-4 rounded-lg border border-blue-500/20">
-                    <label class="text-xs text-blue-300 font-bold uppercase tracking-wider mb-3 block flex items-center justify-between">
-                        <span>📝 自訂策略文字 (GPS)</span>
-                        <button onclick="resetStrategyText()" class="text-[9px] bg-slate-700 px-2 py-0.5 rounded text-slate-300">重置預設</button>
-                    </label>
-                    <div class="space-y-3">
-                        <div><span class="text-[9px] text-red-400 block mb-1">Risk OFF (20MA 下)</span><input type="text" id="txt_risk_off" class="text-xs"></div>
-                        <div><span class="text-[9px] text-green-400 block mb-1">RSI < 30 (超賣)</span><input type="text" id="txt_rsi_buy" class="text-xs"></div>
-                        <div><span class="text-[9px] text-blue-300 block mb-1">Bias < 2% (起漲)</span><input type="text" id="txt_bias_low" class="text-xs"></div>
-                        <div><span class="text-[9px] text-blue-300 block mb-1">Bias 2-5% (續漲)</span><input type="text" id="txt_bias_med" class="text-xs"></div>
-                        <div><span class="text-[9px] text-yellow-300 block mb-1">Bias 5-8% (過熱)</span><input type="text" id="txt_bias_high" class="text-xs"></div>
-                        <div><span class="text-[9px] text-orange-400 block mb-1">Bias > 8% (極度貪婪)</span><input type="text" id="txt_bias_extreme" class="text-xs"></div>
-                        <button onclick="saveStrategyText()" class="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded text-xs font-bold">儲存策略文字</button>
-                    </div>
+        <div id="view-history" class="mobile-view lg:col-span-12 lg:order-3">
+            <div class="card p-5">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-xl font-bold text-slate-200">歷史紀錄</h2>
+                    <button onclick="toggleChartType()" id="chartTypeBtn" class="text-xs bg-slate-700 px-3 py-2 rounded-lg text-white font-bold border border-slate-600 active:scale-95 transition-transform">📉 收益圖</button>
                 </div>
-
-                <div class="bg-indigo-900/30 p-4 rounded-lg border border-indigo-500/30"><label class="text-xs text-indigo-300 font-bold uppercase tracking-wider mb-2 block">☁️ 帳號同步</label><div class="mb-3"><p class="text-[10px] text-slate-400 mb-1">您的 ID:</p><div class="flex gap-2"><input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-700 text-slate-300 font-mono flex-1" readonly><button onclick="copyUserId()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 rounded text-xs font-bold">複製</button></div></div><div class="pt-3 border-t border-indigo-500/20"><p class="text-[10px] text-slate-400 mb-1">讀取外部 ID:</p><div class="flex gap-2"><input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-indigo-500/50 text-white font-mono flex-1" placeholder="貼上電腦端 ID"><button onclick="saveTargetUserId()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 rounded text-xs font-bold">讀取</button></div></div></div>
-                <div><label class="text-xs text-blue-400 font-bold uppercase tracking-wider mb-2 block">財富目標 (FIRE Goal)</label><div class="flex gap-2"><input type="number" id="fireGoalInput" class="border-blue-500/50" placeholder="1000000"><button onclick="saveGoal()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 rounded-lg text-xs font-bold">儲存</button></div></div>
-                <div class="pt-2 border-t border-slate-700/50"><button onclick="toggleSimulator(); closeSettings()" class="w-full flex items-center justify-between p-3 rounded-lg bg-indigo-900/30 hover:bg-indigo-900/50 border border-indigo-500/30 text-indigo-300"><span class="font-bold flex items-center text-xs"><i data-lucide="flask-conical" class="w-4 h-4 mr-2"></i> 開啟模擬器</span><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div>
-                <div class="pt-2 border-t border-slate-700/50"><label class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2 block">數據備份</label><div class="grid grid-cols-2 gap-3"><button onclick="exportJson()" class="flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs"><i data-lucide="upload" class="w-5 h-5 mb-1"></i> 匯出 (JSON)</button><button onclick="document.getElementById('importFile').click()" class="flex flex-col items-center justify-center p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 text-xs"><i data-lucide="download" class="w-5 h-5 mb-1"></i> 匯入</button><input type="file" id="importFile" class="hidden" accept=".json" onchange="importJson(this)"></div></div>
+                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 mb-4 flex justify-between items-center">
+                    <span class="text-xs text-slate-400 font-bold uppercase">總權利金收益</span>
+                    <span id="totalIncomeDisplay" class="text-lg font-black text-green-400">$0</span>
+                </div>
+                <div class="bg-slate-900/40 rounded-2xl p-2 border border-slate-700/30 h-60 relative mb-6"><canvas id="assetChart"></canvas></div>
+                <div class="overflow-x-auto"><table class="w-full history-table text-left"><thead class="border-b border-slate-700"><tr class="text-slate-400"><th class="pl-2">日期</th><th>狀態</th><th>淨值</th><th>備註/收益</th><th class="text-right pr-2"></th></tr></thead><tbody id="historyList"><tr><td colspan="5" class="text-center py-8 text-slate-500">載入中...</td></tr></tbody></table></div>
             </div>
         </div>
     </div>
 
-    <div id="simModal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="card p-6 w-full max-w-sm border border-indigo-500/50 shadow-2xl bg-[#0f172a] transform scale-95 transition-all duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2"><h3 class="text-lg font-bold text-indigo-400">What-If 模擬</h3><button onclick="toggleSimulator()" class="text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <div class="space-y-4">
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="quickSim(-5)" class="text-xs bg-red-900/50 text-red-300 border border-red-500/30 py-1 rounded hover:bg-red-900">-5%</button>
-                    <button onclick="quickSim(-10)" class="text-xs bg-red-900/50 text-red-300 border border-red-500/30 py-1 rounded hover:bg-red-900">-10%</button>
-                    <button onclick="quickSim(-20)" class="text-xs bg-red-900/50 text-red-300 border border-red-500/30 py-1 rounded hover:bg-red-900">-20%</button>
+    <nav class="bottom-nav lg:hidden">
+        <button onclick="switchView('inputs')" id="btn-inputs" class="bottom-nav-btn active"><i data-lucide="edit-3"></i></button>
+        <button onclick="switchView('dashboard')" id="btn-dashboard" class="bottom-nav-btn"><i data-lucide="layout-dashboard"></i></button>
+        <button onclick="switchView('history')" id="btn-history" class="bottom-nav-btn"><i data-lucide="history"></i></button>
+    </nav>
+
+    <!-- Option Status Action Sheet Modal -->
+    <div id="optionStatusModal" class="fixed inset-0 z-[150] hidden modal-backdrop opacity-0 pointer-events-none">
+        <div class="absolute inset-0" onclick="closeStatusModal()"></div>
+        <div id="statusSheet" class="action-sheet">
+            <h3 class="text-center text-slate-400 text-sm font-bold uppercase mb-4">更改選擇權狀態</h3>
+            <input type="hidden" id="statusTargetId">
+            <button onclick="saveOptionStatus('Open')" class="sheet-btn text-green-400"><span class="flex items-center"><i data-lucide="circle-dot" class="w-5 h-5 mr-3"></i> 持倉中 (Open)</span></button>
+            <button onclick="saveOptionStatus('Closed')" class="sheet-btn text-slate-400"><span class="flex items-center"><i data-lucide="x-circle" class="w-5 h-5 mr-3"></i> 已平倉 (Closed)</span></button>
+            <button onclick="saveOptionStatus('Exercised')" class="sheet-btn text-purple-400"><span class="flex items-center"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i> 已行權 (Exercised)</span></button>
+            <button onclick="closeStatusModal()" class="w-full py-4 mt-2 rounded-xl text-slate-500 font-bold">取消</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
+        <div class="card p-6 w-full max-w-sm border border-slate-600 shadow-2xl transform scale-95 transition-all bg-[#1e293b]">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4"><h3 class="text-xl font-bold text-white">設定</h3><button onclick="closeSettings()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div class="space-y-6">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><label class="text-xs text-indigo-300 font-bold uppercase mb-2 block">帳號同步</label><div class="mb-3"><p class="text-[10px] text-slate-400 mb-1">您的 ID:</p><div class="flex gap-2"><input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" readonly><button onclick="copyUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">複製</button></div></div><div class="pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-400 mb-1">讀取外部 ID:</p><div class="flex gap-2"><input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="貼上 ID"><button onclick="saveTargetUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">讀取</button></div></div></div>
+                <div>
+                    <label class="text-xs text-slate-500 font-bold uppercase mb-2 block">備份與匯出</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="exportJson()" class="p-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center"><i data-lucide="download" class="w-4 h-4 mr-1"></i> 匯出 JSON</button>
+                        <button onclick="document.getElementById('importFile').click()" class="p-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center"><i data-lucide="upload" class="w-4 h-4 mr-1"></i> 匯入 (JSON)</button>
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importJson(this)">
+                    </div>
                 </div>
-                <div><label class="text-xs text-slate-400 font-bold ml-1">假設 VOO 價格</label><input type="number" id="simVoo" class="border-indigo-500 text-lg font-bold" placeholder="380"></div>
-                <button onclick="runSimulation()" class="w-full h-10 bg-indigo-600 rounded-lg font-bold text-white shadow-lg">計算</button>
-                <div id="simResult" class="hidden bg-slate-950 p-4 rounded-lg border border-slate-700 mt-2 space-y-2"><div class="flex justify-between"><span class="text-xs text-slate-400">狀態</span><span id="simStatus" class="text-sm font-black">--</span></div><div class="flex justify-between"><span class="text-xs text-slate-400">UPRO</span><span id="simAllocation" class="text-sm font-bold text-white">--</span></div><div class="flex justify-between"><span class="text-xs text-slate-400">乖離</span><span id="simBias" class="text-xs font-mono text-slate-500">--</span></div></div>
             </div>
         </div>
     </div>
 
-    <div id="deleteModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center p-4 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="card p-6 w-full max-w-sm border border-red-500/50 shadow-2xl bg-[#0f172a] transform scale-95 transition-all duration-300">
-            <div class="text-center mb-4"><div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="alert-triangle" class="w-6 h-6 text-red-500"></i></div><h3 class="text-lg font-bold text-white">確認刪除？</h3><p class="text-xs text-slate-400 mt-1">此操作無法復原，請確認。</p></div>
-            <div class="flex gap-3"><button onclick="closeDeleteModal()" class="flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm hover:bg-slate-700">取消</button><button onclick="confirmDelete()" class="flex-1 py-2 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700 shadow-lg shadow-red-900/20">確認刪除</button></div>
+    <!-- Details Modal -->
+    <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
+        <div class="card p-6 w-full max-w-sm border border-blue-500/50 bg-[#1e293b] shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2"><h3 class="text-lg font-bold text-white" id="detailDate">詳細資料</h3><button onclick="closeDetails()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div id="detailContent" class="space-y-4 text-sm"></div>
+            <button id="editBtnFromModal" class="w-full mt-4 btn-main btn-primary active:scale-95 transition-transform shadow-lg"><i data-lucide="edit-2" class="w-4 h-4 mr-2"></i> 編輯此紀錄</button>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
+        <div class="card p-6 w-full max-w-sm border border-red-500/50 bg-[#1e293b] shadow-2xl">
+            <div class="text-center mb-6"><div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i></div><h3 class="text-xl font-bold text-white">確認刪除？</h3><p class="text-sm text-slate-400 mt-2">刪除後無法復原此紀錄。</p></div>
+            <div class="flex gap-4"><button onclick="closeDeleteModal()" class="flex-1 py-4 rounded-xl bg-slate-800 text-slate-300 text-sm font-bold">取消</button><button onclick="confirmDelete()" class="flex-1 py-4 rounded-xl bg-red-600 text-white text-sm font-bold shadow-lg shadow-red-900/30">確認刪除</button></div>
         </div>
     </div>
 
@@ -395,595 +364,423 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIG (Your Provided)
-        const firebaseConfig = {
-          apiKey: "AIzaSyBC0QS7kFgJkU2eguhlATrO3TOBKYe6l_w",
-          authDomain: "my-upro-strategy.firebaseapp.com",
-          projectId: "my-upro-strategy",
-          storageBucket: "my-upro-strategy.firebasestorage.app",
-          messagingSenderId: "554432248082",
-          appId: "1:554432248082:web:162586c09f95f4c33d9bcb"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyBC0QS7kFgJkU2eguhlATrO3TOBKYe6l_w", authDomain: "my-upro-strategy.firebaseapp.com", projectId: "my-upro-strategy", storageBucket: "my-upro-strategy.firebasestorage.app", messagingSenderId: "554432248082", appId: "1:554432248082:web:162586c09f95f4c33d9bcb" };
         const appId = 'my-upro-strategy';
         const initialAuthToken = null;
 
         let db, auth, userId, realUserId;
-        let calculatedSnapshot = null, deleteCandidateId = null, globalHistoryData = [], assetChartInstance = null, allocationChartInstance = null, incomeChartInstance = null, hasInitialized = false, isPrivacyOn = false;
-        let fireGoal = 1000000; 
+        let globalHistoryData = [], assetChartInstance = null, allocationChartInstance = null;
         let currentChartRange = 'ALL';
         let chartMode = 'line';
         let currentDataUserId = null;
-        let calculationTimer = null; // New timer variable to avoid window.t collision
-        
-        // --- Strategy Text Defaults ---
-        const defaultStrategyText = {
-            risk_off: "趨勢轉空，保留現金/SGOV，等待站回。",
-            rsi_buy: "超跌買點！無視乖離，短期 100% 抄底。",
-            bias_low: "趨勢確立，乖離小，100% UPRO 積極持有。",
-            bias_med: "獲利回吐風險增加，降至 80% UPRO。",
-            bias_high: "過熱訊號，降至 60% UPRO，準備避險。",
-            bias_extreme: "極度過熱，降至 50% UPRO，隨時準備大跌。"
-        };
-        let strategyText = JSON.parse(localStorage.getItem('upro_strategy_text')) || defaultStrategyText;
+        let calculationTimer = null;
+        let hasInitialized = false;
+        let deleteCandidateId = null;
 
-        const vibrate = () => { if(navigator.vibrate) navigator.vibrate(10); }
+        window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(15); }
+        window.onerror = function(message) { alert("系統錯誤: " + message); return false; };
 
-        // --- UI Utils ---
+        const sf = (id) => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
         const setTxt = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
         const setHTML = (id, htm) => { const el = document.getElementById(id); if(el) el.innerHTML = htm; };
-        const setStyle = (id, prop, val) => { const el = document.getElementById(id); if(el) el.style[prop] = val; };
-        const setClass = (id, cls) => { const el = document.getElementById(id); if(el) el.className = cls; };
         const openModal = (id) => { vibrate(); const el = document.getElementById(id); if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } };
         const closeModal = (id) => { const el = document.getElementById(id); if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } };
 
-        // --- Settings & Sync ---
-        window.openSettings = () => { 
-            openModal('settingsModal'); 
-            document.getElementById('fireGoalInput').value = fireGoal;
-            if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId;
-            const savedTarget = localStorage.getItem('upro_target_uid');
-            if(savedTarget) document.getElementById('targetUserIdInput').value = savedTarget;
-            // Load Strategy Texts
-            ['risk_off','rsi_buy','bias_low','bias_med','bias_high','bias_extreme'].forEach(k => {
-                document.getElementById(`txt_${k}`).value = strategyText[k];
-            });
-        }
+        window.openSettings = () => { openModal('settingsModal'); if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
         window.closeSettings = () => closeModal('settingsModal');
-        window.saveGoal = () => { const g = parseFloat(document.getElementById('fireGoalInput').value); if(g > 0) { fireGoal = g; localStorage.setItem('upro_fire_goal', fireGoal); calculateStrategy(); alert("目標已更新！"); closeSettings(); } }
-        window.copyUserId = () => { const uid = document.getElementById('myUserIdDisplay').value; navigator.clipboard.writeText(uid).then(() => alert("ID 已複製")); }
-        window.saveTargetUserId = () => { const target = document.getElementById('targetUserIdInput').value.trim(); if(target) { localStorage.setItem('upro_target_uid', target); currentDataUserId = target; alert("已切換！"); loadHistory(); } else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; alert("已重置"); loadHistory(); } }
+        window.closeDetails = () => closeModal('detailsModal');
+        window.copyUserId = () => { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => alert("ID 已複製")); }
+        window.saveTargetUserId = () => { const t = document.getElementById('targetUserIdInput').value.trim(); if(t) { localStorage.setItem('upro_target_uid', t); currentDataUserId = t; alert("已切換"); loadHistory(); } else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; alert("已重置"); loadHistory(); } }
         
-        // --- Strategy Text Logic ---
-        window.saveStrategyText = () => {
-            const newTxt = {};
-            ['risk_off','rsi_buy','bias_low','bias_med','bias_high','bias_extreme'].forEach(k => {
-                newTxt[k] = document.getElementById(`txt_${k}`).value || defaultStrategyText[k];
-            });
-            strategyText = newTxt;
-            localStorage.setItem('upro_strategy_text', JSON.stringify(strategyText));
-            calculateStrategy(); // Update UI immediately
-            alert("策略文字已更新");
-        };
-        window.resetStrategyText = () => {
-            if(confirm("確定要重置為預設文字嗎？")) {
-                strategyText = defaultStrategyText;
-                localStorage.setItem('upro_strategy_text', JSON.stringify(strategyText));
-                ['risk_off','rsi_buy','bias_low','bias_med','bias_high','bias_extreme'].forEach(k => {
-                    document.getElementById(`txt_${k}`).value = strategyText[k];
-                });
-                calculateStrategy();
-            }
-        };
-
-        // --- Core ---
-        window.toggleSimulator = () => { const m = document.getElementById('simModal'); if(m.classList.contains('hidden')) { openModal('simModal'); document.getElementById('simVoo').value = document.getElementById('vooClose').value; document.getElementById('simResult').classList.add('hidden'); } else { closeModal('simModal'); } }
-        window.quickSim = (pct) => { const v = parseFloat(document.getElementById('vooClose').value); if(v) { document.getElementById('simVoo').value = (v * (1 + pct/100)).toFixed(2); runSimulation(); } }
-        window.showDeleteModal = (id) => { deleteCandidateId = id; openModal('deleteModal'); }
+        window.showDeleteModal = (id, e) => { e.stopPropagation(); deleteCandidateId = id; openModal('deleteModal'); }
         window.closeDeleteModal = () => { deleteCandidateId = null; closeModal('deleteModal'); }
-        window.confirmDelete = async () => { if(deleteCandidateId) { await deleteDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, deleteCandidateId)); closeDeleteModal(); } }
-        window.updateRecordStatus = async (id, newStatus) => { vibrate(); try { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, id), { optionStatus: newStatus }); } catch(e) { console.error(e); alert("更新失敗"); } }
-        
-        window.runSimulation = () => {
-            vibrate(); const sf = (id) => parseFloat(document.getElementById(id).value)||0;
-            const simVoo = sf('simVoo'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
-            if(!simVoo || !wema20) return;
-            const bias = ((simVoo - wema20)/wema20)*100, riskStatus = simVoo > wema20 ? 'ON' : 'OFF';
-            let baseU = riskStatus === 'ON' ? (bias >= 8 ? 50 : bias > 5 ? 60 : bias > 2 ? 80 : 100) : 0;
-            if (riskStatus === 'ON') { if (simVoo < wema12) baseU = Math.min(baseU, 50); else if (simVoo < wema5) baseU = Math.min(baseU, 70); }
-            document.getElementById('simResult').classList.remove('hidden');
-            setTxt('simStatus', riskStatus === 'ON' ? 'RISK ON' : 'RISK OFF'); setClass('simStatus', `text-sm font-black ${riskStatus==='ON'?'text-green-400':'text-red-400'}`);
-            setTxt('simAllocation', `${baseU}%`); setTxt('simBias', `${bias.toFixed(2)}%`);
-        }
 
-        window.calculateStrategy = () => {
-            const sf = (id) => parseFloat(document.getElementById(id).value)||0;
-            const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
-            if(!vooClose || !wema20) return;
-            const uproVal = sf('uproShares') * sf('uproPrice'), sgovVal = sf('sgovShares') * sf('sgovPrice'), ibitVal = sf('ibitShares') * sf('ibitPrice'), cash = sf('cashAmount');
-            const totalValue = uproVal + sgovVal + ibitVal + cash;
-            setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`);
-            document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton', 'text-transparent'));
-            renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
-            
-            if(globalHistoryData.length > 0) {
-                const prev = globalHistoryData[0].totalValue, change = totalValue - prev;
-                setHTML('plDisplay', `Day: <span class="${change>=0?'text-green-400':'text-red-400'}">${change>=0?'+':''}$${Math.round(change).toLocaleString()}</span>`);
-                
-                // --- Alpha Calculation (Total & YTD) ---
-                const firstRecord = globalHistoryData[globalHistoryData.length - 1];
-                const currentYear = new Date().getFullYear().toString();
-                let ytdStartRecord = globalHistoryData.find(d => d.manualDate.startsWith(currentYear)); 
-                const recordsThisYear = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
-                ytdStartRecord = recordsThisYear.length > 0 ? recordsThisYear[recordsThisYear.length - 1] : firstRecord;
-
-                // 1. Total Alpha
-                if (firstRecord && firstRecord.vooClose) {
-                    const startVoo = firstRecord.vooClose;
-                    const startTotal = firstRecord.totalValue;
-                    const vooReturn = ((vooClose - startVoo) / startVoo) * 100;
-                    const myReturn = ((totalValue - startTotal) / startTotal) * 100;
-                    const alpha = myReturn - vooReturn;
-                    setTxt('alphaTotalDisplay', `${alpha > 0 ? '+' : ''}${alpha.toFixed(1)}%`);
-                    setClass('alphaTotalDisplay', `text-2xl font-black sens-data mt-1 ${alpha >= 0 ? 'text-yellow-400' : 'text-slate-400'}`);
-                }
-
-                // 2. YTD Alpha
-                if (ytdStartRecord && ytdStartRecord.vooClose) {
-                     const startVooYtd = ytdStartRecord.vooClose;
-                     const startTotalYtd = ytdStartRecord.totalValue;
-                     const vooReturnYtd = ((vooClose - startVooYtd) / startVooYtd) * 100;
-                     const myReturnYtd = ((totalValue - startTotalYtd) / startTotalYtd) * 100;
-                     const alphaYtd = myReturnYtd - vooReturnYtd;
-                     setTxt('alphaYtdDisplay', `${alphaYtd > 0 ? '+' : ''}${alphaYtd.toFixed(1)}%`);
-                     setClass('alphaYtdDisplay', `text-2xl font-black sens-data mt-1 ${alphaYtd >= 0 ? 'text-blue-400' : 'text-slate-400'}`);
-                } else {
-                     setTxt('alphaYtdDisplay', '--%');
-                }
-            }
-
-            const bias = ((vooClose - wema20)/wema20)*100, riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
-            const card = document.getElementById('statusCard');
-            if(card) card.className = `card p-6 relative overflow-hidden transition-all duration-500 border-l-4 ${riskStatus==='ON'?'border-green-500 status-on-glow':'border-red-500 status-off-glow'}`;
-            setTxt('riskState', riskStatus === 'ON' ? 'RISK ON' : 'RISK OFF');
-            if(document.getElementById('riskState')) document.getElementById('riskState').className = `text-4xl font-black tracking-tighter drop-shadow-2xl transition-all ${riskStatus==='ON'?'text-green-400':'text-red-400'}`;
-            setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
-            let gp = 0; if(bias<=0) gp=0; else if(bias>=9) gp=100; else if(bias<=2) gp=(bias/2)*25; else if(bias<=5) gp=25+((bias-2)/3)*37.5; else gp=62.5+((bias-5)/3)*27.5;
-            setStyle('biasMarker', 'left', `${Math.min(gp, 98)}%`); setStyle('biasMarker', 'backgroundColor', riskStatus === 'ON' ? '#fff' : '#ef4444');
-            let baseU = riskStatus==='ON'?(bias>=8?50:bias>5?60:bias>2?80:100):0;
-            if(riskStatus==='ON') { if(vooClose<wema12) baseU=Math.min(baseU, 50); else if(vooClose<wema5) baseU=Math.min(baseU, 70); }
-            const rsi = sf('dailyRsi');
-            if(rsi < 30 && riskStatus === 'ON') { baseU=100; setClass('rsiBadge', "text-[10px] font-bold px-2 py-0.5 rounded bg-red-600 text-white animate-pulse"); setTxt('rsiBadge', "RSI<30 BUY"); }
-            else { setClass('rsiBadge', "text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-slate-400 border border-white/5"); setTxt('rsiBadge', `RSI ${rsi.toFixed(0)}`); }
-            
-            // Advisors - OPTIONS OPTIMIZED
-            let scAdv = "觀察中", scCol = "text-slate-400";
-            if (riskStatus === 'OFF') { scAdv = "Risk OFF (停止)"; scCol = "text-red-400"; }
-            else if (rsi > 75) { scAdv = "🚀 熔斷停賣 (Let it run)"; scCol = "text-pink-400"; }
-            else if (rsi >= 65 && bias >= 3) {
-                 scAdv = bias > 5 ? "🔥 賣出 Call (Delta 0.25)" : "🔥 賣出 Call (Delta 0.20)";
-                 scCol = "text-yellow-400";
-            }
-            setTxt('sellCallAdvice', scAdv); setClass('sellCallAdvice', `text-xs font-bold sens-data ${scCol}`);
-
-            // Advisors - VIX OPTIMIZED
-            let vixAdv = "無需動作", vixCol = "text-slate-400";
-            const vix = sf('vixIndex');
-            if (riskStatus === 'ON') {
-                if (vix < 17) {
-                     const density = vix < 13.5 ? 10000 : 15000;
-                     const groups = Math.floor(uproVal / density);
-                     vixAdv = `買入 ${groups} 組`;
-                     vixCol = "text-emerald-400";
-                } else { vixAdv = "波動已高 (保留現金)"; }
-            }
-            setTxt('vixHedgeAdvice', vixAdv); setClass('vixHedgeAdvice', `text-xs font-bold sens-data ${vixCol}`);
-
-            const tU = (baseU/100)*90, tS = 90-tU;
-            setTxt('allocationDesc', riskStatus==='ON' ? (baseU<100?'防守模式':'積極模式') : 'Risk Off');
-            setTxt('targetUpro', `${tU.toFixed(0)}%`); setTxt('targetSgov', `${tS.toFixed(0)}%`);
-            const diffU = uproVal - (totalValue*tU/100), diffS = sgovVal - (totalValue*tS/100), diffI = ibitVal - (totalValue*0.1);
-            setTxt('uproDiff', `Diff: ${diffU>=0?'+':''}$${Math.round(diffU).toLocaleString()}`); setClass('uproDiff', `text-[9px] font-mono sens-data ${diffU>=0?'text-green-400':'text-red-400'}`); 
-            setTxt('sgovDiff', `Diff: ${diffS>=0?'+':''}$${Math.round(diffS).toLocaleString()}`); setClass('sgovDiff', `text-[9px] font-mono sens-data ${diffS>=0?'text-green-400':'text-red-400'}`); 
-            setTxt('ibitDiff', `Diff: ${diffI>=0?'+':''}$${Math.round(diffI).toLocaleString()}`); setClass('ibitDiff', `text-[9px] font-mono sens-data ${diffI>=0?'text-green-400':'text-red-400'}`); 
-            const thres = totalValue*0.05; let acts = [];
-            if(Math.abs(diffU)>thres) acts.push(`<span class="${diffU>0?'text-red-300':'text-green-300'}">${diffU>0?'賣':'買'} UPRO</span>`);
-            const curI = ibitVal/totalValue*100 || 0; if(curI<7 || curI>15) acts.push(`<span class="text-pink-300">調整 IBIT</span>`);
-            setHTML('rebalanceAction', acts.length ? acts.join(" | ") : "<span class='text-slate-400'>無需操作</span>");
-            
-            // --- Strategy GPS Logic ---
-            const gps = document.getElementById('strategyGPS');
-            if(gps) {
-                gps.querySelector('#gps-risk-off .strategy-text').textContent = strategyText.risk_off;
-                gps.querySelector('#gps-rsi-buy .strategy-text').textContent = strategyText.rsi_buy;
-                gps.querySelector('#gps-bias-low .strategy-text').textContent = strategyText.bias_low;
-                gps.querySelector('#gps-bias-med .strategy-text').textContent = strategyText.bias_med;
-                gps.querySelector('#gps-bias-high .strategy-text').textContent = strategyText.bias_high;
-                gps.querySelector('#gps-bias-extreme .strategy-text').textContent = strategyText.bias_extreme;
-
-                // 2. Determine Active State
-                document.querySelectorAll('.strategy-item').forEach(el => el.classList.remove('active'));
-                
-                let activeId = '';
-                if (riskStatus === 'OFF') {
-                    activeId = 'gps-risk-off';
-                } else if (rsi < 30) {
-                    activeId = 'gps-rsi-buy';
-                } else {
-                    // Risk ON
-                    if (bias >= 8) activeId = 'gps-bias-extreme';
-                    else if (bias > 5) activeId = 'gps-bias-high';
-                    else if (bias > 2) activeId = 'gps-bias-med';
-                    else activeId = 'gps-bias-low';
-                }
-                if(activeId) document.getElementById(activeId).classList.add('active');
-            }
-
-            // --- Scenario Analysis Logic ---
-            const targets = [
-                { name: '5 EMA', val: wema5 },
-                { name: '12 EMA', val: wema12 },
-                { name: '20 EMA', val: wema20 }
-            ];
-            
-            const tableBody = document.getElementById('scenarioTable');
-            tableBody.innerHTML = '';
-            
-            targets.forEach(t => {
-                if(!t.val) return;
-                
-                // 1. VOO Calculation
-                const vooDiff = t.val - vooClose;
-                const vooPct = (vooDiff / vooClose); // e.g., -0.05 for -5% drop
-                const isDrop = vooDiff < 0;
-                
-                // 2. UPRO Calculation (Optimization: 2.8x for drops, 3.0x for rises)
-                const leverage = isDrop ? 2.8 : 3.0;
-                const uproPct = vooPct * leverage;
-                
-                // 3. Asset Impact
-                // Assume only UPRO and IBIT change value. SGOV/Cash stay flat.
-                // UPRO Impact
-                const uproChangeVal = uproVal * uproPct;
-                
-                // IBIT Impact (Simple beta 1 assumption for Scenario)
-                const ibitChangeVal = ibitVal * vooPct; 
-                
-                const totalAssetChange = uproChangeVal + ibitChangeVal;
-                
-                // Formatting
-                const vooClass = isDrop ? 'text-red-400' : 'text-green-400';
-                const uproClass = uproPct < 0 ? 'text-red-400' : 'text-green-400';
-                const assetClass = totalAssetChange < 0 ? 'text-red-400' : 'text-green-400';
-                const sign = totalAssetChange >= 0 ? '+' : '';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-2 pl-1 border-l-2 ${isDrop ? 'border-red-500/50' : 'border-green-500/50'}">
-                        <div class="text-[10px] text-slate-400 font-bold">${t.name}</div>
-                        <div class="text-xs text-slate-200 font-mono">$${t.val.toFixed(2)}</div>
-                    </td>
-                    <td class="py-2 text-right">
-                        <div class="${vooClass} font-bold text-xs">${(vooPct*100).toFixed(2)}%</div>
-                    </td>
-                    <td class="py-2 text-right">
-                        <div class="${uproClass} font-bold text-xs">${(uproPct*100).toFixed(2)}%</div>
-                    </td>
-                    <td class="py-2 text-right pr-1">
-                        <div class="${assetClass} font-bold text-xs sens-data">${sign}$${Math.round(totalAssetChange).toLocaleString()}</div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-
-            calculatedSnapshot = { 
-                vooClose, wema20, wema12, wema5, vix, dailyRsi: rsi, isNewHigh: document.getElementById('newHigh').checked,
-                uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
-                cashAmount: sf('cashAmount'),
-                totalValue, riskStatus, bias, targetUproPct: tU, targetSgovPct: tS, targetIbitPct: 10,
-                rebalanceText: document.getElementById('rebalanceAction').innerText,
-                optType: document.getElementById('optType').value, optStatus: 'Open'
-            };
-            
-            if(isPrivacyOn) document.querySelectorAll('.sens-data').forEach(e => e.classList.add('privacy-blur'));
-        }
-        
-        window.saveRecord = async () => {
+        // NEW: Option UI Logic
+        window.selectOpt = (val) => {
             vibrate();
-            if (!realUserId) return alert("請先登入或等待載入");
-            const uid = currentDataUserId || realUserId;
-            
-            const sf = (id) => parseFloat(document.getElementById(id).value) || 0;
-            const manualDate = document.getElementById('recordDate').value;
-            if(!manualDate) return alert("請輸入日期");
+            const selectEl = document.getElementById('optType');
+            if (selectEl.value === val) {
+                selectEl.value = ""; // Toggle off
+            } else {
+                selectEl.value = val;
+            }
+            updateOptUi();
+            handleInput(); // Trigger calculation and save draft
+        };
 
-            const vooClose = sf('vooClose');
-            const wema20 = sf('wema20');
+        window.updateOptUi = () => {
+            const val = document.getElementById('optType').value;
+            document.querySelectorAll('.opt-btn').forEach(btn => btn.classList.remove('active'));
+            if (val) {
+                const activeBtn = document.getElementById(`btn-${val}`);
+                if (activeBtn) activeBtn.classList.add('active');
+                document.getElementById('optInputZone').classList.remove('hidden');
+            } else {
+                document.getElementById('optInputZone').classList.add('hidden');
+                document.getElementById('optPremium').value = ''; 
+            }
+        };
+        
+        // --- NEW STATUS MODAL LOGIC ---
+        window.openStatusModal = (id, currentStatus) => {
+            vibrate();
+            document.getElementById('statusTargetId').value = id;
+            // Highlight current status
+            document.querySelectorAll('.sheet-btn').forEach(btn => btn.classList.remove('active'));
+            // You could add logic here to highlight the active one based on currentStatus
+            const modal = document.getElementById('optionStatusModal');
+            modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+            // Trigger animation
+            setTimeout(() => { document.getElementById('statusSheet').classList.add('show'); }, 10);
+        };
+
+        window.closeStatusModal = () => {
+            document.getElementById('statusSheet').classList.remove('show');
+            setTimeout(() => {
+                document.getElementById('optionStatusModal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
+            }, 300);
+        };
+
+        window.saveOptionStatus = async (newStatus) => {
+            vibrate();
+            const id = document.getElementById('statusTargetId').value;
+            if(!id) return;
+            try { 
+                await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, id), { optionStatus: newStatus }); 
+                closeStatusModal();
+            } catch(e) { console.error(e); alert("更新失敗"); } 
+        };
+        // ------------------------------
+        
+        window.confirmDelete = async () => { 
+            if(deleteCandidateId) { 
+                if(document.getElementById('editDocId').value === deleteCandidateId) cancelEdit();
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`, deleteCandidateId))
+                .then(() => alert("🗑️ 已刪除"))
+                .catch(e => alert("刪除失敗: " + e.message));
+                closeDeleteModal(); 
+            } 
+        }
+
+        window.showDetails = (id) => {
+            const data = globalHistoryData.find(d => d.id === id);
+            if(!data) return;
+            setTxt('detailDate', data.manualDate);
+            const content = document.getElementById('detailContent');
+            const formatMoney = (v) => v ? `$${parseFloat(v).toLocaleString()}` : '-';
+            const formatNum = (v) => v ? parseFloat(v).toFixed(2) : '-';
             
-            // Recalculate essentials
-            const uproVal = sf('uproShares') * sf('uproPrice');
+            content.innerHTML = `
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <h4 class="text-xs text-indigo-300 font-bold uppercase mb-3">市場數據</h4>
+                    <div class="grid grid-cols-3 gap-3 text-slate-300 mb-2">
+                        <div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VOO</div><div class="font-bold text-white">${data.vooClose}</div></div>
+                        <div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">RSI</div><div class="font-bold text-white">${formatNum(data.dailyRsi)}</div></div>
+                        <div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VIX</div><div class="font-bold text-white">${formatNum(data.vix)}</div></div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 text-center">EMAs: ${formatNum(data.wema5)} / ${formatNum(data.wema12)} / ${formatNum(data.wema20)}</div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <h4 class="text-xs text-blue-300 font-bold uppercase mb-3">庫存快照</h4>
+                    <div class="space-y-2 text-slate-300 text-sm">
+                        <div class="flex justify-between border-b border-slate-700 pb-2"><span>UPRO</span><span>${data.uproShares || 0}股 @ ${data.uproPrice || 0}</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-2"><span>SGOV</span><span>${data.sgovShares || 0}股 @ ${data.sgovPrice || 0}</span></div>
+                        <div class="flex justify-between border-b border-slate-700 pb-2"><span>IBIT</span><span>${data.ibitShares || 0}股 @ ${data.ibitPrice || 0}</span></div>
+                        <div class="flex justify-between pt-1 font-bold text-white text-base"><span>總淨值</span><span>${formatMoney(data.totalValue)}</span></div>
+                        <div class="text-xs text-right text-slate-500">現金: ${formatMoney(data.cashAmount)}</div>
+                    </div>
+                </div>
+                ${data.optType ? `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-green-300 font-bold uppercase mb-2">選擇權收益</h4><div class="flex justify-between text-white font-bold text-base"><span>${data.optType}</span><span class="${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionsIncome > 0 ? '+' : ''}$${data.optionsIncome}</span></div></div>` : ''}
+                ${data.note ? `<div class="p-4 bg-slate-900 rounded-xl border border-slate-700 text-slate-300 italic">"${data.note}"</div>` : ''}
+            `;
+            document.getElementById('editBtnFromModal').onclick = () => loadRecordForEdit(data);
+            openModal('detailsModal');
+        };
+
+        window.loadRecordForEdit = (data) => {
+            closeDetails();
+            const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; };
+            set('recordDate', data.manualDate); set('vooClose', data.vooClose);
+            set('wema5', data.wema5); set('wema12', data.wema12); set('wema20', data.wema20);
+            set('vixIndex', data.vix); set('dailyRsi', data.dailyRsi);
+            set('uproShares', data.uproShares); set('uproPrice', data.uproPrice);
+            set('sgovShares', data.sgovShares); set('sgovPrice', data.sgovPrice);
+            set('ibitShares', data.ibitShares); set('ibitPrice', data.ibitPrice);
+            set('cashAmount', data.cashAmount);
+            set('optType', data.optType); set('optPremium', data.optPremium ? Math.abs(data.optPremium) : '');
+            set('recordNote', data.note);
+            updateOptUi();
+            document.getElementById('editDocId').value = data.id;
+            
+            document.getElementById('saveTitle').innerText = "編輯紀錄";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6 mr-2"></i> <span>更新紀錄</span>`;
+            btn.classList.add('btn-edit');
+            switchView('inputs');
+            alert("資料已帶入，請修改後點擊「更新」");
+        };
+
+        window.cancelEdit = () => {
+            document.getElementById('editDocId').value = '';
+            document.getElementById('saveTitle').innerText = "選擇權與儲存";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`;
+            btn.classList.remove('btn-edit');
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent') e.value = ''; });
+            updateOptUi(); 
+            lucide.createIcons();
+        };
+
+        window.updateSimulation = () => {
+            const inputVal = document.getElementById('simPercent').value;
+            const pct = parseFloat(inputVal) || 0;
+            const vooPrice = sf('vooClose');
+            const uproPrice = sf('uproPrice');
+            const uproShares = sf('uproShares');
             const sgovVal = sf('sgovShares') * sf('sgovPrice');
             const ibitVal = sf('ibitShares') * sf('ibitPrice');
             const cash = sf('cashAmount');
-            const totalValue = uproVal + sgovVal + ibitVal + cash; // Income removed from total value logic
             
-            const riskStatus = document.getElementById('riskState').innerText; 
-            
-            const note = document.getElementById('recordNote').value;
-            const optType = document.getElementById('optType').value;
-            let optPremium = sf('optPremium'); // Use premium from this transaction
-            
-            // Determine sign based on Buy/Sell
-            // Buy Call/Put is an expense (negative)
-            // Sell Call/Put is income (positive)
-            if (optType && (optType.toLowerCase().includes('buy'))) {
-                optPremium = -Math.abs(optPremium); // Force negative for buys
+            if(!vooPrice || !uproPrice) {
+                document.getElementById('simError').classList.remove('hidden');
+                document.getElementById('simAssetResult').innerText = "--";
+                return;
             } else {
-                optPremium = Math.abs(optPremium); // Force positive for sells/others
+                document.getElementById('simError').classList.add('hidden');
             }
 
-            // Use optPremium as the income for this record (for chart tracking)
-            // If it's a Buy, income is negative. If Sell, income is positive.
-            const optionsIncome = optPremium !== 0 ? optPremium : 0;
-
-            const data = {
-                manualDate,
-                vooClose, wema5: sf('wema5'), wema12: sf('wema12'), wema20,
-                vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'), isNewHigh: document.getElementById('newHigh').checked,
-                uproShares: sf('uproShares'), uproPrice: sf('uproPrice'),
-                sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'),
-                ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
-                cashAmount: cash, 
-                optionsIncome: optionsIncome, // Save premium for chart
-                totalValue, riskStatus,
-                note,
-                optType, optPremium,
-                optionDetails: optType ? `${optType} (${optPremium >= 0 ? '+' : '-'}$${Math.abs(optPremium)})` : '',
-                optionStatus: optType ? 'Open' : null
-            };
-
-            const editId = document.getElementById('editDocId').value;
-
-            try {
-                if(editId) {
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${uid}/full_records`, editId), {
-                        ...data,
-                        updatedAt: serverTimestamp()
-                    });
-                    document.getElementById('editDocId').value = '';
-                    alert("紀錄已更新");
-                } else {
-                    await addDoc(collection(db, `artifacts/${appId}/users/${uid}/full_records`), {
-                        ...data,
-                        timestamp: serverTimestamp()
-                    });
-                    alert("紀錄已新增");
-                }
-                
-                // Clear draft so next time it loads fresh from DB (newest record)
-                localStorage.removeItem('upro_v6_draft');
-
-                // Reset inputs and switch view
-                document.getElementById('recordNote').value = '';
-                document.getElementById('optType').value = '';
-                document.getElementById('optPremium').value = '';
-                document.getElementById('optPremium').classList.add('hidden');
-                switchView('history');
-            } catch (e) {
-                console.error(e);
-                alert("儲存錯誤: " + e.message);
-            }
+            const leverage = pct < 0 ? 2.8 : 3.0; 
+            const uproPct = pct * leverage;
+            const newUproPrice = uproPrice * (1 + uproPct/100);
+            
+            const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
+            const newIbitVal = ibitVal * (1 + pct/100); 
+            const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
+            const pl = newTotal - originalTotal;
+            
+            const el = document.getElementById('simAssetResult');
+            el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`;
+            el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            
+            const inputEl = document.getElementById('simPercent');
+            if (pct > 0) inputEl.style.color = '#4ade80';
+            else if (pct < 0) inputEl.style.color = '#f87171';
+            else inputEl.style.color = '#ffffff';
         };
 
-        window.handleInput = () => { debouncedCalculate(); saveDraft(); }
-        function saveDraft() { const d = {}; document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); localStorage.setItem('upro_v6_draft', JSON.stringify(d)); }
-        function restoreDraft() { const d = JSON.parse(localStorage.getItem('upro_v6_draft')); if(d) Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; }); calculateStrategy(); }
-        window.switchView = (v) => { vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
-        window.addTag = (tag) => { const area = document.getElementById('recordNote'); area.value = area.value ? area.value + ` #${tag}` : `#${tag}`; vibrate(); }
-        document.getElementById('optType').addEventListener('change', e => { const p = document.getElementById('optPremium'); e.target.value ? p.classList.remove('hidden') : p.classList.add('hidden'); });
-        window.togglePrivacy = () => { vibrate(); isPrivacyOn = !isPrivacyOn; const icon = document.getElementById('privacyIcon'); if(isPrivacyOn) { document.querySelectorAll('.sens-data').forEach(e=>e.classList.add('privacy-blur')); document.querySelectorAll('.sens-data-input').forEach(e=>e.type='password'); icon.setAttribute('data-lucide', 'eye-off'); } else { document.querySelectorAll('.sens-data').forEach(e=>e.classList.remove('privacy-blur')); document.querySelectorAll('.sens-data-input').forEach(e=>e.type='number'); icon.setAttribute('data-lucide', 'eye'); } lucide.createIcons(); }
-        window.shareReport = () => { vibrate(); if(!calculatedSnapshot) return alert("無數據"); const s = calculatedSnapshot; navigator.clipboard.writeText(`🚀 *UPRO V9.0* (${s.manualDate})\n🔹 Status: ${s.riskStatus}\n💰 NW: $${Math.round(s.totalValue).toLocaleString()}\n🎯 UPRO: ${s.targetUproPct.toFixed(0)}%\n⚡ Act: ${s.rebalanceText.replace(/<[^>]*>?/gm, ' ')}`).then(()=>alert("Copied")); }
-        window.exportJson = () => { if(!globalHistoryData.length) return alert("無資料"); const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"})); a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
-        window.importJson = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
-        window.exportToCsv = () => { if(!globalHistoryData.length) return alert("No Data"); const csv = "Date,Total,Risk\n"+globalHistoryData.map(d=>`${d.manualDate},${d.totalValue},${d.riskStatus}`).join("\n"); const a = document.createElement("a"); a.href="data:text/csv;charset=utf-8,"+encodeURI(csv); a.download="upro.csv"; a.click(); }
-        window.setChartRange = (range) => { currentChartRange = range; document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active')); document.getElementById(`btn-${range}`).classList.add('active'); renderAssetHistoryChart(); }
-        window.toggleChartMode = () => { chartMode = chartMode === 'line' ? 'stacked' : 'line'; document.getElementById('chartToggleBtn').textContent = chartMode === 'line' ? '📉 淨值 (Line)' : '📊 堆疊 (Stacked)'; renderAssetHistoryChart(); }
-        window.downloadChart = () => { const a = document.createElement('a'); a.href = document.getElementById('assetChart').toDataURL('image/png'); a.download = 'upro_chart.png'; a.click(); }
+        window.calculateStrategy = () => {
+            const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
+            if(vooClose) {
+                const uproVal = sf('uproShares')*sf('uproPrice'), sgovVal = sf('sgovShares')*sf('sgovPrice'), ibitVal = sf('ibitShares')*sf('ibitPrice'), cash = sf('cashAmount');
+                const totalValue = uproVal + sgovVal + ibitVal + cash;
+                setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`);
+                renderAllocationChart([uproVal, sgovVal, ibitVal, cash], totalValue);
+                const bias = ((vooClose - wema20)/wema20)*100, riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
+                const card = document.getElementById('statusCard');
+                if(riskStatus === 'ON') { card.classList.remove('status-off'); card.classList.add('status-on'); setTxt('riskState', 'RISK ON'); document.getElementById('riskState').className = 'text-5xl font-black text-green-400 tracking-tighter'; } else { card.classList.remove('status-on'); card.classList.add('status-off'); setTxt('riskState', 'RISK OFF'); document.getElementById('riskState').className = 'text-5xl font-black text-red-400 tracking-tighter'; }
+                setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
+                const rsi = sf('dailyRsi'); if(rsi < 30 && riskStatus === 'ON') setTxt('rsiBadge', "RSI<30 BUY"); else setTxt('rsiBadge', `RSI ${rsi.toFixed(0)}`);
+                const tU = (riskStatus==='ON'?(bias>=8?50:bias>5?60:bias>2?80:100):0)*0.9, tS = 90-tU;
+                setTxt('allocationDesc', riskStatus==='ON' ? (tU<90?'防守模式':'積極模式') : 'Risk Off');
+                setTxt('targetUpro', `${tU.toFixed(0)}%`); setTxt('targetSgov', `${tS.toFixed(0)}%`);
+                const diffU = uproVal-(totalValue*tU/100), diffS = sgovVal-(totalValue*tS/100), diffI = ibitVal-(totalValue*0.1);
+                setTxt('uproDiff', `${diffU>=0?'+':''}$${Math.round(diffU).toLocaleString()}`); setTxt('sgovDiff', `${diffS>=0?'+':''}$${Math.round(diffS).toLocaleString()}`); setTxt('ibitDiff', `${diffI>=0?'+':''}$${Math.round(diffI).toLocaleString()}`);
+                const thres = totalValue*0.05; let acts = []; if(Math.abs(diffU)>thres) acts.push(`${diffU>0?'賣':'買'} UPRO`); const curI = ibitVal/totalValue*100 || 0; if(curI<7 || curI>15) acts.push(`調整 IBIT`);
+                setTxt('rebalanceAction', acts.length ? acts.join(" | ") : "無需操作");
+                document.querySelectorAll('.strategy-item').forEach(el => el.classList.remove('active'));
+                let activeId = riskStatus === 'OFF' ? 'gps-risk-off' : (rsi < 30 ? 'gps-rsi-buy' : (bias >= 8 ? 'gps-bias-extreme' : (bias > 5 ? 'gps-bias-high' : (bias > 2 ? 'gps-bias-med' : 'gps-bias-low'))));
+                if(activeId) document.getElementById(activeId).classList.add('active');
+                
+                const tableBody = document.getElementById('scenarioTable'); tableBody.innerHTML = '';
+                const uproPrice = sf('uproPrice');
+                [{n:'5 EMA',v:wema5}, {n:'12 EMA',v:wema12}, {n:'20 EMA',v:wema20}].forEach(t => {
+                    if(!t.v) return;
+                    const pct = ((t.v - vooClose) / vooClose) * 100;
+                    const lev = pct < 0 ? 2.8 : 3.0; const uproPct = pct * lev;
+                    const predUproPrice = uproPrice * (1 + uproPct/100);
+                    tableBody.innerHTML += `<tr><td class="pl-3 py-3 text-left"><span class="text-[10px] text-slate-400 block">${t.n}</span><span class="text-xs font-mono text-white">$${t.v.toFixed(2)}</span></td><td class="py-3 ${pct<0?'text-red-400':'text-green-400'} font-bold text-xs">${pct.toFixed(1)}%</td><td class="py-3 ${uproPct<0?'text-red-400':'text-green-400'} font-bold text-xs">${uproPct.toFixed(1)}%</td><td class="pr-3 py-3 text-right font-mono text-slate-300 text-xs">$${predUproPrice.toFixed(2)}</td></tr>`;
+                });
+                updateSimulation();
+            }
+        }
+        
+        window.saveRecord = async () => {
+            vibrate(); const btn = document.getElementById('saveBtn'); const originalText = btn.innerHTML;
+            try {
+                if (!db || !auth) throw new Error("資料庫尚未連線");
+                if (!realUserId) throw new Error("請先登入");
+                const manualDate = document.getElementById('recordDate').value;
+                if(!manualDate) throw new Error("請輸入日期");
+                
+                btn.disabled = true; btn.innerHTML = `<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>`; lucide.createIcons();
+                
+                const uproVal = sf('uproShares')*sf('uproPrice');
+                const sgovVal = sf('sgovShares')*sf('sgovPrice');
+                const ibitVal = sf('ibitShares')*sf('ibitPrice');
+                const cash = sf('cashAmount');
+                const totalValue = uproVal + sgovVal + ibitVal + cash;
+                const riskStatus = document.getElementById('riskState').innerText.replace('RISK ', ''); 
+                const optType = document.getElementById('optType').value;
+                let optPremium = sf('optPremium');
+                if (optType && (optType.toLowerCase().includes('buy'))) optPremium = -Math.abs(optPremium); else optPremium = Math.abs(optPremium);
+                
+                const data = {
+                    manualDate, vooClose: sf('vooClose'), wema5: sf('wema5'), wema12: sf('wema12'), wema20: sf('wema20'),
+                    vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'),
+                    uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'),
+                    cashAmount: cash, optionsIncome: optPremium !== 0 ? optPremium : 0,
+                    totalValue, riskStatus, note: document.getElementById('recordNote').value,
+                    optType, optPremium, optionDetails: optType ? `${optType} $${Math.abs(optPremium)}` : '', optionStatus: optType ? 'Open' : null
+                };
 
-        // --- Firebase ---
-        async function initFirebase() { if (Object.keys(firebaseConfig).length === 0) return; const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); onAuthStateChanged(auth, u => { 
-            if(u){ 
-                realUserId = u.uid; 
-                const savedTarget = localStorage.getItem('upro_target_uid');
-                currentDataUserId = savedTarget || realUserId;
-                if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId;
-                loadHistory(); 
-            } 
-        }); }
-        window.fillLatestData = (force) => { 
-            vibrate(); 
-            if(globalHistoryData.length && (force || !document.getElementById('vooClose').value)) { 
-                const l = globalHistoryData[0]; 
-                const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
-                
-                if(force) set('recordDate',l.manualDate);
-                
-                set('vooClose',l.vooClose); 
-                set('wema20',l.wema20); 
-                set('wema12',l.wema12); 
-                set('wema5',l.wema5); 
-                set('vixIndex',l.vix); 
-                set('dailyRsi',l.dailyRsi); 
-                document.getElementById('newHigh').checked=l.isNewHigh; 
-                set('uproShares',l.uproShares); 
-                set('uproPrice',l.uproPrice); 
-                set('sgovShares',l.sgovShares); 
-                set('sgovPrice',l.sgovPrice); 
-                set('ibitShares',l.ibitShares); 
-                set('ibitPrice',l.ibitPrice); 
-                set('cashAmount',l.cashAmount); 
-                // Removed options income input fill
+                const editId = document.getElementById('editDocId').value;
+                if(editId) { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`, editId), { ...data, updatedAt: serverTimestamp() }); alert("✅ 已更新"); cancelEdit(); } 
+                else { await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); alert("✅ 已儲存"); cancelEdit(); }
+                localStorage.removeItem('upro_v9_draft'); switchView('history');
+            } catch (e) { alert("錯誤: " + e.message); } finally { btn.disabled = false; btn.innerHTML = originalText; lucide.createIcons(); }
+        };
+
+        window.handleInput = () => { debouncedCalculate(); const d={}; document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); localStorage.setItem('upro_v9_draft', JSON.stringify(d)); }
+        function restoreDraft() { 
+            const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
+            if(d) {
+                Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; });
+                updateOptUi(); // Sync buttons with draft
                 calculateStrategy(); 
-                if(force && window.innerWidth<1024) switchView('inputs'); 
+            }
+        }
+        window.switchView = (v) => { vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
+        
+        window.exportJson = () => {
+            if(!globalHistoryData.length) return;
+            const a = document.createElement('a');
+            a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"}));
+            a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+        }
+
+        window.importJson = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
+        window.setChartRange = (range) => { currentChartRange = range; renderAssetHistoryChart(); }
+        window.toggleChartType = () => { chartMode = chartMode === 'line' ? 'income' : 'line'; document.getElementById('chartTypeBtn').textContent = chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'; renderAssetHistoryChart(); };
+
+        async function initFirebase() { 
+            try { 
+                const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); 
+                if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); 
+                onAuthStateChanged(auth, u => { 
+                    if(u){ 
+                        realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; 
+                        if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; 
+                        document.getElementById('connDot').className = 'conn-dot conn-online';
+                        document.getElementById('connText').innerText = 'Online';
+                        document.getElementById('connText').className = 'text-xs text-green-400 font-bold';
+                        loadHistory(); 
+                    } 
+                }); 
+            } catch(e) { 
+                document.getElementById('connText').innerText = 'Offline';
+                alert("連線失敗: " + e.message); 
             } 
         }
         
-        function renderAllocationChart(data, total) {
-            const ctx = document.getElementById('allocationChart').getContext('2d');
-            if (allocationChartInstance) allocationChartInstance.destroy();
-            if (total === 0) return;
-            allocationChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['UPRO', 'SGOV', 'IBIT', 'Cash'], datasets: [{ data: data, backgroundColor: ['#f87171', '#4ade80', '#f472b6', '#94a3b8'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } } });
-        }
-
-        function renderAssetHistoryChart() {
-            if (!globalHistoryData.length) return;
-            const ctx = document.getElementById('assetChart').getContext('2d');
-            if (assetChartInstance) assetChartInstance.destroy();
-            let dataToShow = [...globalHistoryData].reverse();
-            const now = new Date();
-            if (currentChartRange !== 'ALL') {
-                const cutoff = new Date();
-                if (currentChartRange === '1M') cutoff.setMonth(now.getMonth() - 1);
-                if (currentChartRange === '3M') cutoff.setMonth(now.getMonth() - 3);
-                if (currentChartRange === '6M') cutoff.setMonth(now.getMonth() - 6);
-                if (currentChartRange === 'YTD') cutoff.setFullYear(now.getFullYear(), 0, 1);
-                dataToShow = dataToShow.filter(d => new Date(d.manualDate) >= cutoff);
-            }
-            const labels = dataToShow.map(d => d.manualDate.slice(5));
-            const val = (d, type) => {
-                if (type === 'Cash') return (d.cashAmount || 0) + (d.optionsIncome || 0);
-                if (type === 'UPRO') return (d.uproShares || 0) * (d.uproPrice || 0);
-                if (type === 'SGOV') return (d.sgovShares || 0) * (d.sgovPrice || 0);
-                if (type === 'IBIT') return (d.ibitShares || 0) * (d.ibitPrice || 0);
-                return 0;
-            };
-            const dsUPRO = dataToShow.map(d => val(d, 'UPRO'));
-            const dsSGOV = dataToShow.map(d => val(d, 'SGOV'));
-            const dsIBIT = dataToShow.map(d => val(d, 'IBIT'));
-            const dsCash = dataToShow.map(d => val(d, 'Cash'));
+        window.fillLatestData = (force) => { vibrate(); if(globalHistoryData.length) { const l = globalHistoryData[0]; const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; if(force) set('recordDate',l.manualDate); set('vooClose',l.vooClose); set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); set('cashAmount',l.cashAmount); calculateStrategy(); if(force) switchView('inputs'); } }
+        
+        function renderAllocationChart(data, total) { const ctx = document.getElementById('allocationChart').getContext('2d'); if (allocationChartInstance) allocationChartInstance.destroy(); if (total === 0) return; allocationChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['UPRO', 'SGOV', 'IBIT', 'Cash'], datasets: [{ data: data, backgroundColor: ['#f87171', '#4ade80', '#f472b6', '#94a3b8'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false } } } }); }
+        
+        // FIXED: Added VOO Benchmark Line
+        function renderAssetHistoryChart() { 
+            const ctx = document.getElementById('assetChart').getContext('2d'); 
+            if (assetChartInstance) assetChartInstance.destroy(); 
+            if (!globalHistoryData.length) return; 
             
-            if (chartMode === 'stacked') {
-                assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [ { label: 'UPRO', data: dsUPRO, borderColor: '#f87171', backgroundColor: 'rgba(248, 113, 113, 0.5)', fill: true, pointRadius: 0, borderWidth: 0 }, { label: 'SGOV', data: dsSGOV, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.5)', fill: true, pointRadius: 0, borderWidth: 0 }, { label: 'IBIT', data: dsIBIT, borderColor: '#f472b6', backgroundColor: 'rgba(244, 114, 182, 0.5)', fill: true, pointRadius: 0, borderWidth: 0 }, { label: 'Cash', data: dsCash, borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.5)', fill: true, pointRadius: 0, borderWidth: 0 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, scales: { x: { display: false }, y: { display: false, stacked: true } }, interaction: { mode: 'nearest', axis: 'x', intersect: false }, elements: { line: { tension: 0.4 } } } });
-            } else {
-                const dsTotal = dataToShow.map(d => d.totalValue);
-                assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ data: dsTotal, borderColor: '#3b82f6', borderWidth: 2, pointRadius: 2, tension: 0.4, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0, 0, 0, 200); gr.addColorStop(0, "rgba(59, 130, 246, 0.3)"); gr.addColorStop(1, "transparent"); return gr; } }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } } });
-            }
-        }
-
-        // New Income Chart (V9.0)
-        function renderIncomeChart() {
-            if (!globalHistoryData.length) return;
-            const ctx = document.getElementById('incomeChart').getContext('2d');
-            if (incomeChartInstance) incomeChartInstance.destroy();
-
-            // 1. Sort data by date (oldest to newest)
-            const sortedData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-
-            // 2. Calculate cumulative income
-            let cumulative = 0;
-            const labels = [];
-            const data = [];
-
-            sortedData.forEach(d => {
-                const inc = parseFloat(d.optionsIncome) || 0;
-                cumulative += inc;
-                labels.push(d.manualDate.slice(5)); // "MM-DD"
-                data.push(cumulative);
-            });
-
-            // 3. Render Chart
-            incomeChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '累積權利金',
-                        data: data,
-                        borderColor: '#22c55e', // Green-500
-                        backgroundColor: (context) => {
-                            const ctx = context.chart.ctx;
-                            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                            gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
-                            gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)');
-                            return gradient;
-                        },
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            callbacks: {
-                                label: (context) => `累積收入: $${context.parsed.y.toLocaleString()}`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { display: false },
-                        y: {
-                            display: true,
-                            position: 'right',
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#475569', font: { size: 9 }, callback: (val) => '$' + val }
-                        }
-                    },
-                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+            let dataToShow = [...globalHistoryData].reverse(); 
+            const labels = dataToShow.map(d => d.manualDate.slice(5)); 
+            
+            let datasets = [];
+            
+            if (chartMode === 'income') { 
+                let cumulative = 0; 
+                const dsData = dataToShow.map(d => { cumulative += (parseFloat(d.optionsIncome) || 0); return cumulative; }); 
+                datasets.push({ label: '收益', data: dsData, borderColor: '#22c55e', borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0,0,0,240); gr.addColorStop(0, "#22c55e44"); gr.addColorStop(1,"transparent"); return gr; } });
+            } else { 
+                const dsData = dataToShow.map(d => d.totalValue); 
+                datasets.push({ label: '淨值', data: dsData, borderColor: '#3b82f6', borderWidth: 3, pointRadius: 2, tension: 0.3, fill: true, backgroundColor: (c) => { const gr = c.chart.ctx.createLinearGradient(0,0,0,240); gr.addColorStop(0, "#3b82f644"); gr.addColorStop(1,"transparent"); return gr; } });
+                
+                // Add VOO Benchmark Line
+                if (dataToShow.length > 0 && dataToShow[0].vooClose && dataToShow[0].totalValue) {
+                    const startVoo = dataToShow[0].vooClose;
+                    const startVal = dataToShow[0].totalValue;
+                    const vooData = dataToShow.map(d => {
+                        if (!d.vooClose) return null;
+                        return (d.vooClose / startVoo) * startVal;
+                    });
+                    datasets.push({ label: 'VOO Benchmark', data: vooData, borderColor: '#64748b', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.3, fill: false });
                 }
-            });
-        }
-
-        function renderHeatmap() {
-            const grid = document.getElementById('heatmapGrid'); if(!grid) return; grid.innerHTML = '';
-            let recentData = [...globalHistoryData]; recentData.sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
-            const toShow = recentData.slice(-12);
-            toShow.forEach((d, i) => {
-                let colorClass = 'bg-slate-800'; let val = '';
-                if (i > 0) {
-                    const diff = d.totalValue - recentData[recentData.indexOf(d)-1].totalValue;
-                    const pct = (diff / recentData[recentData.indexOf(d)-1].totalValue) * 100;
-                    val = (pct > 0 ? '+' : '') + pct.toFixed(1) + '%';
-                    if(pct > 5) colorClass = 'bg-green-500'; else if(pct > 2) colorClass = 'bg-green-600'; else if(pct > 0) colorClass = 'bg-green-800'; else if(pct > -2) colorClass = 'bg-red-900'; else if(pct > -5) colorClass = 'bg-red-700'; else colorClass = 'bg-red-600';
-                } else { val = 'Start'; }
-                const date = new Date(d.manualDate); const month = date.toLocaleString('default', { month: 'short' });
-                const cell = document.createElement('div'); cell.className = `heatmap-cell ${colorClass}`; cell.innerHTML = `<span>${month}</span><span class="heatmap-val">${val}</span>`; grid.appendChild(cell);
-            });
+            } 
+            
+            assetChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false, grid: {display: false} }, y: { display: false, grid: {display: false} } } } }); 
         }
 
         function loadHistory() {
             onSnapshot(query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('timestamp','desc')), snap => {
                 const list = document.getElementById('historyList'); list.innerHTML=''; globalHistoryData=[];
-                if(snap.empty) { list.innerHTML='<tr><td colspan="6" class="text-center py-6 text-slate-500">無資料</td></tr>'; return; }
+                let totalIncome = 0;
+                if(snap.empty) { list.innerHTML='<tr><td colspan="5" class="text-center py-8 text-slate-500">無資料</td></tr>'; document.getElementById('totalIncomeDisplay').textContent = "$0"; if (assetChartInstance) assetChartInstance.destroy(); return; }
                 snap.forEach(d => {
                     const data = d.data(); data.id=d.id; globalHistoryData.push(data);
-                    const row = document.createElement('tr'); row.className="border-b border-slate-700/50";
-                    let noteContent = data.note || '-';
-                    const isOption = (data.optType && (data.optType.includes("Call") || data.optType.includes("Put") || data.optType.includes("Spread")));
-                    if (isOption) {
-                        const status = data.optionStatus || 'Open';
-                        const noteText = data.note ? `<div class="text-[9px] text-slate-400 mt-0.5 border-t border-slate-700/50 pt-0.5">${data.note}</div>` : '';
-                        noteContent = `<div class="flex flex-col gap-1"><span class="text-[9px] ${data.optionsIncome < 0 ? 'text-red-400' : 'text-green-400'}">${data.optionDetails}</span><select onchange="updateRecordStatus('${data.id}', this.value)" class="status-select" data-status="${status}"><option value="Open" ${status==='Open'?'selected':''}>持倉</option><option value="Closed" ${status==='Closed'?'selected':''}>平倉</option><option value="Exercised" ${status==='Exercised'?'selected':''}>行權</option><option value="Expired" ${status==='Expired'?'selected':''}>作廢</option></select>${noteText}</div>`;
-                    } else if (data.optionDetails) { noteContent = `<span class="text-[9px] text-slate-400">${data.optionDetails}</span><br>${noteContent}`; }
-                    row.innerHTML=`<td class="p-3 text-xs font-mono text-slate-400">${data.manualDate.slice(5)}</td><td class="p-3 text-xs font-bold text-slate-200">$${data.vooClose}</td><td class="p-3 text-[10px] ${data.riskStatus==='ON' || data.riskStatus==='RISK ON'?'text-green-400':'text-red-400'}">${data.riskStatus}</td><td class="p-3 text-xs font-bold text-yellow-500 sens-data">$${Math.round(data.totalValue/1000)}k</td><td class="p-3 text-[10px] text-slate-300 truncate max-w-[120px]">${noteContent}</td><td class="p-3 text-right"><button onclick="showDeleteModal('${data.id}')" class="text-slate-500 hover:text-red-400 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
+                    totalIncome += (parseFloat(data.optionsIncome) || 0);
+                    const row = document.createElement('tr'); row.className="border-b border-slate-700/50 cursor-pointer active:bg-slate-800 transition-colors";
+                    row.onclick = (e) => { if(!e.target.closest('button') && !e.target.closest('select')) showDetails(data.id); };
+                    let noteDisplay = data.note ? `<div class="w-2 h-2 rounded-full bg-blue-500 inline-block ml-1"></div>` : '';
+                    let detailsHtml = data.optionDetails ? `<div class="text-[9px] font-bold ${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionDetails.split(' ')[0]}</div>` : '';
+                    
+                    let statusHtml = ''; 
+                    if(data.optType) { 
+                        const s = data.optionStatus || 'Open'; 
+                        let badgeClass = 'badge-open';
+                        let badgeText = '持倉';
+                        if (s === 'Closed') { badgeClass = 'badge-closed'; badgeText = '平倉'; }
+                        else if (s === 'Exercised') { badgeClass = 'badge-exercised'; badgeText = '行權'; }
+                        
+                        statusHtml = `<button onclick="event.stopPropagation(); openStatusModal('${data.id}', '${s}')" class="status-badge ${badgeClass} ml-1">${badgeText}</button>`; 
+                    }
+
+                    row.innerHTML=`<td class="pl-2 py-4 text-xs font-mono text-slate-400 font-bold">${data.manualDate.slice(5)}</td><td class="py-4 text-[10px] font-bold ${data.riskStatus.includes('ON')?'text-green-400':'text-red-400'}">${data.riskStatus.includes('ON') ? 'ON' : 'OFF'}</td><td class="py-4 text-xs font-black text-yellow-500">$${Math.round(data.totalValue/1000)}k</td><td class="py-4 flex flex-col items-start justify-center gap-1">${detailsHtml}<div class="flex items-center">${noteDisplay}${statusHtml}</div></td><td class="py-4 pr-2 text-right"><button onclick="showDeleteModal('${data.id}', event)" class="text-slate-500 active:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
                     list.appendChild(row);
                 });
-                const footerRow = document.createElement('tr'); footerRow.innerHTML = `<td colspan="6" class="p-3 text-center text-xs text-slate-500 border-t border-slate-700">總筆數: ${globalHistoryData.length}</td>`; list.appendChild(footerRow);
-                renderAssetHistoryChart(); 
-                renderIncomeChart(); // Now implemented!
-                renderHeatmap();
-                if(!hasInitialized) { 
-                    if(localStorage.getItem('upro_v6_draft')) restoreDraft(); 
-                    else fillLatestData(); // Auto fill if no draft
-                    hasInitialized=true; 
+                
+                // FIXED: Calculate Alpha Displays
+                if(globalHistoryData.length) {
+                    const first = globalHistoryData[globalHistoryData.length - 1];
+                    const year = new Date().getFullYear().toString();
+                    let ytdStart = globalHistoryData.find(d => d.manualDate.startsWith(year)) || first;
+                    const vooClose = parseFloat(document.getElementById('vooClose').value) || 0;
+                    
+                    // Helper to get total value from string
+                    const currentTotal = parseFloat(document.getElementById('totalValueDisplay').innerText.replace(/[$,]/g,'')) || 0;
+
+                    if (vooClose && first.vooClose && currentTotal > 0) {
+                        const myReturn = ((currentTotal - first.totalValue) / first.totalValue) * 100;
+                        const vooReturn = ((vooClose - first.vooClose) / first.vooClose) * 100;
+                        const alpha = myReturn - vooReturn;
+                        setTxt('alphaTotalDisplay', `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`);
+                        document.getElementById('alphaTotalDisplay').className = `text-lg font-bold ${alpha >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                    }
+                    
+                    if (vooClose && ytdStart.vooClose && currentTotal > 0) {
+                        const myReturn = ((currentTotal - ytdStart.totalValue) / ytdStart.totalValue) * 100;
+                        const vooReturn = ((vooClose - ytdStart.vooClose) / ytdStart.vooClose) * 100;
+                        const alpha = myReturn - vooReturn;
+                        setTxt('alphaYtdDisplay', `${alpha >= 0 ? '+' : ''}${alpha.toFixed(1)}%`);
+                        document.getElementById('alphaYtdDisplay').className = `text-lg font-bold ${alpha >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                    }
                 }
-                if(localStorage.getItem('upro_fire_goal')) fireGoal = parseFloat(localStorage.getItem('upro_fire_goal'));
-                if(isPrivacyOn) document.querySelectorAll('.sens-data').forEach(e => e.classList.add('privacy-blur'));
+                
+                document.getElementById('totalIncomeDisplay').textContent = `$${totalIncome.toLocaleString()}`;
+                renderAssetHistoryChart(); 
+                if(!hasInitialized) { if(localStorage.getItem('upro_v9_draft')) restoreDraft(); else fillLatestData(); hasInitialized=true; }
                 lucide.createIcons();
             });
         }

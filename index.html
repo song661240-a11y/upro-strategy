@@ -102,9 +102,9 @@
         .suggestion-label { font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 4px; }
         .suggestion-val { font-size: 14px; color: #e2e8f0; font-weight: 600; }
 
-        .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; }
-        .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-        .sim-table td:first-child { text-align: left; }
+        .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; font-weight: 700; }
+        .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+        .sim-table td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
 
         @media (min-width: 1024px) { .mobile-view { display: block !important; } .bottom-nav { display: none; } body { padding-bottom: 2rem; } }
         
@@ -175,7 +175,6 @@
                  <div class="flex justify-between items-center mb-4">
                     <h2 class="text-sm font-bold text-pink-300" id="saveTitle">選擇權與儲存</h2>
                     <input type="hidden" id="editDocId" value="">
-                    <!-- FIX: Hidden input to store option status during edit -->
                     <input type="hidden" id="optionStatus" value="Open">
                     <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">取消編輯</button>
                  </div>
@@ -288,7 +287,7 @@
                 </div>
             </div>
 
-            <!-- Scenario Lab (Manual Only) -->
+            <!-- Scenario Lab -->
             <div class="card p-5 border border-purple-500/30 bg-[#162032]">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2"><i data-lucide="flask-conical" class="w-5 h-5 text-purple-400"></i><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬實驗室</h3></div>
@@ -309,6 +308,18 @@
                         <span class="text-[10px] text-slate-500 uppercase block">預估總資產損益</span>
                         <span id="simAssetResult" class="text-lg font-black text-slate-300">--</span>
                     </div>
+                </div>
+
+                <!-- Added: EMA Scenarios -->
+                <div class="mt-4 pt-4 border-t border-slate-700/50">
+                    <table class="w-full sim-table">
+                        <thead>
+                            <tr><th>目標均線</th><th>價格</th><th>距離</th><th>預估損益</th></tr>
+                        </thead>
+                        <tbody id="emaSimBody">
+                            <tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -557,7 +568,6 @@
             set('cashAmount', data.cashAmount);
             set('optType', data.optType); set('optPremium', data.optPremium ? Math.abs(data.optPremium) : '');
             set('recordNote', data.note);
-            // FIX: Load the existing status to the hidden field
             document.getElementById('optionStatus').value = data.optionStatus || 'Open';
             
             updateOptUi();
@@ -575,7 +585,6 @@
             document.getElementById('editDocId').value = '';
             document.getElementById('saveTitle').innerText = "選擇權與儲存";
             document.getElementById('cancelEditBtn').classList.add('hidden');
-            // FIX: Reset status to Open
             document.getElementById('optionStatus').value = 'Open';
             
             const btn = document.getElementById('saveBtn');
@@ -587,8 +596,6 @@
         }
 
         function updateSimulation() {
-            const inputVal = document.getElementById('simPercent').value;
-            const pct = parseFloat(inputVal) || 0;
             const vooPrice = sf('vooClose');
             const uproPrice = sf('uproPrice');
             const uproShares = sf('uproShares');
@@ -601,11 +608,15 @@
             if(!vooPrice || !uproPrice) {
                 if(errorEl) errorEl.classList.remove('hidden');
                 document.getElementById('simAssetResult').innerText = "--";
+                document.getElementById('emaSimBody').innerHTML = '<tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>';
                 return;
             } else {
                 if(errorEl) errorEl.classList.add('hidden');
             }
 
+            // 1. Manual Simulation
+            const inputVal = document.getElementById('simPercent').value;
+            const pct = parseFloat(inputVal) || 0;
             const leverage = pct < 0 ? 2.8 : 3.0; 
             const uproPct = pct * leverage;
             const newUproPrice = uproPrice * (1 + uproPct/100);
@@ -623,6 +634,45 @@
             if (pct > 0) inputEl.style.color = '#4ade80';
             else if (pct < 0) inputEl.style.color = '#f87171';
             else inputEl.style.color = '#ffffff';
+
+            // 2. EMA Simulations
+            const emas = [
+                { label: '5MA', val: sf('wema5') },
+                { label: '12MA', val: sf('wema12') },
+                { label: '20MA', val: sf('wema20') }
+            ];
+
+            const tbody = document.getElementById('emaSimBody');
+            tbody.innerHTML = '';
+
+            emas.forEach(ema => {
+                if(ema.val > 0) {
+                    const emaPct = ((ema.val - vooPrice) / vooPrice) * 100;
+                    // Logic: If price goes up to EMA (emaPct > 0), leverage 3.0. If down (emaPct < 0), leverage 2.8.
+                    const emaLev = emaPct < 0 ? 2.8 : 3.0;
+                    const emaUproPct = emaPct * emaLev;
+                    const emaUproPrice = uproPrice * (1 + emaUproPct/100);
+                    const emaIbitVal = ibitVal * (1 + emaPct/100);
+                    const emaTotal = (emaUproPrice * uproShares) + sgovVal + emaIbitVal + cash;
+                    const emaPl = emaTotal - originalTotal;
+
+                    const row = document.createElement('tr');
+                    const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400';
+                    const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+                    
+                    row.innerHTML = `
+                        <td>${ema.label}</td>
+                        <td>${ema.val.toFixed(2)}</td>
+                        <td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td>
+                        <td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(row);
+                } else {
+                     const row = document.createElement('tr');
+                     row.innerHTML = `<td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td>`;
+                     tbody.appendChild(row);
+                }
+            });
         }
 
         function calculateStrategy() {
@@ -854,7 +904,6 @@
                     note: document.getElementById('recordNote').value,
                     optType: document.getElementById('optType').value,
                     optPremium: sf('optPremium'),
-                    // FIX: Read from hidden input, default to Open if new
                     optionStatus: document.getElementById('optionStatus').value || 'Open' 
                 };
 
@@ -874,18 +923,10 @@
                         timestamp: serverTimestamp()
                     });
                     showToast("✅ 紀錄已儲存", "success");
-                    // Clear inputs for next entry, but keep some market data maybe? Or just clear.
-                    // restoreDraft() usually handles persistence, let's clear inputs.
                      document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus') e.value = ''; });
                      document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
                      updateOptUi();
                 }
-                
-                // Refresh is handled by onSnapshot in loadHistory usually, but if we aren't using onSnapshot everywhere, we might need to trigger load. 
-                // However, since we define loadHistory to use onSnapshot or getDocs? 
-                // The prompt code uses onSnapshot in imports but let's see how I implement loadHistory. 
-                // Usually better to just wait for the listener if using onSnapshot, or call reload if using getDocs.
-                // Let's implement loadHistory with onSnapshot for real-time updates.
                 
             } catch (e) {
                 console.error(e);
@@ -909,10 +950,7 @@
                 renderAssetHistoryChart();
                 
                 if(globalHistoryData.length > 0) {
-                    // Update dashboard with latest data if inputs are empty? 
-                    // Actually, the user might be typing. Let's just calculate totals.
                     const latest = globalHistoryData[0];
-                     // Update total value display on dashboard
                     document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`;
                 }
             }, (error) => {
@@ -987,19 +1025,8 @@
             const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
             
             const labels = chartData.map(d => d.manualDate.slice(5));
-            const values = chartMode === 'line' 
-                ? chartData.map(d => d.totalValue) 
-                : chartData.map(d => {
-                    // Cumulative income calculation
-                    // This is a bit tricky if we just map directly. 
-                    // Let's just show discrete income for bar or cumulative for line?
-                    // The prompt implies a toggle. Let's do Cumulative for Line mode called "Income" vs Asset Value.
-                    // Actually, let's just do Asset Value (Line) vs Monthly Income (Bar)? 
-                    // To keep it simple based on the code provided earlier, let's stick to Asset Value line chart and maybe Cumulative Income.
-                    return d.totalValue; // Placeholder logic, will refine below.
-                });
-
             let dataset = {};
+            
             if (chartMode === 'line') {
                 dataset = {
                     type: 'line',
@@ -1013,7 +1040,6 @@
                     pointRadius: 0
                 };
             } else {
-                // Income Mode - let's make it cumulative income over time
                 let runningTotal = 0;
                 const incomeData = chartData.map(d => {
                     runningTotal += (parseFloat(d.optionsIncome) || 0);

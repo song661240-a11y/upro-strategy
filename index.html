@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V11.7 Merged</title>
+    <title>UPRO V11.7 Final</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -105,6 +105,11 @@
         .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; font-weight: 700; }
         .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
         .sim-table td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
+
+        /* Annual/Monthly Table Styles */
+        .summary-table th { font-size: 10px; color: #60a5fa; text-align: right; padding: 8px 4px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid rgba(96, 165, 250, 0.2); }
+        .summary-table td { font-size: 12px; text-align: right; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
+        .summary-table td:first-child { text-align: left; font-weight: 800; color: #94a3b8; }
 
         @media (min-width: 1024px) { .mobile-view { display: block !important; } .bottom-nav { display: none; } body { padding-bottom: 2rem; } }
         
@@ -231,7 +236,10 @@
 
             <!-- Merged Strategy Action Card -->
             <div class="card p-5 bg-[#162032] border border-blue-500/30">
-                <div class="flex items-center gap-2 mb-4"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
+                    <button onclick="fillStrategyNote()" class="text-[10px] bg-blue-600/90 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-lg active:scale-95 transition-all flex items-center"><i data-lucide="file-edit" class="w-3 h-3 mr-1"></i> 寫入備註</button>
+                </div>
 
                 <div class="space-y-3 mb-4">
                     <!-- UPRO Row -->
@@ -343,10 +351,69 @@
                     <h2 class="text-xl font-bold text-slate-200">歷史紀錄</h2>
                     <button onclick="toggleChartType()" id="chartTypeBtn" class="text-xs bg-slate-700 px-3 py-2 rounded-lg text-white font-bold border border-slate-600 active:scale-95 transition-transform">📉 收益圖</button>
                 </div>
-                <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 mb-4 flex justify-between items-center">
-                    <span class="text-xs text-slate-400 font-bold uppercase">總權利金收益</span>
-                    <span id="totalIncomeDisplay" class="text-lg font-black text-green-400">$0</span>
+                <!-- Revised Grid: YTD Gain -> YTD MDD -> YTD Income -->
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年漲幅 (YTD)</div>
+                        <div id="ytdDisplay" class="text-lg font-black text-slate-200">--%</div>
+                    </div>
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年最大回撤</div>
+                        <div id="mddDisplay" class="text-lg font-black text-red-400">--%</div>
+                    </div>
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年權利金</div>
+                        <div id="totalIncomeDisplay" class="text-lg font-black text-green-400">$0</div>
+                    </div>
                 </div>
+                
+                <!-- Added: Annual Summary Table (Default Collapsed) -->
+                <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
+                    <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleAnnualExpansion()">
+                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">年度績效總結</span>
+                        <div class="text-xs text-blue-400" id="annualToggleIcon">⬇️ 展開</div>
+                    </div>
+                    <div id="annualSummaryContainer" class="hidden overflow-x-auto">
+                        <table class="w-full summary-table">
+                            <thead>
+                                <tr>
+                                    <th class="pl-4 text-left">年份</th>
+                                    <th>年底淨值</th>
+                                    <th>年度漲幅 (權利金%)</th>
+                                    <th>最大回撤</th>
+                                    <th class="pr-4">年度權利金</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annualSummaryBody">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Added: Monthly Summary Table (Collapsed by Default) -->
+                <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
+                    <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleMonthlyExpansion()">
+                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">月度績效詳情</span>
+                        <div class="text-xs text-blue-400" id="monthlyToggleIcon">⬇️ 展開</div>
+                    </div>
+                    <div id="monthlySummaryContainer" class="hidden overflow-x-auto">
+                        <table class="w-full summary-table">
+                            <thead>
+                                <tr>
+                                    <th class="pl-4 text-left">月份</th>
+                                    <th>年底淨值</th>
+                                    <th>月漲跌</th>
+                                    <th class="pr-4">月權利金</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlySummaryBody">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="bg-slate-900/40 rounded-2xl p-2 border border-slate-700/30 h-60 relative mb-6"><canvas id="assetChart"></canvas></div>
                 <div class="overflow-x-auto"><table class="w-full history-table text-left"><thead class="border-b border-slate-700"><tr class="text-slate-400"><th class="pl-2">日期</th><th>狀態</th><th>淨值</th><th>備註/收益</th><th class="text-right pr-2"></th></tr></thead><tbody id="historyList"><tr><td colspan="5" class="text-center py-8 text-slate-500">載入中...</td></tr></tbody></table></div>
             </div>
@@ -430,15 +497,38 @@
         let calculationTimer = null;
         let hasInitialized = false;
         let deleteCandidateId = null;
+        let isHistoryExpanded = false;
+        let isAnnualExpanded = false; 
+        let isMonthlyExpanded = false;
 
         window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(15); }
         window.onerror = function(message) { alert("系統錯誤: " + message); return false; };
 
-        // Define functions LOCALLY first
+        // --- HELPER FUNCTIONS ---
         function sf(id) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; }
         function setTxt(id, txt) { const el = document.getElementById(id); if(el) el.textContent = txt; }
-        function openModal(id) { window.vibrate(); const el = document.getElementById(id); if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } }
-        function closeModal(id) { const el = document.getElementById(id); if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } }
+        
+        function openModal(id) { 
+            window.vibrate(); 
+            const el = document.getElementById(id); 
+            if(el){ 
+                el.classList.remove('hidden'); 
+                void el.offsetWidth; 
+                el.classList.remove('opacity-0','pointer-events-none'); 
+                const c=el.querySelector('.card'); 
+                if(c) c.classList.remove('scale-95'); 
+            } 
+        }
+        
+        function closeModal(id) { 
+            const el = document.getElementById(id); 
+            if(el){ 
+                el.classList.add('opacity-0','pointer-events-none'); 
+                const c=el.querySelector('.card'); 
+                if(c) c.classList.add('scale-95'); 
+                setTimeout(()=>el.classList.add('hidden'),300); 
+            } 
+        }
         
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
@@ -595,6 +685,7 @@
             lucide.createIcons();
         }
 
+        // --- CORE LOGIC ---
         function updateSimulation() {
             const vooPrice = sf('vooClose');
             const uproPrice = sf('uproPrice');
@@ -622,7 +713,8 @@
             const newUproPrice = uproPrice * (1 + uproPct/100);
             
             const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
-            const newIbitVal = ibitVal * (1 + pct/100); 
+            // IBIT Beta ~1.5
+            const newIbitVal = ibitVal * (1 + (pct * 1.5)/100); 
             const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
             const pl = newTotal - originalTotal;
             
@@ -652,7 +744,8 @@
                     const emaLev = emaPct < 0 ? 2.8 : 3.0;
                     const emaUproPct = emaPct * emaLev;
                     const emaUproPrice = uproPrice * (1 + emaUproPct/100);
-                    const emaIbitVal = ibitVal * (1 + emaPct/100);
+                    // IBIT Beta 1.5 for EMA sim too
+                    const emaIbitVal = ibitVal * (1 + (emaPct * 1.5)/100);
                     const emaTotal = (emaUproPrice * uproShares) + sgovVal + emaIbitVal + cash;
                     const emaPl = emaTotal - originalTotal;
 
@@ -749,26 +842,36 @@
                 const diffS = sgovVal - targetSgovVal;
                 const diffI = ibitVal - satCapital;
 
-                const getAction = (diff, name) => {
-                    if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`; 
-                    return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()}` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}`;
+                // FIX: Calculate shares
+                const getAction = (diff, price) => {
+                    if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`;
+                    const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0;
+                    const shareText = shares > 0 ? ` (${shares}股)` : '';
+                    return diff > 0 
+                        ? `🔴 賣出 $${Math.round(diff).toLocaleString()}${shareText}` 
+                        : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}${shareText}`;
                 };
 
-                setTxt('uproAction', getAction(diffU, 'UPRO'));
-                setTxt('sgovAction', getAction(diffS, 'SGOV'));
-                setTxt('ibitAction', getAction(diffI, 'IBIT'));
+                setTxt('uproAction', getAction(diffU, sf('uproPrice')));
+                setTxt('sgovAction', getAction(diffS, sf('sgovPrice')));
+                setTxt('ibitAction', getAction(diffI, sf('ibitPrice')));
 
                 const coreCap = totalValue * 0.9;
                 let vixText = "無";
                 let vixClass = "text-slate-500";
+                
+                // Calculate Target UPRO Shares for hedging info
+                const uproP = sf('uproPrice');
+                const targetUproShares = uproP > 0 ? Math.round(targetUproVal / uproP) : 0;
+
                 if (riskStatus === 'ON') {
                     if (vix < 13.5) {
                         const count = Math.round(coreCap / 10000);
-                        vixText = `Buy ${count} 組 Spread (Core 90%)`;
-                        vixClass = "text-purple-400 font-bold";
+                        vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`;
+                        vixClass = "text-emerald-400 font-black"; 
                     } else if (vix >= 13.5 && vix <= 17) {
                         const count = Math.round(coreCap / 15000);
-                        vixText = `Buy ${count} 組 Spread (Core 90%)`;
+                        vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`;
                         vixClass = "text-purple-400 font-bold";
                     }
                 }
@@ -787,7 +890,7 @@
                 setTxt('callSuggestion', callText);
                 document.getElementById('callSuggestion').className = `suggestion-val ${callClass}`;
 
-                // GPS Highlight logic: Safely handle element existence
+                // GPS Highlight logic
                 const strategyItemIds = ['gps-risk-off', 'gps-rsi-buy', 'gps-bias-low', 'gps-bias-med', 'gps-bias-high', 'gps-bias-extreme'];
                 strategyItemIds.forEach(id => {
                     const el = document.getElementById(id);
@@ -807,6 +910,182 @@
 
                 updateSimulation();
             }
+        }
+
+        // --- NEW FEATURES ---
+        function fillStrategyNote() {
+            const date = document.getElementById('recordDate').value;
+            const upro = document.getElementById('uproAction').innerText;
+            const sgov = document.getElementById('sgovAction').innerText;
+            const ibit = document.getElementById('ibitAction').innerText;
+            const vix = document.getElementById('vixSuggestion').innerText;
+            
+            const noteText = `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}`;
+            
+            document.getElementById('recordNote').value = noteText;
+            switchView('inputs'); 
+            showToast("✅ 策略指令已寫入備註", "success");
+        }
+
+        function toggleHistoryExpansion() {
+            isHistoryExpanded = !isHistoryExpanded;
+            renderHistoryTable();
+        }
+
+        function toggleAnnualExpansion() {
+            const container = document.getElementById('annualSummaryContainer');
+            const icon = document.getElementById('annualToggleIcon');
+            
+            isAnnualExpanded = !isAnnualExpanded;
+            
+            if(isAnnualExpanded) {
+                container.classList.remove('hidden');
+                icon.innerText = "⬆️ 收合";
+                renderAnnualSummary();
+            } else {
+                container.classList.add('hidden');
+                icon.innerText = "⬇️ 展開";
+            }
+        }
+
+        function toggleMonthlyExpansion() {
+            const container = document.getElementById('monthlySummaryContainer');
+            const icon = document.getElementById('monthlyToggleIcon');
+            
+            isMonthlyExpanded = !isMonthlyExpanded;
+            
+            if(isMonthlyExpanded) {
+                container.classList.remove('hidden');
+                icon.innerText = "⬆️ 收合";
+                renderMonthlySummary();
+            } else {
+                container.classList.add('hidden');
+                icon.innerText = "⬇️ 展開";
+            }
+        }
+
+        function renderMonthlySummary() {
+            if (globalHistoryData.length === 0) return;
+
+            const months = {};
+            globalHistoryData.forEach(d => {
+                const monthKey = d.manualDate.slice(0,7); 
+                if (!months[monthKey]) months[monthKey] = [];
+                months[monthKey].push(d);
+            });
+
+            const sortedMonths = Object.keys(months).sort((a,b) => b.localeCompare(a));
+            const tbody = document.getElementById('monthlySummaryBody');
+            tbody.innerHTML = '';
+
+            sortedMonths.forEach(monthKey => {
+                const records = months[monthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
+                if(records.length === 0) return;
+
+                const lastRecord = records[records.length - 1];
+                const endNav = lastRecord.totalValue;
+                const monthlyPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
+
+                let startNav;
+                const dateObj = new Date(monthKey + "-01");
+                dateObj.setMonth(dateObj.getMonth() - 1);
+                const prevMonthKey = dateObj.toISOString().slice(0,7);
+
+                if (months[prevMonthKey]) {
+                    const prevRecords = months[prevMonthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
+                    startNav = prevRecords[prevRecords.length - 1].totalValue;
+                } else {
+                    startNav = records[0].totalValue;
+                }
+
+                let returnPct = 0;
+                if (startNav > 0) {
+                    returnPct = ((endNav - startNav) / startNav) * 100;
+                }
+
+                const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
+                const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="pl-4">${monthKey}</td>
+                    <td>$${Math.round(endNav/1000).toLocaleString()}k</td>
+                    <td class="${returnClass} font-bold">${returnStr}</td>
+                    <td class="pr-4 text-slate-300">$${Math.round(monthlyPremium).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAnnualSummary() {
+            if (globalHistoryData.length === 0) return;
+
+            const years = {};
+            globalHistoryData.forEach(d => {
+                const year = d.manualDate.slice(0,4);
+                if (!years[year]) years[year] = [];
+                years[year].push(d);
+            });
+
+            const sortedYears = Object.keys(years).sort((a,b) => b-a);
+            const tbody = document.getElementById('annualSummaryBody');
+            tbody.innerHTML = '';
+
+            sortedYears.forEach((year, index) => {
+                const records = years[year].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
+                if (records.length === 0) return;
+
+                const lastRecord = records[records.length - 1];
+                const endNav = lastRecord.totalValue;
+                const annualPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
+
+                let startNav;
+                const prevYear = (parseInt(year) - 1).toString();
+                
+                const prevYearRecords = globalHistoryData.filter(d => d.manualDate.startsWith(prevYear));
+
+                if (prevYearRecords.length > 0) {
+                     const sortedPrev = prevYearRecords.sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
+                     startNav = sortedPrev[sortedPrev.length - 1].totalValue;
+                } else {
+                    startNav = records[0].totalValue;
+                }
+
+                let gain = 0;
+                let returnPct = 0;
+                let premRatio = 0;
+
+                if (startNav > 0) {
+                    gain = endNav - startNav;
+                    returnPct = (gain / startNav) * 100;
+                    if (gain > 0) {
+                        premRatio = (annualPremium / gain) * 100;
+                    }
+                }
+
+                let peak = -Infinity;
+                let maxDrawdown = 0;
+                records.forEach(r => {
+                    if (r.totalValue > peak) peak = r.totalValue;
+                    const dd = (peak - r.totalValue) / peak;
+                    if (dd > maxDrawdown) maxDrawdown = dd;
+                });
+                const mddPct = maxDrawdown * 100;
+
+                const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
+                const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
+                const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(annualPremium)})`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="pl-4">${year}</td>
+                    <td>$${Math.round(endNav/1000).toLocaleString()}k</td>
+                    <td><span class="${returnClass} font-bold">${returnStr}</span> <span class="text-[10px] text-slate-500">${premStr}</span></td>
+                    <td class="text-red-400">-${mddPct.toFixed(2)}%</td>
+                    <td class="pr-4 text-slate-300 font-bold">$${Math.round(annualPremium).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function fillLatestData(force) { 
@@ -948,6 +1227,8 @@
                 renderHistoryTable();
                 calculateTotals();
                 renderAssetHistoryChart();
+                renderAnnualSummary();
+                renderMonthlySummary(); 
                 
                 if(globalHistoryData.length > 0) {
                     const latest = globalHistoryData[0];
@@ -965,14 +1246,18 @@
             
             if (globalHistoryData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>';
+                const toggleBtn = document.getElementById('historyToggleBtn');
+                if(toggleBtn) toggleBtn.remove(); 
                 return;
             }
 
-            globalHistoryData.forEach(item => {
+            // Slice data based on expansion state
+            const displayData = isHistoryExpanded ? globalHistoryData : globalHistoryData.slice(0, 5);
+
+            displayData.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors';
                 
-                // Status Logic
                 let statusBadge = '';
                 if (item.optType) {
                     const status = item.optionStatus || 'Open';
@@ -981,7 +1266,6 @@
                     statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`;
                 }
 
-                // Income color
                 const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500');
                 const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : '';
 
@@ -1009,21 +1293,92 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            // Toggle Button Logic
+            if (globalHistoryData.length > 5) {
+                const btnRow = document.createElement('tr');
+                const btnText = isHistoryExpanded ? '⬆️ 收合 (只看最近 5 筆)' : `⬇️ 展開完整紀錄 (還有 ${globalHistoryData.length - 5} 筆)`;
+                btnRow.id = 'historyToggleBtnRow';
+                btnRow.innerHTML = `
+                    <td colspan="5" class="p-3 text-center">
+                        <button id="historyToggleBtn" onclick="toggleHistoryExpansion()" class="text-xs font-bold text-blue-400 hover:text-blue-300 py-2 w-full border border-blue-500/30 rounded-lg bg-blue-500/10 transition-colors">
+                            ${btnText}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(btnRow);
+            }
+
             lucide.createIcons();
         }
 
         function calculateTotals() {
-            const totalIncome = globalHistoryData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0);
-            document.getElementById('totalIncomeDisplay').innerText = `$${totalIncome.toLocaleString()}`;
+            const currentYear = new Date().getFullYear().toString();
+            const lastYear = (new Date().getFullYear() - 1).toString();
+            const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
+            
+            const ytdIncome = currentYearData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0);
+            document.getElementById('totalIncomeDisplay').innerText = `$${ytdIncome.toLocaleString()}`;
+
+            let mddPct = 0;
+            if (currentYearData.length > 0) {
+                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
+                let peak = -Infinity;
+                let maxDrawdown = 0;
+                
+                sortedData.forEach(d => {
+                    if (d.totalValue > peak) peak = d.totalValue;
+                    const drawdown = (peak - d.totalValue) / peak;
+                    if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+                });
+                mddPct = maxDrawdown * 100;
+            }
+            
+            const mddEl = document.getElementById('mddDisplay');
+            mddEl.innerText = `-${mddPct.toFixed(2)}%`;
+            if (mddPct > 20) mddEl.className = "text-lg font-black text-red-500";
+            else if (mddPct > 10) mddEl.className = "text-lg font-black text-orange-400";
+            else mddEl.className = "text-lg font-black text-green-400";
+
+            const ytdEl = document.getElementById('ytdDisplay');
+            if (currentYearData.length > 0) {
+                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
+                const currentVal = sortedData[sortedData.length - 1].totalValue;
+                
+                let startVal = sortedData[0].totalValue; 
+                const lastYearData = globalHistoryData.filter(d => d.manualDate.startsWith(lastYear));
+                if (lastYearData.length > 0) {
+                     const sortedLastYear = lastYearData.sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
+                     startVal = sortedLastYear[sortedLastYear.length - 1].totalValue;
+                }
+
+                const gainVal = currentVal - startVal;
+                let ytdStr = "0.00%";
+                let premPctStr = "";
+
+                if (startVal > 0) {
+                    const ytd = (gainVal / startVal) * 100;
+                    ytdStr = (ytd >= 0 ? '+' : '') + ytd.toFixed(2) + '%';
+                    ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                    
+                    if (gainVal > 0) {
+                        const contribution = (ytdIncome / gainVal) * 100;
+                        premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round(contribution)}%)</span>`;
+                    } else {
+                         premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`;
+                    }
+                }
+                ytdEl.innerHTML = `${ytdStr}${premPctStr}`;
+            } else {
+                ytdEl.innerText = "--%";
+            }
         }
 
         function renderAssetHistoryChart() {
             const ctx = document.getElementById('assetChart').getContext('2d');
             if (assetChartInstance) assetChartInstance.destroy();
 
-            // Sort by date ascending for chart
             const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-            
             const labels = chartData.map(d => d.manualDate.slice(5));
             let dataset = {};
             
@@ -1059,10 +1414,7 @@
             }
 
             assetChartInstance = new Chart(ctx, {
-                data: {
-                    labels: labels,
-                    datasets: [dataset]
-                },
+                data: { labels: labels, datasets: [dataset] },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -1087,11 +1439,7 @@
                             ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' }
                         }
                     },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    }
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
                 }
             });
         }
@@ -1123,6 +1471,10 @@
         window.saveRecord = saveRecord;
         window.switchView = switchView;
         window.toggleChartType = toggleChartType;
+        window.fillStrategyNote = fillStrategyNote;
+        window.toggleHistoryExpansion = toggleHistoryExpansion;
+        window.toggleAnnualExpansion = toggleAnnualExpansion;
+        window.toggleMonthlyExpansion = toggleMonthlyExpansion;
 
         // INIT
         document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);

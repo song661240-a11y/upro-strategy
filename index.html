@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V12.6 SnapshotFix</title>
+    <title>UPRO V12.7.1 Stable</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,118 +14,42 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
         :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
         
-        body { 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-            background-color: #0f172a; 
-            color: #f1f5f9; 
-            padding-top: max(1rem, var(--safe-top)); 
-            padding-bottom: calc(90px + var(--safe-bottom)); 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none; 
-        }
-
-        /* Inputs */
-        input, select, textarea { 
-            background-color: #1e293b !important; 
-            color: #ffffff !important; 
-            border: 1px solid #334155 !important; 
-            border-radius: 0.8rem !important;
-            padding: 0 1rem !important;
-            font-size: 16px !important;
-            height: 52px !important;
-            width: 100%; 
-            transition: all 0.2s; 
-            appearance: none;
-        }
-        textarea { height: auto !important; padding-top: 1rem !important; }
-        input:focus, textarea:focus { 
-            border-color: #60a5fa !important; 
-            background-color: #0f172a !important; 
-            outline: none; 
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-        
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; padding-top: max(1rem, var(--safe-top)); padding-bottom: calc(90px + var(--safe-bottom)); -webkit-tap-highlight-color: transparent; user-select: none; }
+        input, select, textarea { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important; border-radius: 0.8rem !important; padding: 0 1rem !important; font-size: 16px !important; height: 52px !important; width: 100%; appearance: none; }
+        input:focus, textarea:focus { border-color: #60a5fa !important; background-color: #0f172a !important; outline: none; }
         label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
-
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); overflow: hidden; margin-bottom: 1.5rem; }
-        
-        .mobile-view { display: none; animation: fadeIn 0.2s ease-out; } 
-        .mobile-view.active { display: block; }
+        .mobile-view { display: none; animation: fadeIn 0.2s ease-out; } .mobile-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .bottom-nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 400px;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 2rem;
-            display: flex; justify-content: space-between;
-            padding: 0.6rem 1.5rem;
-            z-index: 100;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-        }
-        .bottom-nav-btn { color: #64748b; transition: all 0.2s; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
-        .bottom-nav-btn i { width: 24px; height: 24px; }
-        .bottom-nav-btn.active { color: #ffffff; background: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transform: translateY(-2px); }
-
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; display: flex; justify-content: space-between; padding: 0.6rem 1.5rem; z-index: 100; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); }
+        .bottom-nav-btn { color: #64748b; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
+        .bottom-nav-btn.active { color: #ffffff; background: #3b82f6; transform: translateY(-2px); }
         .status-on { border-top: 4px solid #22c55e; } .status-off { border-top: 4px solid #ef4444; }
-
         .strategy-item { opacity: 0.5; padding: 12px; border-left: 3px solid transparent; margin-bottom: 8px; background: rgba(15, 23, 42, 0.5); border-radius: 0.5rem; }
-        .strategy-item.active { opacity: 1; background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .strategy-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
-        .strategy-text { font-size: 12px; color: #e2e8f0; line-height: 1.4; }
-        
+        .strategy-item.active { opacity: 1; background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; transform: scale(1.02); }
         .modal-backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); transition: opacity 0.2s; }
-        
         .btn-main { height: 56px; border-radius: 1rem; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; width: 100%; }
-        .btn-save { background: linear-gradient(135deg, #db2777, #e11d48); color: white; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4); }
+        .btn-save { background: linear-gradient(135deg, #db2777, #e11d48); color: white; }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
-
-        .opt-btn { background: #334155; color: #94a3b8; border: 1px solid transparent; transition: all 0.2s; position: relative; overflow: hidden; }
-        .opt-btn.active { background: #4f46e5; color: white; border-color: #818cf8; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); font-weight: 900; }
-        .opt-btn:active { transform: scale(0.96); }
-
-        .status-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
-        .status-badge:active { transform: scale(0.95); }
-        .badge-open { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
-        .badge-closed { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); }
-        .badge-exercised { background: rgba(168, 85, 247, 0.1); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
-
-        .action-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; padding: 1.5rem; z-index: 200; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-top: 1px solid #334155; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+        .opt-btn { background: #334155; color: #94a3b8; border: 1px solid transparent; transition: all 0.2s; }
+        .opt-btn.active { background: #4f46e5; color: white; border-color: #818cf8; font-weight: 900; }
+        .action-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; padding: 1.5rem; z-index: 200; transform: translateY(100%); transition: transform 0.3s; border-top: 1px solid #334155; }
         .action-sheet.show { transform: translateY(0); }
-        .sheet-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; background: #334155; color: white; font-weight: 700; text-align: left; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
-        .sheet-btn:active { background: #475569; transform: scale(0.98); }
-        .sheet-btn.active { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid #3b82f6; }
-
+        .sheet-btn { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 12px; background: #334155; color: white; font-weight: 700; text-align: left; }
         .suggestion-box { background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 0.8rem; padding: 1rem; margin-top: 1rem; }
-        .suggestion-label { font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; margin-bottom: 4px; }
-        .suggestion-val { font-size: 14px; color: #e2e8f0; font-weight: 600; }
-
-        .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; font-weight: 700; }
-        .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
-        .sim-table td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
-
-        .summary-table th { font-size: 10px; color: #60a5fa; text-align: right; padding: 8px 4px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid rgba(96, 165, 250, 0.2); }
-        .summary-table td { font-size: 12px; text-align: right; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
-        .summary-table td:first-child { text-align: left; font-weight: 800; color: #94a3b8; }
-
+        .sim-table th { font-size: 10px; color: #94a3b8; text-align: right; padding-bottom: 4px; } .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
+        .summary-table th { font-size: 10px; color: #60a5fa; text-align: right; padding: 8px 4px; border-bottom: 1px solid rgba(96, 165, 250, 0.2); } .summary-table td { font-size: 12px; text-align: right; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         @media (min-width: 1024px) { .mobile-view { display: block !important; } .bottom-nav { display: none; } body { padding-bottom: 2rem; } }
-        
         .conn-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-        .conn-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .conn-offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        .spin { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .conn-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; } .conn-offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="p-4 md:p-6 max-w-lg mx-auto lg:max-w-6xl">
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.6</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.7.1</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -141,7 +65,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2"><div class="p-2 bg-indigo-500/20 rounded-lg"><i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i></div><h3 class="text-base font-bold text-white">市場數據</h3></div>
                     <div class="flex gap-2">
-                        <button onclick="fetchLivePrices()" id="fetchBtn" class="flex items-center text-[10px] bg-emerald-600/90 text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="download-cloud" class="w-3 h-3 mr-1"></i> 更新現價</button>
+                        <button onclick="fetchLivePrices()" id="fetchBtn" class="flex items-center text-[10px] bg-emerald-600/90 text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="download-cloud" class="w-3 h-3 mr-1"></i> 更新</button>
                         <button onclick="fillLatestData(true)" class="flex items-center text-[10px] bg-indigo-600/90 backdrop-blur text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="copy" class="w-3 h-3 mr-1"></i> 舊資料</button>
                     </div>
                 </div>
@@ -151,8 +75,8 @@
                     
                     <div class="bg-indigo-900/10 p-3 rounded-xl border border-indigo-500/20">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] font-bold text-indigo-300 uppercase">技術指標 (手動)</span>
-                            <a id="chartLink" href="https://www.futunn.com/index/.SPX-US?chain_id=pAjzx2K_yXld_l.1kkd36m&global_content=%7B%22promote_id%22%3A13766,%22sub_promote_id%22%3A1,%22f%22%3A%22nn%2F403%22%7D" target="_blank" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded flex items-center transition-colors"><i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 富途圖表</a>
+                            <span class="text-[10px] font-bold text-indigo-300 uppercase">技術指標</span>
+                            <a id="chartLink" href="#" target="_blank" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded flex items-center transition-colors"><i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 圖表</a>
                         </div>
                         <div class="grid grid-cols-3 gap-3 mb-3">
                             <div><label class="text-[10px]">5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
@@ -505,35 +429,29 @@
         window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(15); }
         window.onerror = function(message) { alert("系統錯誤: " + message); return false; };
 
-        function sf(id) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; }
-        function setTxt(id, txt) { const el = document.getElementById(id); if(el) el.textContent = txt; }
-        
+        // Optimized Helpers
+        const $ = id => document.getElementById(id);
+        const getVal = id => { const el = $(id); return el ? el.value : ''; };
+        const setVal = (id, v) => { const el = $(id); if(el) el.value = v; };
+        const setTxt = (id, txt) => { const el = $(id); if(el) el.textContent = txt; };
+        // V12.7.1 Fix: Ensure sf returns 0 on error
+        const sf = id => { const val = parseFloat(getVal(id)); return isNaN(val) ? 0 : val; };
+
         function openModal(id) { 
             window.vibrate(); 
-            const el = document.getElementById(id); 
-            if(el){ 
-                el.classList.remove('hidden'); 
-                void el.offsetWidth; 
-                el.classList.remove('opacity-0','pointer-events-none'); 
-                const c=el.querySelector('.card'); 
-                if(c) c.classList.remove('scale-95'); 
-            } 
+            const el = $(id); 
+            if(el){ el.classList.remove('hidden'); void el.offsetWidth; el.classList.remove('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.remove('scale-95'); } 
         }
         
         function closeModal(id) { 
-            const el = document.getElementById(id); 
-            if(el){ 
-                el.classList.add('opacity-0','pointer-events-none'); 
-                const c=el.querySelector('.card'); 
-                if(c) c.classList.add('scale-95'); 
-                setTimeout(()=>el.classList.add('hidden'),300); 
-            } 
+            const el = $(id); 
+            if(el){ el.classList.add('opacity-0','pointer-events-none'); const c=el.querySelector('.card'); if(c) c.classList.add('scale-95'); setTimeout(()=>el.classList.add('hidden'),300); } 
         }
         
         function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const text = document.getElementById('toastMsg');
+            const toast = $('toast');
+            const icon = $('toastIcon');
+            const text = $('toastMsg');
             toast.className = "fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border";
             if(type === 'success') { toast.classList.add('bg-green-500/90', 'border-green-400/50'); icon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-white"></i>'; } 
             else if(type === 'normal') { toast.classList.add('bg-slate-800/90', 'border-slate-600/50'); icon.innerHTML = '<i data-lucide="info" class="w-5 h-5 text-slate-300"></i>'; }
@@ -546,31 +464,19 @@
         // --- DEVICE DETECTION & LINK UPDATE ---
         function updateChartLink() {
             const isMobile = window.innerWidth < 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-            const link = document.getElementById('chartLink');
+            const link = $('chartLink');
             const targetUrl = "https://www.futunn.com/index/.SPX-US?chain_id=pAjzx2K_yXld_l.1kkd36m&global_content=%7B%22promote_id%22%3A13766,%22sub_promote_id%22%3A1,%22f%22%3A%22nn%2F403%22%7D";
-            
             if (link) {
-                // ALWAYS use the new target URL for both desktop and mobile
                 link.href = targetUrl;
-                
-                if (isMobile) {
-                    // Mobile styling
-                    link.innerHTML = '<i data-lucide="smartphone" class="w-3 h-3 mr-1"></i> 📱 富途/App';
-                    link.classList.remove('bg-slate-700');
-                    link.classList.add('bg-orange-600'); 
-                } else {
-                    // Desktop styling
-                    link.innerHTML = '<i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 富途圖表';
-                    link.classList.remove('bg-orange-600');
-                    link.classList.add('bg-slate-700');
-                }
+                if (isMobile) { link.innerHTML = '<i data-lucide="smartphone" class="w-3 h-3 mr-1"></i> 📱 富途/App'; link.classList.remove('bg-slate-700'); link.classList.add('bg-orange-600'); } 
+                else { link.innerHTML = '<i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 富途圖表'; link.classList.remove('bg-orange-600'); link.classList.add('bg-slate-700'); }
                 lucide.createIcons();
             }
         }
 
         // --- STABLE FETCH LOGIC ---
         function saveApiKey() {
-            const key = document.getElementById('finnHubKeyInput').value.trim();
+            const key = getVal('finnHubKeyInput').trim();
             if(key) { localStorage.setItem('finnhub_key', key); showToast("✅ API Key 已儲存", "success"); } 
             else { localStorage.removeItem('finnhub_key'); showToast("🗑️ API Key 已移除", "normal"); }
         }
@@ -580,62 +486,33 @@
             const apiKey = localStorage.getItem('finnhub_key');
             if(!apiKey) { showToast("請先到設定輸入 API Key", "normal"); openSettings(); return; }
 
-            const btn = document.getElementById('fetchBtn');
+            const btn = $('fetchBtn');
             const originalHtml = btn.innerHTML;
             btn.innerHTML = '<i data-lucide="loader-2" class="w-3 h-3 mr-1 spin"></i> 更新中...';
             btn.disabled = true;
 
-            const targets = [
-                { symbol: 'VOO', id: 'vooClose' },
-                { symbol: 'UPRO', id: 'uproPrice' },
-                { symbol: 'SGOV', id: 'sgovPrice' },
-                { symbol: 'IBIT', id: 'ibitPrice' }
-            ];
-
+            const targets = [ { symbol: 'VOO', id: 'vooClose' }, { symbol: 'UPRO', id: 'uproPrice' }, { symbol: 'SGOV', id: 'sgovPrice' }, { symbol: 'IBIT', id: 'ibitPrice' } ];
             let successCount = 0;
 
             try {
-                // Stable Mode: Only fetch current quotes
                 for (const t of targets) {
                     try {
                         const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${t.symbol}&token=${apiKey}`);
-                        if(!res.ok) {
-                            console.warn(`Quote error for ${t.symbol}: ${res.status}`);
-                            continue;
-                        }
+                        if(!res.ok) continue;
                         const data = await res.json();
-                        if(data.c) {
-                            document.getElementById(t.id).value = data.c; 
-                            successCount++;
-                        }
-                    } catch(err) {
-                        console.error(err);
-                    }
-                    // Tiny delay to respect rate limits (Safe: 250ms)
+                        if(data.c) { setVal(t.id, data.c); successCount++; }
+                    } catch(err) { console.error(err); }
                     await new Promise(r => setTimeout(r, 250)); 
                 }
-
-                if(successCount > 0) {
-                    showToast("✅ 股價更新完成", "success");
-                    handleInput();
-                } else {
-                    showToast("⚠️ 更新失敗 (API 無回應)", "normal");
-                }
-                
-            } catch (e) {
-                console.error(e);
-                showToast(`❌ 錯誤: ${e.message}`, "normal");
-            } finally {
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-                lucide.createIcons();
-            }
+                if(successCount > 0) { showToast("✅ 股價更新完成", "success"); handleInput(); } else { showToast("⚠️ 更新失敗 (API 無回應)", "normal"); }
+            } catch (e) { console.error(e); showToast(`❌ 錯誤: ${e.message}`, "normal"); } 
+            finally { btn.innerHTML = originalHtml; btn.disabled = false; lucide.createIcons(); }
         }
 
-        function copyUserId() { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); }
+        function copyUserId() { navigator.clipboard.writeText(getVal('myUserIdDisplay')).then(() => showToast("ID 已複製到剪貼簿", "success")); }
         
         function saveTargetUserId() { 
-            const t = document.getElementById('targetUserIdInput').value.trim(); 
+            const t = getVal('targetUserIdInput').trim(); 
             if(t) { localStorage.setItem('upro_target_uid', t); currentDataUserId = t; showToast("✅ 已切換至讀取模式", "success"); loadHistory(); } 
             else { localStorage.removeItem('upro_target_uid'); currentDataUserId = realUserId; showToast("🔄 已重置為本人帳號", "success"); loadHistory(); }
             closeSettings();
@@ -646,43 +523,41 @@
 
         function selectOpt(val) {
             window.vibrate();
-            const selectEl = document.getElementById('optType');
-            if (selectEl.value === val) { selectEl.value = ""; } else { selectEl.value = val; }
+            const selectEl = $('optType');
+            selectEl.value = (selectEl.value === val) ? "" : val;
             updateOptUi();
             handleInput();
         }
 
         function updateOptUi() {
-            const val = document.getElementById('optType').value;
+            const val = getVal('optType');
             document.querySelectorAll('.opt-btn').forEach(btn => btn.classList.remove('active'));
             if (val) {
-                const activeBtn = document.getElementById(`btn-${val}`);
+                const activeBtn = $(`btn-${val}`);
                 if (activeBtn) activeBtn.classList.add('active');
-                document.getElementById('optInputZone').classList.remove('hidden');
+                $('optInputZone').classList.remove('hidden');
             } else {
-                document.getElementById('optInputZone').classList.add('hidden');
-                document.getElementById('optPremium').value = ''; 
+                $('optInputZone').classList.add('hidden');
+                setVal('optPremium', ''); 
             }
         }
         
         function openStatusModal(id, currentStatus) {
             window.vibrate();
-            document.getElementById('statusTargetId').value = id;
-            const modal = document.getElementById('optionStatusModal');
+            setVal('statusTargetId', id);
+            const modal = $('optionStatusModal');
             modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-            setTimeout(() => { document.getElementById('statusSheet').classList.add('show'); }, 10);
+            setTimeout(() => { $('statusSheet').classList.add('show'); }, 10);
         }
 
         function closeStatusModal() {
-            document.getElementById('statusSheet').classList.remove('show');
-            setTimeout(() => {
-                document.getElementById('optionStatusModal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
-            }, 300);
+            $('statusSheet').classList.remove('show');
+            setTimeout(() => { $('optionStatusModal').classList.add('hidden', 'opacity-0', 'pointer-events-none'); }, 300);
         }
 
         async function saveOptionStatus(newStatus) {
             window.vibrate();
-            const id = document.getElementById('statusTargetId').value;
+            const id = getVal('statusTargetId');
             if(!id) return;
             try { 
                 await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, id), { optionStatus: newStatus }); 
@@ -692,7 +567,7 @@
         
         async function confirmDelete() { 
             if(deleteCandidateId) { 
-                if(document.getElementById('editDocId').value === deleteCandidateId) cancelEdit();
+                if(getVal('editDocId') === deleteCandidateId) cancelEdit();
                 await deleteDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId || realUserId}/full_records`, deleteCandidateId))
                 .then(() => alert("🗑️ 已刪除"))
                 .catch(e => alert("刪除失敗: " + e.message));
@@ -704,11 +579,10 @@
             const data = globalHistoryData.find(d => d.id === id);
             if(!data) return;
             setTxt('detailDate', data.manualDate);
-            const content = document.getElementById('detailContent');
             const formatMoney = (v) => v ? `$${parseFloat(v).toLocaleString()}` : '-';
             const formatNum = (v) => v ? parseFloat(v).toFixed(2) : '-';
             
-            content.innerHTML = `
+            $('detailContent').innerHTML = `
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
                     <h4 class="text-xs text-indigo-300 font-bold uppercase mb-3">市場數據</h4>
                     <div class="grid grid-cols-3 gap-3 text-slate-300 mb-2">
@@ -731,29 +605,32 @@
                 ${data.optType ? `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-green-300 font-bold uppercase mb-2">選擇權收益</h4><div class="flex justify-between text-white font-bold text-base"><span>${data.optType}</span><span class="${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionsIncome > 0 ? '+' : ''}$${data.optionsIncome}</span></div></div>` : ''}
                 ${data.note ? `<div class="p-4 bg-slate-900 rounded-xl border border-slate-700 text-slate-300 italic">"${data.note}"</div>` : ''}
             `;
-            document.getElementById('editBtnFromModal').onclick = () => loadRecordForEdit(data);
+            $('editBtnFromModal').onclick = () => loadRecordForEdit(data);
             openModal('detailsModal');
         }
 
         function loadRecordForEdit(data) {
             closeDetails();
-            const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; };
-            set('recordDate', data.manualDate); set('vooClose', data.vooClose);
-            set('wema5', data.wema5); set('wema12', data.wema12); set('wema20', data.wema20);
-            set('vixIndex', data.vix); set('dailyRsi', data.dailyRsi);
-            set('uproShares', data.uproShares); set('uproPrice', data.uproPrice);
-            set('sgovShares', data.sgovShares); set('sgovPrice', data.sgovPrice);
-            set('ibitShares', data.ibitShares); set('ibitPrice', data.ibitPrice);
-            set('cashAmount', data.cashAmount);
-            set('optType', data.optType); set('optPremium', data.optPremium ? Math.abs(data.optPremium) : '');
-            set('recordNote', data.note);
-            document.getElementById('optionStatus').value = data.optionStatus || 'Open';
+            const fields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount'];
+            
+            // Map data to inputs
+            setVal('recordDate', data.manualDate);
+            fields.forEach(f => {
+                // Map 'vixIndex' -> data.vix, others match
+                const dataKey = f === 'vixIndex' ? 'vix' : f;
+                setVal(f, data[dataKey]);
+            });
+            
+            setVal('optType', data.optType);
+            setVal('optPremium', data.optPremium ? Math.abs(data.optPremium) : '');
+            setVal('recordNote', data.note);
+            setVal('optionStatus', data.optionStatus || 'Open');
             
             updateOptUi();
-            document.getElementById('editDocId').value = data.id;
-            document.getElementById('saveTitle').innerText = "編輯紀錄";
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            const btn = document.getElementById('saveBtn');
+            setVal('editDocId', data.id);
+            setTxt('saveTitle', "編輯紀錄");
+            $('cancelEditBtn').classList.remove('hidden');
+            const btn = $('saveBtn');
             btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6 mr-2"></i> <span>更新紀錄</span>`;
             btn.classList.add('btn-edit');
             switchView('inputs');
@@ -761,187 +638,194 @@
         }
 
         function cancelEdit() {
-            document.getElementById('editDocId').value = '';
-            document.getElementById('saveTitle').innerText = "選擇權與儲存";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('optionStatus').value = 'Open';
+            setVal('editDocId', '');
+            setTxt('saveTitle', "選擇權與儲存");
+            $('cancelEditBtn').classList.add('hidden');
+            setVal('optionStatus', 'Open');
             
-            const btn = document.getElementById('saveBtn');
+            const btn = $('saveBtn');
             btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`;
             btn.classList.remove('btn-edit');
-            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !=='optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; });
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(!['importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput'].includes(e.id)) e.value = ''; });
             updateOptUi(); 
             lucide.createIcons();
         }
 
         // --- CORE LOGIC ---
+        function getAssetTotal() {
+            // V12.7.1 Fix: Use sf() to safely handle nulls
+            const u = sf('uproShares') * sf('uproPrice');
+            const s = sf('sgovShares') * sf('sgovPrice');
+            const i = sf('ibitShares') * sf('ibitPrice');
+            const c = sf('cashAmount');
+            return u + s + i + c;
+        }
+
         function updateSimulation() {
-            const vooPrice = sf('vooClose');
-            const uproPrice = sf('uproPrice');
-            const uproShares = sf('uproShares');
-            const sgovVal = sf('sgovShares') * sf('sgovPrice');
-            const ibitVal = sf('ibitShares') * sf('ibitPrice');
-            const cash = sf('cashAmount');
-            const errorEl = document.getElementById('simError');
-            
-            if(!vooPrice || !uproPrice) {
-                if(errorEl) errorEl.classList.remove('hidden');
-                document.getElementById('simAssetResult').innerText = "--";
-                document.getElementById('emaSimBody').innerHTML = '<tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>';
-                return;
-            } else {
-                if(errorEl) errorEl.classList.add('hidden');
-            }
-
-            const inputVal = document.getElementById('simPercent').value;
-            const pct = parseFloat(inputVal) || 0;
-            const leverage = pct < 0 ? 2.8 : 3.0; 
-            const uproPct = pct * leverage;
-            const newUproPrice = uproPrice * (1 + uproPct/100);
-            
-            const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
-            const newIbitVal = ibitVal * (1 + (pct * 1.5)/100); 
-            const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
-            const pl = newTotal - originalTotal;
-            
-            const el = document.getElementById('simAssetResult');
-            el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`;
-            el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
-            
-            const inputEl = document.getElementById('simPercent');
-            if (pct > 0) inputEl.style.color = '#4ade80'; else if (pct < 0) inputEl.style.color = '#f87171'; else inputEl.style.color = '#ffffff';
-
-            const emas = [{ label: '5MA', val: sf('wema5') }, { label: '12MA', val: sf('wema12') }, { label: '20MA', val: sf('wema20') }];
-            const tbody = document.getElementById('emaSimBody');
-            tbody.innerHTML = '';
-
-            emas.forEach(ema => {
-                if(ema.val > 0) {
-                    const emaPct = ((ema.val - vooPrice) / vooPrice) * 100;
-                    const emaLev = emaPct < 0 ? 2.8 : 3.0;
-                    const emaUproPct = emaPct * emaLev;
-                    const emaUproPrice = uproPrice * (1 + emaUproPct/100);
-                    const emaIbitVal = ibitVal * (1 + (emaPct * 1.5)/100);
-                    const emaTotal = (emaUproPrice * uproShares) + sgovVal + emaIbitVal + cash;
-                    const emaPl = emaTotal - originalTotal;
-                    const row = document.createElement('tr');
-                    const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400';
-                    const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
-                    row.innerHTML = `<td>${ema.label}</td><td>${ema.val.toFixed(2)}</td><td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td><td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>`;
-                    tbody.appendChild(row);
+            // V12.7.1 Fix: Wrap in try-catch to prevent crashes
+            try {
+                const vooPrice = sf('vooClose');
+                const uproPrice = sf('uproPrice');
+                const uproShares = sf('uproShares');
+                const currentTotal = getAssetTotal();
+                const errorEl = $('simError');
+                
+                if(!vooPrice || !uproPrice) {
+                    if(errorEl) errorEl.classList.remove('hidden');
+                    setTxt('simAssetResult', "--");
+                    $('emaSimBody').innerHTML = '<tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>';
+                    return;
                 } else {
-                     const row = document.createElement('tr'); row.innerHTML = `<td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td>`; tbody.appendChild(row);
+                    if(errorEl) errorEl.classList.add('hidden');
                 }
-            });
+
+                const pct = parseFloat(getVal('simPercent')) || 0;
+                const leverage = pct < 0 ? 2.8 : 3.0; 
+                
+                const calculateSim = (pChange) => {
+                    // Approximate sim logic: UPRO moves 3x (or 2.8x), IBIT moves 1.5x of SPY move (rough correlation), SGOV/Cash flat
+                    const newUproPrice = uproPrice * (1 + (pChange * leverage / 100));
+                    const newIbitPrice = sf('ibitPrice') * (1 + (pChange * 1.5 / 100));
+                    
+                    const newUproVal = newUproPrice * uproShares;
+                    const newIbitVal = newIbitPrice * sf('ibitShares');
+                    const fixedVal = (sf('sgovShares') * sf('sgovPrice')) + sf('cashAmount');
+                    
+                    return (newUproVal + newIbitVal + fixedVal) - currentTotal;
+                };
+
+                const pl = calculateSim(pct);
+                const el = $('simAssetResult');
+                el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`;
+                el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                $('simPercent').style.color = pct > 0 ? '#4ade80' : (pct < 0 ? '#f87171' : '#ffffff');
+
+                const emas = [{ label: '5MA', val: sf('wema5') }, { label: '12MA', val: sf('wema12') }, { label: '20MA', val: sf('wema20') }];
+                const tbody = $('emaSimBody');
+                tbody.innerHTML = '';
+
+                emas.forEach(ema => {
+                    if(ema.val > 0) {
+                        const emaPct = ((ema.val - vooPrice) / vooPrice) * 100;
+                        const emaPl = calculateSim(emaPct);
+                        const row = document.createElement('tr');
+                        const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400';
+                        const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+                        row.innerHTML = `<td>${ema.label}</td><td>${ema.val.toFixed(2)}</td><td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td><td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>`;
+                        tbody.appendChild(row);
+                    } else {
+                         tbody.innerHTML += `<tr><td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td></tr>`;
+                    }
+                });
+            } catch(e) { console.warn("Sim Error", e); }
         }
 
         function calculateStrategy() {
-            // ALWAYS UPDATE TOTAL VALUE DISPLAY FIRST
-            const uproVal = sf('uproShares')*sf('uproPrice');
-            const sgovVal = sf('sgovShares')*sf('sgovPrice');
-            const ibitVal = sf('ibitShares')*sf('ibitPrice');
-            const cash = sf('cashAmount');
-            const totalValue = uproVal + sgovVal + ibitVal + cash;
-            const tvEl = document.getElementById('totalValueDisplay');
-            if(tvEl) tvEl.innerText = `$${Math.round(totalValue).toLocaleString()}`;
+            // V12.7.1 Fix: Wrap in try-catch
+            try {
+                const totalValue = getAssetTotal();
+                if($('totalValueDisplay')) setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`);
 
-            const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
-            const dailyRsi = sf('dailyRsi'), vix = sf('vixIndex');
-            
-            if(vooClose && wema20) {
-                const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
+                const vooClose = sf('vooClose');
+                const wema20 = sf('wema20');
+                const dailyRsi = sf('dailyRsi');
                 
-                const card = document.getElementById('statusCard');
-                const riskEl = document.getElementById('riskState');
-                if(riskStatus === 'ON') { card.classList.remove('status-off'); card.classList.add('status-on'); setTxt('riskState', 'RISK ON'); riskEl.className = 'text-5xl font-black text-green-400 tracking-tighter'; } 
-                else { card.classList.remove('status-on'); card.classList.add('status-off'); setTxt('riskState', 'RISK OFF'); riskEl.className = 'text-5xl font-black text-red-400 tracking-tighter'; }
+                if(vooClose && wema20) {
+                    const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
+                    const card = $('statusCard');
+                    const riskEl = $('riskState');
+                    
+                    card.className = `card p-6 transition-all relative overflow-hidden ${riskStatus === 'ON' ? 'status-on' : 'status-off'}`;
+                    setTxt('riskState', `RISK ${riskStatus}`);
+                    riskEl.className = `text-5xl font-black tracking-tighter ${riskStatus === 'ON' ? 'text-green-400' : 'text-red-400'}`;
 
-                const bias = ((vooClose - wema20)/wema20)*100;
-                setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
-                if (dailyRsi < 30) setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)} (BUY!)`); else setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}`);
+                    const bias = ((vooClose - wema20)/wema20)*100;
+                    setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
+                    setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}${dailyRsi < 30 ? ' (BUY!)' : ''}`);
 
-                let biasLimit = 100;
-                if (bias > 12) biasLimit = 50; else if (bias > 8) biasLimit = 60; else if (bias > 4) biasLimit = 80; else biasLimit = 100;
+                    // Logic map
+                    let biasLimit = bias > 12 ? 50 : (bias > 8 ? 60 : (bias > 4 ? 80 : 100));
+                    let tacticalLimit = (sf('wema12') && vooClose < sf('wema12')) ? 50 : ((sf('wema5') && vooClose < sf('wema5')) ? 70 : 100);
 
-                let tacticalLimit = 100;
-                if (wema12 && vooClose < wema12) tacticalLimit = 50; else if (wema5 && vooClose < wema5) tacticalLimit = 70; else tacticalLimit = 100;
+                    let finalUproPct = 0;
+                    let reason = "";
 
-                let finalUproPct = 0;
-                let reason = "";
+                    if (riskStatus === 'OFF') { finalUproPct = 0; reason = "Risk OFF (破 20MA)"; } 
+                    else if (dailyRsi < 30) { finalUproPct = 100; reason = "暴利濾網 (RSI<30) 強制滿倉"; } 
+                    else { finalUproPct = Math.min(biasLimit, tacticalLimit); reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`; }
 
-                if (riskStatus === 'OFF') { finalUproPct = 0; reason = "Risk OFF (破 20MA)"; } 
-                else if (dailyRsi < 30) { finalUproPct = 100; reason = "暴利濾網 (RSI<30) 強制滿倉"; } 
-                else { finalUproPct = Math.min(biasLimit, tacticalLimit); reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`; }
+                    setTxt('targetUproPct', `${finalUproPct}%`);
+                    setTxt('uproReason', reason);
 
-                setTxt('targetUproPct', `${finalUproPct}%`);
-                setTxt('uproReason', reason);
+                    const coreCapital = totalValue * 0.9;
+                    const targetUproVal = coreCapital * (finalUproPct / 100);
+                    const targetSgovVal = coreCapital - targetUproVal;
+                    
+                    setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`);
+                    setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`);
+                    setTxt('targetIbitVal', `($${Math.round(totalValue * 0.1).toLocaleString()})`);
+                    setTxt('targetSgovPct', `${(100 - finalUproPct)}%`);
 
-                const coreCapital = totalValue * 0.9;
-                const satCapital = totalValue * 0.1;
-                const targetUproVal = coreCapital * (finalUproPct / 100);
-                const targetSgovVal = coreCapital - targetUproVal;
-                
-                setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`);
-                setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`);
-                setTxt('targetIbitVal', `($${Math.round(satCapital).toLocaleString()})`);
-                setTxt('targetSgovPct', `${(100 - finalUproPct)}%`);
+                    const diffU = (sf('uproShares') * sf('uproPrice')) - targetUproVal;
+                    const diffS = (sf('sgovShares') * sf('sgovPrice')) - targetSgovVal;
+                    const diffI = (sf('ibitShares') * sf('ibitPrice')) - (totalValue * 0.1);
 
-                const diffU = uproVal - targetUproVal;
-                const diffS = sgovVal - targetSgovVal;
-                const diffI = ibitVal - satCapital;
+                    const getAction = (diff, price) => {
+                        if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`;
+                        const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0;
+                        return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()} (${shares}股)` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()} (${shares}股)`;
+                    };
 
-                const getAction = (diff, price) => {
-                    if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`;
-                    const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0;
-                    const shareText = shares > 0 ? ` (${shares}股)` : '';
-                    return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()}${shareText}` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}${shareText}`;
-                };
+                    setTxt('uproAction', getAction(diffU, sf('uproPrice')));
+                    setTxt('sgovAction', getAction(diffS, sf('sgovPrice')));
+                    setTxt('ibitAction', getAction(diffI, sf('ibitPrice')));
 
-                setTxt('uproAction', getAction(diffU, sf('uproPrice')));
-                setTxt('sgovAction', getAction(diffS, sf('sgovPrice')));
-                setTxt('ibitAction', getAction(diffI, sf('ibitPrice')));
+                    // Strategy Suggestions
+                    const vix = sf('vixIndex');
+                    const targetUproShares = sf('uproPrice') > 0 ? Math.round(targetUproVal / sf('uproPrice')) : 0;
+                    let vixText = "無";
+                    let vixClass = "text-slate-500";
 
-                const coreCap = totalValue * 0.9;
-                let vixText = "無";
-                let vixClass = "text-slate-500";
-                const uproP = sf('uproPrice');
-                const targetUproShares = uproP > 0 ? Math.round(targetUproVal / uproP) : 0;
+                    if (riskStatus === 'ON') {
+                        if (vix < 13.5 || (vix >= 13.5 && vix <= 17)) {
+                            const denom = vix < 13.5 ? 10000 : 15000;
+                            const count = Math.round(coreCapital / denom);
+                            vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`;
+                            vixClass = vix < 13.5 ? "text-emerald-400 font-black" : "text-purple-400 font-bold";
+                        }
+                    }
+                    const vixEl = $('vixSuggestion');
+                    vixEl.innerText = vixText;
+                    vixEl.className = `suggestion-val ${vixClass}`;
 
-                if (riskStatus === 'ON') {
-                    if (vix < 13.5) { const count = Math.round(coreCap / 10000); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = "text-emerald-400 font-black"; } 
-                    else if (vix >= 13.5 && vix <= 17) { const count = Math.round(coreCap / 15000); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = "text-purple-400 font-bold"; }
+                    let callText = "觀望";
+                    let callClass = "text-slate-500";
+                    if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) {
+                        callText = bias > 12 ? "Sell Call Delta 0.30 (積極)" : (bias > 8 ? "Sell Call Delta 0.20-0.25 (標準)" : (bias > 4 ? "Sell Call Delta 0.15-0.20 (防守)" : callText));
+                        if (bias > 4) callClass = "text-green-400 font-bold";
+                    }
+                    const callEl = $('callSuggestion');
+                    callEl.innerText = callText;
+                    callEl.className = `suggestion-val ${callClass}`;
+
+                    // GPS Active State
+                    document.querySelectorAll('.strategy-item').forEach(e => e.classList.remove('active'));
+                    let activeId = riskStatus === 'OFF' ? 'gps-risk-off' : (dailyRsi < 30 ? 'gps-rsi-buy' : (bias > 12 ? 'gps-bias-extreme' : (bias > 8 ? 'gps-bias-high' : (bias > 4 ? 'gps-bias-med' : 'gps-bias-low'))));
+                    if($(activeId)) $(activeId).classList.add('active');
+                    
+                    updateSimulation();
                 }
-                setTxt('vixSuggestion', vixText);
-                document.getElementById('vixSuggestion').className = `suggestion-val ${vixClass}`;
-
-                let callText = "觀望";
-                let callClass = "text-slate-500";
-                if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) {
-                    if (bias > 12) callText = "Sell Call Delta 0.30 (積極)"; else if (bias > 8) callText = "Sell Call Delta 0.20-0.25 (標準)"; else if (bias > 4) callText = "Sell Call Delta 0.15-0.20 (防守)";
-                    if (bias > 4) callClass = "text-green-400 font-bold";
-                }
-                setTxt('callSuggestion', callText);
-                document.getElementById('callSuggestion').className = `suggestion-val ${callClass}`;
-
-                const strategyItemIds = ['gps-risk-off', 'gps-rsi-buy', 'gps-bias-low', 'gps-bias-med', 'gps-bias-high', 'gps-bias-extreme'];
-                strategyItemIds.forEach(id => { document.getElementById(id).classList.remove('active'); });
-                let activeId = '';
-                if (riskStatus === 'OFF') activeId = 'gps-risk-off'; else if (dailyRsi < 30) activeId = 'gps-rsi-buy'; else if (bias > 12) activeId = 'gps-bias-extreme'; else if (bias > 8) activeId = 'gps-bias-high'; else if (bias > 4) activeId = 'gps-bias-med'; else activeId = 'gps-bias-low';
-                const activeEl = document.getElementById(activeId);
-                if (activeEl) activeEl.classList.add('active');
-                updateSimulation();
-            }
+            } catch(e) { console.warn("Calc Error", e); }
         }
 
         // --- NEW FEATURES ---
         function fillStrategyNote() {
-            const date = document.getElementById('recordDate').value;
-            const upro = document.getElementById('uproAction').innerText;
-            const sgov = document.getElementById('sgovAction').innerText;
-            const ibit = document.getElementById('ibitAction').innerText;
-            const vix = document.getElementById('vixSuggestion').innerText;
-            const noteText = `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}`;
-            document.getElementById('recordNote').value = noteText;
+            const date = getVal('recordDate');
+            const upro = $('uproAction').innerText;
+            const sgov = $('sgovAction').innerText;
+            const ibit = $('ibitAction').innerText;
+            const vix = $('vixSuggestion').innerText;
+            setVal('recordNote', `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}`);
             switchView('inputs'); 
             showToast("✅ 策略指令已寫入備註", "success");
         }
@@ -953,70 +837,96 @@
 
         function toggleAnnualExpansion() {
             isAnnualExpanded = !isAnnualExpanded;
-            const container = document.getElementById('annualSummaryContainer');
-            const icon = document.getElementById('annualToggleIcon');
-            if(isAnnualExpanded) { container.classList.remove('hidden'); icon.innerText = "⬆️ 收合"; renderAnnualSummary(); } else { container.classList.add('hidden'); icon.innerText = "⬇️ 展開"; }
+            const container = $('annualSummaryContainer');
+            if(isAnnualExpanded) { container.classList.remove('hidden'); setTxt('annualToggleIcon', "⬆️ 收合"); renderSummaryTable('annual'); } 
+            else { container.classList.add('hidden'); setTxt('annualToggleIcon', "⬇️ 展開"); }
         }
 
         function toggleMonthlyExpansion() {
             isMonthlyExpanded = !isMonthlyExpanded;
-            const container = document.getElementById('monthlySummaryContainer');
-            const icon = document.getElementById('monthlyToggleIcon');
-            if(isMonthlyExpanded) { container.classList.remove('hidden'); icon.innerText = "⬆️ 收合"; renderMonthlySummary(); } else { container.classList.add('hidden'); icon.innerText = "⬇️ 展開"; }
+            const container = $('monthlySummaryContainer');
+            if(isMonthlyExpanded) { container.classList.remove('hidden'); setTxt('monthlyToggleIcon', "⬆️ 收合"); renderSummaryTable('monthly'); } 
+            else { container.classList.add('hidden'); setTxt('monthlyToggleIcon', "⬇️ 展開"); }
         }
 
-        function renderMonthlySummary() {
+        // --- MERGED SUMMARY TABLE LOGIC ---
+        function renderSummaryTable(mode) {
             if (globalHistoryData.length === 0) return;
-            const months = {};
-            globalHistoryData.forEach(d => { const monthKey = d.manualDate.slice(0,7); if (!months[monthKey]) months[monthKey] = []; months[monthKey].push(d); });
-            const sortedMonths = Object.keys(months).sort((a,b) => b.localeCompare(a));
-            const tbody = document.getElementById('monthlySummaryBody');
-            tbody.innerHTML = '';
-            sortedMonths.forEach(monthKey => {
-                const records = months[monthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
-                if(records.length === 0) return;
-                const lastRecord = records[records.length - 1];
-                const endNav = lastRecord.totalValue;
-                const monthlyPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
-                let startNav;
-                const dateObj = new Date(monthKey + "-01"); dateObj.setMonth(dateObj.getMonth() - 1); const prevMonthKey = dateObj.toISOString().slice(0,7);
-                if (months[prevMonthKey]) { const prevRecords = months[prevMonthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); startNav = prevRecords[prevRecords.length - 1].totalValue; } else { startNav = records[0].totalValue; }
-                let returnPct = 0; if (startNav > 0) { returnPct = ((endNav - startNav) / startNav) * 100; }
-                const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
-                const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="pl-4">${monthKey}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td class="${returnClass} font-bold">${returnStr}</td><td class="pr-4 text-slate-300">$${Math.round(monthlyPremium).toLocaleString()}</td>`;
-                tbody.appendChild(tr);
+            
+            // Group Data
+            const groups = {};
+            globalHistoryData.forEach(d => {
+                const key = mode === 'annual' ? d.manualDate.slice(0,4) : d.manualDate.slice(0,7);
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(d);
             });
-        }
 
-        function renderAnnualSummary() {
-            if (globalHistoryData.length === 0) return;
-            const years = {};
-            globalHistoryData.forEach(d => { const year = d.manualDate.slice(0,4); if (!years[year]) years[year] = []; years[year].push(d); });
-            const sortedYears = Object.keys(years).sort((a,b) => b-a);
-            const tbody = document.getElementById('annualSummaryBody');
+            const sortedKeys = Object.keys(groups).sort((a,b) => b.localeCompare(a)); // Descending
+            const tbody = $(mode === 'annual' ? 'annualSummaryBody' : 'monthlySummaryBody');
             tbody.innerHTML = '';
-            sortedYears.forEach((year, index) => {
-                const records = years[year].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
-                if (records.length === 0) return;
+
+            sortedKeys.forEach(key => {
+                const records = groups[key].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); // Ascending within group
+                if(records.length === 0) return;
+
                 const lastRecord = records[records.length - 1];
                 const endNav = lastRecord.totalValue;
-                const annualPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
+                const totalPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
+                
+                // Find Start NAV (Previous period end or current period start)
                 let startNav;
-                const prevYear = (parseInt(year) - 1).toString();
-                const prevYearRecords = globalHistoryData.filter(d => d.manualDate.startsWith(prevYear));
-                if (prevYearRecords.length > 0) { const sortedPrev = prevYearRecords.sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); startNav = sortedPrev[sortedPrev.length - 1].totalValue; } else { startNav = records[0].totalValue; }
-                let gain = 0; let returnPct = 0; let premRatio = 0;
-                if (startNav > 0) { gain = endNav - startNav; returnPct = (gain / startNav) * 100; if (gain > 0) { premRatio = (annualPremium / gain) * 100; } }
-                let peak = -Infinity; let maxDrawdown = 0;
-                records.forEach(r => { if (r.totalValue > peak) peak = r.totalValue; const dd = (peak - r.totalValue) / peak; if (dd > maxDrawdown) maxDrawdown = dd; });
-                const mddPct = maxDrawdown * 100;
+                // Simple logic: if there is a previous period, take its last record value. Otherwise take current period first record.
+                // For simplicity in this optimization, we use current period first record as baseline or previous period calculation if available in memory
+                // To keep it robust without complex date math, we use the first record of this period as the 'open'
+                // Better accuracy: find the record immediately preceding this period.
+                
+                // Optimized "Previous Close" lookup
+                const firstRecord = records[0];
+                startNav = firstRecord.totalValue; // Fallback
+                
+                // Look for a record from the previous period (roughly)
+                // Since globalHistory is sorted descending, we can look for the first record that is OLDER than this group's first record
+                const prevRecord = globalHistoryData.find(d => d.manualDate < firstRecord.manualDate);
+                if(prevRecord) startNav = prevRecord.totalValue;
+
+                let returnPct = 0; 
+                let gain = 0;
+                if (startNav > 0) { 
+                    gain = endNav - startNav; 
+                    returnPct = (gain / startNav) * 100; 
+                }
+
+                // Drawdown (Annual Only usually)
+                let mddStr = '';
+                if(mode === 'annual') {
+                    let peak = -Infinity; 
+                    let maxDrawdown = 0;
+                    records.forEach(r => { 
+                        if (r.totalValue > peak) peak = r.totalValue; 
+                        const dd = (peak - r.totalValue) / peak; 
+                        if (dd > maxDrawdown) maxDrawdown = dd; 
+                    });
+                    mddStr = `<td class="text-red-400">-${(maxDrawdown * 100).toFixed(2)}%</td>`;
+                }
+
                 const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
                 const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
-                const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(annualPremium)})`;
+                
+                let extraInfo = '';
+                if(mode === 'annual') {
+                    const premRatio = gain > 0 ? (totalPremium / gain) * 100 : 0;
+                    const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(totalPremium)})`;
+                    extraInfo = ` <span class="text-[10px] text-slate-500">${premStr}</span>`;
+                }
+
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="pl-4">${year}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td><span class="${returnClass} font-bold">${returnStr}</span> <span class="text-[10px] text-slate-500">${premStr}</span></td><td class="text-red-400">-${mddPct.toFixed(2)}%</td><td class="pr-4 text-slate-300 font-bold">$${Math.round(annualPremium).toLocaleString()}</td>`;
+                tr.innerHTML = `
+                    <td class="pl-4">${key}</td>
+                    <td>$${Math.round(endNav/1000).toLocaleString()}k</td>
+                    <td><span class="${returnClass} font-bold">${returnStr}</span>${extraInfo}</td>
+                    ${mddStr}
+                    <td class="pr-4 text-slate-300 font-bold">$${Math.round(totalPremium).toLocaleString()}</td>
+                `;
                 tbody.appendChild(tr);
             });
         }
@@ -1025,15 +935,11 @@
             window.vibrate(); 
             if(globalHistoryData.length) { 
                 const l = globalHistoryData[0]; 
-                const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
-                if(force) set('recordDate',l.manualDate); 
-                set('vooClose',l.vooClose); 
-                set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); 
-                set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); 
-                set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); 
-                set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); 
-                set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); 
-                set('cashAmount',l.cashAmount); 
+                if(force) setVal('recordDate',l.manualDate); 
+                ['vooClose', 'wema20', 'wema12', 'wema5', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount'].forEach(id => {
+                    const key = id === 'vixIndex' ? 'vix' : id;
+                    setVal(id, l[key]);
+                });
                 calculateStrategy(); 
                 if(force) { switchView('inputs'); showToast("✅ 最新資料已帶入", "success"); }
             } else { showToast("⚠️ 無歷史資料可帶入", "normal"); }
@@ -1043,33 +949,45 @@
             clearTimeout(calculationTimer); 
             calculationTimer = setTimeout(calculateStrategy, 300); 
             const d={}; 
-            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent' && e.id !=='optionStatus' && e.id !=='finnHubKeyInput') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); 
+            document.querySelectorAll('input, select, textarea').forEach(e => { 
+                if(!['editDocId','importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput'].includes(e.id)) d[e.id] = e.value; 
+            }); 
             localStorage.setItem('upro_v9_draft', JSON.stringify(d)); 
         }
 
         function restoreDraft() { 
             const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
-            if(d) { Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; }); updateOptUi(); calculateStrategy(); }
+            if(d) { Object.keys(d).forEach(k => { const e=$(k); if(e) e.value=d[k]; }); updateOptUi(); calculateStrategy(); }
         }
         
-        function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
-        function openSettings() { openModal('settingsModal'); const k = localStorage.getItem('finnhub_key'); if(k) document.getElementById('finnHubKeyInput').value = k; if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
+        function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); $(`view-${v}`).classList.add('active'); $(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
+        function openSettings() { openModal('settingsModal'); const k = localStorage.getItem('finnhub_key'); if(k) setVal('finnHubKeyInput', k); if(realUserId) setVal('myUserIdDisplay', realUserId); const t = localStorage.getItem('upro_target_uid'); if(t) setVal('targetUserIdInput', t); }
         function closeSettings() { closeModal('settingsModal'); }
         function closeDetails() { closeModal('detailsModal'); }
         function exportJson() { if(!globalHistoryData.length) return; const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"})); a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
         function importJson(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
-        function setChartRange(range) { currentChartRange = range; renderAssetHistoryChart(); }
-        function toggleChartType() { chartMode = chartMode === 'line' ? 'income' : 'line'; document.getElementById('chartTypeBtn').textContent = chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'; renderAssetHistoryChart(); }
+        function toggleChartType() { chartMode = chartMode === 'line' ? 'income' : 'line'; setTxt('chartTypeBtn', chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'); renderAssetHistoryChart(); }
 
         async function saveRecord() {
-            const btn = document.getElementById('saveBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>'; btn.disabled = true;
+            const btn = $('saveBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>'; btn.disabled = true;
             try {
-                const docId = document.getElementById('editDocId').value; const recordDate = document.getElementById('recordDate').value;
+                const docId = getVal('editDocId'); 
+                const recordDate = getVal('recordDate');
                 if(!recordDate) throw new Error("日期為必填");
-                const data = { manualDate: recordDate, vooClose: sf('vooClose'), wema5: sf('wema5'), wema12: sf('wema12'), wema20: sf('wema20'), vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'), uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'), cashAmount: sf('cashAmount'), note: document.getElementById('recordNote').value, optType: document.getElementById('optType').value, optPremium: sf('optPremium'), optionStatus: document.getElementById('optionStatus').value || 'Open' };
-                data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount; data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
+
+                // Optimized Data Collection
+                const numFields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'optPremium'];
+                const data = { manualDate: recordDate, note: getVal('recordNote'), optType: getVal('optType'), optionStatus: getVal('optionStatus') || 'Open' };
                 
-                // --- FIX: Rely purely on Snapshot with metadata changes ---
+                numFields.forEach(f => {
+                    // map input id to db field (vixIndex -> vix)
+                    const key = f === 'vixIndex' ? 'vix' : f;
+                    data[key] = sf(f);
+                });
+
+                data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount;
+                data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
+                
                 if (docId) { 
                     await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data); 
                     showToast("✅ 紀錄已更新", "success"); cancelEdit(); 
@@ -1077,8 +995,8 @@
                 else { 
                     await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); 
                     showToast("✅ 紀錄已儲存", "success"); 
-                    document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; }); 
-                    document.getElementById('recordDate').value = new Date().toISOString().slice(0,10); 
+                    document.querySelectorAll('input, select, textarea').forEach(e => { if(!['importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput'].includes(e.id)) e.value = ''; }); 
+                    setVal('recordDate', new Date().toISOString().slice(0,10)); 
                     updateOptUi(); 
                 }
             } catch (e) { console.error(e); showToast("❌ 錯誤: " + e.message, "normal"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
@@ -1087,17 +1005,19 @@
         function loadHistory() {
             if(!currentDataUserId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('manualDate', 'desc'));
-            // --- FIX: includeMetadataChanges: true to catch local writes immediately ---
             onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
                 globalHistoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderHistoryTable(); calculateTotals(); renderAssetHistoryChart(); renderAnnualSummary(); renderMonthlySummary();
-                if(globalHistoryData.length > 0) { const latest = globalHistoryData[0]; document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`; }
-            }, (error) => { console.error("Error loading history:", error); document.getElementById('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>'; });
+                renderHistoryTable(); calculateTotals(); renderAssetHistoryChart(); 
+                // Re-render open summary tables
+                if(isAnnualExpanded) renderSummaryTable('annual');
+                if(isMonthlyExpanded) renderSummaryTable('monthly');
+                if(globalHistoryData.length > 0) setTxt('totalValueDisplay', `$${Math.round(globalHistoryData[0].totalValue).toLocaleString()}`);
+            }, (error) => { console.error("Error loading history:", error); $('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>'; });
         }
 
         function renderHistoryTable() {
-            const tbody = document.getElementById('historyList'); tbody.innerHTML = '';
-            if (globalHistoryData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>'; const toggleBtn = document.getElementById('historyToggleBtn'); if(toggleBtn) toggleBtn.remove(); return; }
+            const tbody = $('historyList'); tbody.innerHTML = '';
+            if (globalHistoryData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>'; return; }
             const displayData = isHistoryExpanded ? globalHistoryData : globalHistoryData.slice(0, 5);
             displayData.forEach(item => {
                 const tr = document.createElement('tr'); tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors';
@@ -1111,16 +1031,41 @@
         }
 
         function calculateTotals() {
-            const currentYear = new Date().getFullYear().toString(); const lastYear = (new Date().getFullYear() - 1).toString(); const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
+            const currentYear = new Date().getFullYear().toString(); const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
             const ytdIncome = currentYearData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0);
-            document.getElementById('totalIncomeDisplay').innerText = `$${ytdIncome.toLocaleString()}`;
-            let mddPct = 0; if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); let peak = -Infinity; let maxDrawdown = 0; sortedData.forEach(d => { if (d.totalValue > peak) peak = d.totalValue; const drawdown = (peak - d.totalValue) / peak; if (drawdown > maxDrawdown) maxDrawdown = drawdown; }); mddPct = maxDrawdown * 100; }
-            const mddEl = document.getElementById('mddDisplay'); mddEl.innerText = `-${mddPct.toFixed(2)}%`; if (mddPct > 20) mddEl.className = "text-lg font-black text-red-500"; else if (mddPct > 10) mddEl.className = "text-lg font-black text-orange-400"; else mddEl.className = "text-lg font-black text-green-400";
-            const ytdEl = document.getElementById('ytdDisplay'); if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const currentVal = sortedData[sortedData.length - 1].totalValue; let startVal = sortedData[0].totalValue; const lastYearData = globalHistoryData.filter(d => d.manualDate.startsWith(lastYear)); if (lastYearData.length > 0) { const sortedLastYear = lastYearData.sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); startVal = sortedLastYear[sortedLastYear.length - 1].totalValue; } const gainVal = currentVal - startVal; let ytdStr = "0.00%"; let premPctStr = ""; if (startVal > 0) { const ytd = (gainVal / startVal) * 100; ytdStr = (ytd >= 0 ? '+' : '') + ytd.toFixed(2) + '%'; ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`; if (gainVal > 0) { const contribution = (ytdIncome / gainVal) * 100; premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round(contribution)}%)</span>`; } else { premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`; } } ytdEl.innerHTML = `${ytdStr}${premPctStr}`; } else { ytdEl.innerText = "--%"; }
+            setTxt('totalIncomeDisplay', `$${ytdIncome.toLocaleString()}`);
+            
+            let mddPct = 0; 
+            if (currentYearData.length > 0) { 
+                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); 
+                let peak = -Infinity; let maxDrawdown = 0; 
+                sortedData.forEach(d => { if (d.totalValue > peak) peak = d.totalValue; const drawdown = (peak - d.totalValue) / peak; if (drawdown > maxDrawdown) maxDrawdown = drawdown; }); 
+                mddPct = maxDrawdown * 100; 
+            }
+            const mddEl = $('mddDisplay'); 
+            setTxt('mddDisplay', `-${mddPct.toFixed(2)}%`);
+            mddEl.className = `text-lg font-black ${mddPct > 20 ? 'text-red-500' : (mddPct > 10 ? 'text-orange-400' : 'text-green-400')}`;
+
+            const ytdEl = $('ytdDisplay'); 
+            if (currentYearData.length > 0) { 
+                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); 
+                const currentVal = sortedData[sortedData.length - 1].totalValue; 
+                // Find start value (last year close or this year open)
+                let startVal = sortedData[0].totalValue;
+                const prevYearRec = globalHistoryData.find(d => d.manualDate.startsWith((new Date().getFullYear()-1).toString()) && d.manualDate < sortedData[0].manualDate);
+                if(prevYearRec) startVal = prevYearRec.totalValue;
+
+                const gainVal = currentVal - startVal; 
+                const ytd = startVal > 0 ? (gainVal / startVal) * 100 : 0;
+                
+                ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`;
+                const premPctStr = gainVal > 0 ? `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round((ytdIncome / gainVal) * 100)}%)</span>` : `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`;
+                ytdEl.innerHTML = `${(ytd >= 0 ? '+' : '')}${ytd.toFixed(2)}%${premPctStr}`;
+            } else { setTxt('ytdDisplay', "--%"); }
         }
 
         function renderAssetHistoryChart() {
-            const ctx = document.getElementById('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy();
+            const ctx = $('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy();
             const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const labels = chartData.map(d => d.manualDate.slice(5)); let dataset = {};
             if (chartMode === 'line') { dataset = { type: 'line', label: '總資產淨值', data: chartData.map(d => d.totalValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } 
             else { let runningTotal = 0; const incomeData = chartData.map(d => { runningTotal += (parseFloat(d.optionsIncome) || 0); return runningTotal; }); dataset = { type: 'line', label: '累計權利金收益', data: incomeData, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; }
@@ -1133,14 +1078,14 @@
         // Init Date with Timezone correction
         const today = new Date();
         const localIso = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-        document.getElementById('recordDate').value = localIso;
+        setVal('recordDate', localIso);
 
         async function init() {
             try { 
                 const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); 
                 if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); 
-                onAuthStateChanged(auth, u => { if(u){ realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; document.getElementById('connDot').className = 'conn-dot conn-online'; document.getElementById('connText').innerText = 'Online'; document.getElementById('connText').className = 'text-xs text-green-400 font-bold'; loadHistory(); updateChartLink(); } }); 
-            } catch(e) { document.getElementById('connText').innerText = 'Offline'; alert("連線失敗: " + e.message); } 
+                onAuthStateChanged(auth, u => { if(u){ realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; if($('myUserIdDisplay')) setVal('myUserIdDisplay', realUserId); $('connDot').className = 'conn-dot conn-online'; setTxt('connText', 'Online'); $('connText').className = 'text-xs text-green-400 font-bold'; loadHistory(); updateChartLink(); } }); 
+            } catch(e) { setTxt('connText', 'Offline'); alert("連線失敗: " + e.message); } 
         }
         init();
         lucide.createIcons();

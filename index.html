@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V12.4 LinkFix</title>
+    <title>UPRO V12.6 SnapshotFix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -125,7 +125,7 @@
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.4</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.6</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -1068,15 +1068,27 @@
                 if(!recordDate) throw new Error("日期為必填");
                 const data = { manualDate: recordDate, vooClose: sf('vooClose'), wema5: sf('wema5'), wema12: sf('wema12'), wema20: sf('wema20'), vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'), uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'), cashAmount: sf('cashAmount'), note: document.getElementById('recordNote').value, optType: document.getElementById('optType').value, optPremium: sf('optPremium'), optionStatus: document.getElementById('optionStatus').value || 'Open' };
                 data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount; data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
-                if (docId) { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data); showToast("✅ 紀錄已更新", "success"); cancelEdit(); } 
-                else { await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); showToast("✅ 紀錄已儲存", "success"); document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; }); document.getElementById('recordDate').value = new Date().toISOString().slice(0,10); updateOptUi(); }
+                
+                // --- FIX: Rely purely on Snapshot with metadata changes ---
+                if (docId) { 
+                    await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data); 
+                    showToast("✅ 紀錄已更新", "success"); cancelEdit(); 
+                } 
+                else { 
+                    await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); 
+                    showToast("✅ 紀錄已儲存", "success"); 
+                    document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; }); 
+                    document.getElementById('recordDate').value = new Date().toISOString().slice(0,10); 
+                    updateOptUi(); 
+                }
             } catch (e) { console.error(e); showToast("❌ 錯誤: " + e.message, "normal"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
         }
 
         function loadHistory() {
             if(!currentDataUserId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('manualDate', 'desc'));
-            onSnapshot(q, (snapshot) => {
+            // --- FIX: includeMetadataChanges: true to catch local writes immediately ---
+            onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
                 globalHistoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderHistoryTable(); calculateTotals(); renderAssetHistoryChart(); renderAnnualSummary(); renderMonthlySummary();
                 if(globalHistoryData.length > 0) { const latest = globalHistoryData[0]; document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`; }

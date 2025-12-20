@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V11.7 Final</title>
+    <title>UPRO V12.2 FixNav</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,7 +24,7 @@
             user-select: none; 
         }
 
-        /* Mobile Optimization: Inputs */
+        /* Inputs */
         input, select, textarea { 
             background-color: #1e293b !important; 
             color: #ffffff !important; 
@@ -106,7 +106,6 @@
         .sim-table td { font-size: 13px; text-align: right; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #cbd5e1; }
         .sim-table td:first-child { text-align: left; color: #94a3b8; font-weight: 600; }
 
-        /* Annual/Monthly Table Styles */
         .summary-table th { font-size: 10px; color: #60a5fa; text-align: right; padding: 8px 4px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid rgba(96, 165, 250, 0.2); }
         .summary-table td { font-size: 12px; text-align: right; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
         .summary-table td:first-child { text-align: left; font-weight: 800; color: #94a3b8; }
@@ -117,13 +116,16 @@
         .conn-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
         .conn-offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="p-4 md:p-6 max-w-lg mx-auto lg:max-w-6xl">
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V11.7</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.2</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -138,19 +140,29 @@
             <div class="card p-5 border-l-4 border-indigo-500">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex items-center gap-2"><div class="p-2 bg-indigo-500/20 rounded-lg"><i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-400"></i></div><h3 class="text-base font-bold text-white">市場數據</h3></div>
-                    <button onclick="fillLatestData(true)" class="flex items-center text-[10px] bg-indigo-600/90 backdrop-blur text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="copy" class="w-3 h-3 mr-1"></i> 帶入舊資料</button>
+                    <div class="flex gap-2">
+                        <button onclick="fetchLivePrices()" id="fetchBtn" class="flex items-center text-[10px] bg-emerald-600/90 text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="download-cloud" class="w-3 h-3 mr-1"></i> 更新現價</button>
+                        <button onclick="fillLatestData(true)" class="flex items-center text-[10px] bg-indigo-600/90 backdrop-blur text-white px-3 py-2 rounded-lg font-bold shadow-lg active:scale-95 transition-all"><i data-lucide="copy" class="w-3 h-3 mr-1"></i> 舊資料</button>
+                    </div>
                 </div>
                 <div class="space-y-4">
                     <div><label>日期</label><input type="date" id="recordDate" onchange="handleInput()" class="font-mono"></div>
                     <div><label>VOO 收盤價 (週線)</label><input type="number" id="vooClose" inputmode="decimal" step="0.01" oninput="handleInput()" class="text-xl font-bold text-indigo-200 border-indigo-500/50 bg-indigo-900/20"></div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div><label>5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        <div><label>12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                        <div><label>20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label>VIX (用於校正波動)</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
-                        <div><label>RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()"></div>
+                    
+                    <div class="bg-indigo-900/10 p-3 rounded-xl border border-indigo-500/20">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-bold text-indigo-300 uppercase">技術指標 (手動)</span>
+                            <a href="https://www.tradingview.com/chart/?symbol=AMEX%3AVOO" target="_blank" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded flex items-center transition-colors"><i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 查看圖表</a>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div><label class="text-[10px]">5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
+                            <div><label class="text-[10px]">12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
+                            <div><label class="text-[10px]">20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-[10px]">VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
+                            <div><label class="text-[10px]">RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,7 +246,6 @@
                 </div>
             </div>
 
-            <!-- Merged Strategy Action Card -->
             <div class="card p-5 bg-[#162032] border border-blue-500/30">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-yellow-400"></i><h3 class="text-sm font-bold text-slate-200 uppercase tracking-wide">戰術執行指令 (V5.2)</h3></div>
@@ -242,7 +253,6 @@
                 </div>
 
                 <div class="space-y-3 mb-4">
-                    <!-- UPRO Row -->
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
                             <div class="text-[10px] text-red-400 font-bold uppercase">UPRO 核心</div>
@@ -255,7 +265,6 @@
                         </div>
                     </div>
 
-                    <!-- SGOV Row -->
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
                             <div class="text-[10px] text-green-400 font-bold uppercase">SGOV/現金</div>
@@ -267,7 +276,6 @@
                         </div>
                     </div>
 
-                    <!-- IBIT Row -->
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
                             <div class="text-[10px] text-pink-400 font-bold uppercase">IBIT 衛星</div>
@@ -295,13 +303,11 @@
                 </div>
             </div>
 
-            <!-- Scenario Lab -->
             <div class="card p-5 border border-purple-500/30 bg-[#162032]">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2"><i data-lucide="flask-conical" class="w-5 h-5 text-purple-400"></i><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬實驗室</h3></div>
                 </div>
                 
-                <!-- Manual Scenario Input -->
                 <div id="simError" class="hidden text-center text-xs text-red-400 mb-3 font-bold bg-red-900/20 py-2 rounded">⚠️ 請先輸入 VOO 與 UPRO 價格</div>
                 
                 <div class="flex items-center gap-3 mb-2">
@@ -318,7 +324,6 @@
                     </div>
                 </div>
 
-                <!-- Added: EMA Scenarios -->
                 <div class="mt-4 pt-4 border-t border-slate-700/50">
                     <table class="w-full sim-table">
                         <thead>
@@ -331,7 +336,6 @@
                 </div>
             </div>
 
-            <!-- Strategy GPS -->
             <div class="card p-5 border border-slate-700/50 bg-[#162032]">
                 <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
                 <div class="space-y-1" id="strategyGPS">
@@ -351,7 +355,6 @@
                     <h2 class="text-xl font-bold text-slate-200">歷史紀錄</h2>
                     <button onclick="toggleChartType()" id="chartTypeBtn" class="text-xs bg-slate-700 px-3 py-2 rounded-lg text-white font-bold border border-slate-600 active:scale-95 transition-transform">📉 收益圖</button>
                 </div>
-                <!-- Revised Grid: YTD Gain -> YTD MDD -> YTD Income -->
                 <div class="grid grid-cols-3 gap-3 mb-6">
                     <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
                         <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年漲幅 (YTD)</div>
@@ -367,7 +370,6 @@
                     </div>
                 </div>
                 
-                <!-- Added: Annual Summary Table (Default Collapsed) -->
                 <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
                     <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleAnnualExpansion()">
                         <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">年度績效總結</span>
@@ -385,13 +387,11 @@
                                 </tr>
                             </thead>
                             <tbody id="annualSummaryBody">
-                                <!-- JS will populate this -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Added: Monthly Summary Table (Collapsed by Default) -->
                 <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
                     <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleMonthlyExpansion()">
                         <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">月度績效詳情</span>
@@ -408,7 +408,6 @@
                                 </tr>
                             </thead>
                             <tbody id="monthlySummaryBody">
-                                <!-- JS will populate this -->
                             </tbody>
                         </table>
                     </div>
@@ -426,13 +425,11 @@
         <button onclick="switchView('history')" id="btn-history" class="bottom-nav-btn"><i data-lucide="history"></i></button>
     </nav>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border">
         <div id="toastIcon"></div>
         <div id="toastMsg" class="text-sm font-bold text-white"></div>
     </div>
 
-    <!-- Option Status Action Sheet Modal -->
     <div id="optionStatusModal" class="fixed inset-0 z-[150] hidden modal-backdrop opacity-0 pointer-events-none">
         <div class="absolute inset-0" onclick="closeStatusModal()"></div>
         <div id="statusSheet" class="action-sheet">
@@ -445,12 +442,20 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settingsModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
         <div class="card p-6 w-full max-w-sm border border-slate-600 shadow-2xl transform scale-95 transition-all bg-[#1e293b]">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4"><h3 class="text-xl font-bold text-white">設定</h3><button onclick="closeSettings()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div>
             <div class="space-y-6">
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><label class="text-xs text-indigo-300 font-bold uppercase mb-2 block">帳號同步</label><div class="mb-3"><p class="text-[10px] text-slate-400 mb-1">您的 ID:</p><div class="flex gap-2"><input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" readonly><button onclick="copyUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">複製</button></div></div><div class="pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-400 mb-1">讀取外部 ID:</p><div class="flex gap-2"><input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="貼上 ID"><button onclick="saveTargetUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">讀取</button></div></div></div>
+                 <div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30">
+                    <label class="text-xs text-indigo-300 font-bold uppercase mb-2 block">Finnhub API Key (抓股價用)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="finnHubKeyInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="輸入 API Key">
+                        <button onclick="saveApiKey()" class="btn-primary px-4 text-xs rounded-lg font-bold">儲存</button>
+                    </div>
+                    <a href="https://finnhub.io/" target="_blank" class="text-[10px] text-blue-400 mt-2 block hover:underline">👉 點此免費註冊獲取 Key</a>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><label class="text-xs text-slate-300 font-bold uppercase mb-2 block">帳號同步</label><div class="mb-3"><p class="text-[10px] text-slate-400 mb-1">您的 ID:</p><div class="flex gap-2"><input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" readonly><button onclick="copyUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">複製</button></div></div><div class="pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-400 mb-1">讀取外部 ID:</p><div class="flex gap-2"><input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="貼上 ID"><button onclick="saveTargetUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">讀取</button></div></div></div>
                 <div>
                     <label class="text-xs text-slate-500 font-bold uppercase mb-2 block">備份與匯出</label>
                     <div class="grid grid-cols-2 gap-3">
@@ -463,7 +468,6 @@
         </div>
     </div>
 
-    <!-- Details Modal -->
     <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
         <div class="card p-6 w-full max-w-sm border border-blue-500/50 bg-[#1e293b] shadow-2xl max-h-[80vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2"><h3 class="text-lg font-bold text-white" id="detailDate">詳細資料</h3><button onclick="closeDetails()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div>
@@ -472,7 +476,6 @@
         </div>
     </div>
 
-    <!-- Delete Modal -->
     <div id="deleteModal" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none">
         <div class="card p-6 w-full max-w-sm border border-red-500/50 bg-[#1e293b] shadow-2xl">
             <div class="text-center mb-6"><div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i></div><h3 class="text-xl font-bold text-white">確認刪除？</h3><p class="text-sm text-slate-400 mt-2">刪除後無法復原此紀錄。</p></div>
@@ -491,11 +494,9 @@
 
         let db, auth, userId, realUserId;
         let globalHistoryData = [], assetChartInstance = null; 
-        let currentChartRange = 'ALL';
         let chartMode = 'line';
         let currentDataUserId = null;
         let calculationTimer = null;
-        let hasInitialized = false;
         let deleteCandidateId = null;
         let isHistoryExpanded = false;
         let isAnnualExpanded = false; 
@@ -504,7 +505,6 @@
         window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(15); }
         window.onerror = function(message) { alert("系統錯誤: " + message); return false; };
 
-        // --- HELPER FUNCTIONS ---
         function sf(id) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; }
         function setTxt(id, txt) { const el = document.getElementById(id); if(el) el.textContent = txt; }
         
@@ -541,6 +541,70 @@
             lucide.createIcons();
             requestAnimationFrame(() => { toast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); toast.classList.add('opacity-100', 'translate-y-0'); });
             setTimeout(() => { toast.classList.remove('opacity-100', 'translate-y-0'); toast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none'); }, 2000);
+        }
+
+        // --- STABLE FETCH LOGIC ---
+        function saveApiKey() {
+            const key = document.getElementById('finnHubKeyInput').value.trim();
+            if(key) { localStorage.setItem('finnhub_key', key); showToast("✅ API Key 已儲存", "success"); } 
+            else { localStorage.removeItem('finnhub_key'); showToast("🗑️ API Key 已移除", "normal"); }
+        }
+
+        async function fetchLivePrices() {
+            window.vibrate();
+            const apiKey = localStorage.getItem('finnhub_key');
+            if(!apiKey) { showToast("請先到設定輸入 API Key", "normal"); openSettings(); return; }
+
+            const btn = document.getElementById('fetchBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-3 h-3 mr-1 spin"></i> 更新中...';
+            btn.disabled = true;
+
+            const targets = [
+                { symbol: 'VOO', id: 'vooClose' },
+                { symbol: 'UPRO', id: 'uproPrice' },
+                { symbol: 'SGOV', id: 'sgovPrice' },
+                { symbol: 'IBIT', id: 'ibitPrice' }
+            ];
+
+            let successCount = 0;
+
+            try {
+                // Stable Mode: Only fetch current quotes
+                for (const t of targets) {
+                    try {
+                        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${t.symbol}&token=${apiKey}`);
+                        if(!res.ok) {
+                            console.warn(`Quote error for ${t.symbol}: ${res.status}`);
+                            continue;
+                        }
+                        const data = await res.json();
+                        if(data.c) {
+                            document.getElementById(t.id).value = data.c; 
+                            successCount++;
+                        }
+                    } catch(err) {
+                        console.error(err);
+                    }
+                    // Tiny delay to respect rate limits (Safe: 250ms)
+                    await new Promise(r => setTimeout(r, 250)); 
+                }
+
+                if(successCount > 0) {
+                    showToast("✅ 股價更新完成", "success");
+                    handleInput();
+                } else {
+                    showToast("⚠️ 更新失敗 (API 無回應)", "normal");
+                }
+                
+            } catch (e) {
+                console.error(e);
+                showToast(`❌ 錯誤: ${e.message}`, "normal");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
         }
 
         function copyUserId() { navigator.clipboard.writeText(document.getElementById('myUserIdDisplay').value).then(() => showToast("ID 已複製到剪貼簿", "success")); }
@@ -680,7 +744,7 @@
             const btn = document.getElementById('saveBtn');
             btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`;
             btn.classList.remove('btn-edit');
-            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !=='optionStatus') e.value = ''; });
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !=='optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; });
             updateOptUi(); 
             lucide.createIcons();
         }
@@ -693,7 +757,6 @@
             const sgovVal = sf('sgovShares') * sf('sgovPrice');
             const ibitVal = sf('ibitShares') * sf('ibitPrice');
             const cash = sf('cashAmount');
-            
             const errorEl = document.getElementById('simError');
             
             if(!vooPrice || !uproPrice) {
@@ -705,7 +768,6 @@
                 if(errorEl) errorEl.classList.add('hidden');
             }
 
-            // 1. Manual Simulation
             const inputVal = document.getElementById('simPercent').value;
             const pct = parseFloat(inputVal) || 0;
             const leverage = pct < 0 ? 2.8 : 3.0; 
@@ -713,7 +775,6 @@
             const newUproPrice = uproPrice * (1 + uproPct/100);
             
             const originalTotal = (uproPrice * uproShares) + sgovVal + ibitVal + cash;
-            // IBIT Beta ~1.5
             const newIbitVal = ibitVal * (1 + (pct * 1.5)/100); 
             const newTotal = (newUproPrice * uproShares) + sgovVal + newIbitVal + cash;
             const pl = newTotal - originalTotal;
@@ -723,133 +784,92 @@
             el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`;
             
             const inputEl = document.getElementById('simPercent');
-            if (pct > 0) inputEl.style.color = '#4ade80';
-            else if (pct < 0) inputEl.style.color = '#f87171';
-            else inputEl.style.color = '#ffffff';
+            if (pct > 0) inputEl.style.color = '#4ade80'; else if (pct < 0) inputEl.style.color = '#f87171'; else inputEl.style.color = '#ffffff';
 
-            // 2. EMA Simulations
-            const emas = [
-                { label: '5MA', val: sf('wema5') },
-                { label: '12MA', val: sf('wema12') },
-                { label: '20MA', val: sf('wema20') }
-            ];
-
+            const emas = [{ label: '5MA', val: sf('wema5') }, { label: '12MA', val: sf('wema12') }, { label: '20MA', val: sf('wema20') }];
             const tbody = document.getElementById('emaSimBody');
             tbody.innerHTML = '';
 
             emas.forEach(ema => {
                 if(ema.val > 0) {
                     const emaPct = ((ema.val - vooPrice) / vooPrice) * 100;
-                    // Logic: If price goes up to EMA (emaPct > 0), leverage 3.0. If down (emaPct < 0), leverage 2.8.
                     const emaLev = emaPct < 0 ? 2.8 : 3.0;
                     const emaUproPct = emaPct * emaLev;
                     const emaUproPrice = uproPrice * (1 + emaUproPct/100);
-                    // IBIT Beta 1.5 for EMA sim too
                     const emaIbitVal = ibitVal * (1 + (emaPct * 1.5)/100);
                     const emaTotal = (emaUproPrice * uproShares) + sgovVal + emaIbitVal + cash;
                     const emaPl = emaTotal - originalTotal;
-
                     const row = document.createElement('tr');
                     const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400';
                     const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
-                    
-                    row.innerHTML = `
-                        <td>${ema.label}</td>
-                        <td>${ema.val.toFixed(2)}</td>
-                        <td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td>
-                        <td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>
-                    `;
+                    row.innerHTML = `<td>${ema.label}</td><td>${ema.val.toFixed(2)}</td><td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td><td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>`;
                     tbody.appendChild(row);
                 } else {
-                     const row = document.createElement('tr');
-                     row.innerHTML = `<td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td>`;
-                     tbody.appendChild(row);
+                     const row = document.createElement('tr'); row.innerHTML = `<td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td>`; tbody.appendChild(row);
                 }
             });
         }
 
         function calculateStrategy() {
+            // ALWAYS UPDATE TOTAL VALUE DISPLAY FIRST
+            const uproVal = sf('uproShares')*sf('uproPrice');
+            const sgovVal = sf('sgovShares')*sf('sgovPrice');
+            const ibitVal = sf('ibitShares')*sf('ibitPrice');
+            const cash = sf('cashAmount');
+            const totalValue = uproVal + sgovVal + ibitVal + cash;
+            const tvEl = document.getElementById('totalValueDisplay');
+            if(tvEl) tvEl.innerText = `$${Math.round(totalValue).toLocaleString()}`;
+
             const vooClose = sf('vooClose'), wema20 = sf('wema20'), wema12 = sf('wema12'), wema5 = sf('wema5');
             const dailyRsi = sf('dailyRsi'), vix = sf('vixIndex');
             
             if(vooClose && wema20) {
-                const uproVal = sf('uproShares')*sf('uproPrice');
-                const sgovVal = sf('sgovShares')*sf('sgovPrice');
-                const ibitVal = sf('ibitShares')*sf('ibitPrice');
-                const cash = sf('cashAmount');
-                const totalValue = uproVal + sgovVal + ibitVal + cash;
-                
                 const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
                 
                 const card = document.getElementById('statusCard');
                 const riskEl = document.getElementById('riskState');
-                if(riskStatus === 'ON') { 
-                    card.classList.remove('status-off'); card.classList.add('status-on'); 
-                    setTxt('riskState', 'RISK ON'); 
-                    riskEl.className = 'text-5xl font-black text-green-400 tracking-tighter'; 
-                } else { 
-                    card.classList.remove('status-on'); card.classList.add('status-off'); 
-                    setTxt('riskState', 'RISK OFF'); 
-                    riskEl.className = 'text-5xl font-black text-red-400 tracking-tighter'; 
-                }
+                if(riskStatus === 'ON') { card.classList.remove('status-off'); card.classList.add('status-on'); setTxt('riskState', 'RISK ON'); riskEl.className = 'text-5xl font-black text-green-400 tracking-tighter'; } 
+                else { card.classList.remove('status-on'); card.classList.add('status-off'); setTxt('riskState', 'RISK OFF'); riskEl.className = 'text-5xl font-black text-red-400 tracking-tighter'; }
 
                 const bias = ((vooClose - wema20)/wema20)*100;
                 setTxt('biasText', `Bias ${bias.toFixed(2)}%`);
-                if (dailyRsi < 30) setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)} (BUY!)`);
-                else setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}`);
+                if (dailyRsi < 30) setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)} (BUY!)`); else setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}`);
 
                 let biasLimit = 100;
-                if (bias > 12) biasLimit = 50;
-                else if (bias > 8) biasLimit = 60;
-                else if (bias > 4) biasLimit = 80;
-                else biasLimit = 100;
+                if (bias > 12) biasLimit = 50; else if (bias > 8) biasLimit = 60; else if (bias > 4) biasLimit = 80; else biasLimit = 100;
 
                 let tacticalLimit = 100;
-                if (wema12 && vooClose < wema12) tacticalLimit = 50;
-                else if (wema5 && vooClose < wema5) tacticalLimit = 70;
-                else tacticalLimit = 100;
+                if (wema12 && vooClose < wema12) tacticalLimit = 50; else if (wema5 && vooClose < wema5) tacticalLimit = 70; else tacticalLimit = 100;
 
                 let finalUproPct = 0;
                 let reason = "";
 
-                if (riskStatus === 'OFF') {
-                    finalUproPct = 0;
-                    reason = "Risk OFF (破 20MA)";
-                } else if (dailyRsi < 30) {
-                    finalUproPct = 100; 
-                    reason = "暴利濾網 (RSI<30) 強制滿倉";
-                } else {
-                    finalUproPct = Math.min(biasLimit, tacticalLimit);
-                    reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`;
-                }
+                if (riskStatus === 'OFF') { finalUproPct = 0; reason = "Risk OFF (破 20MA)"; } 
+                else if (dailyRsi < 30) { finalUproPct = 100; reason = "暴利濾網 (RSI<30) 強制滿倉"; } 
+                else { finalUproPct = Math.min(biasLimit, tacticalLimit); reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`; }
 
                 setTxt('targetUproPct', `${finalUproPct}%`);
                 setTxt('uproReason', reason);
 
                 const coreCapital = totalValue * 0.9;
                 const satCapital = totalValue * 0.1;
-                
                 const targetUproVal = coreCapital * (finalUproPct / 100);
                 const targetSgovVal = coreCapital - targetUproVal;
                 
                 setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`);
                 setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`);
                 setTxt('targetIbitVal', `($${Math.round(satCapital).toLocaleString()})`);
-                
                 setTxt('targetSgovPct', `${(100 - finalUproPct)}%`);
 
                 const diffU = uproVal - targetUproVal;
                 const diffS = sgovVal - targetSgovVal;
                 const diffI = ibitVal - satCapital;
 
-                // FIX: Calculate shares
                 const getAction = (diff, price) => {
                     if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`;
                     const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0;
                     const shareText = shares > 0 ? ` (${shares}股)` : '';
-                    return diff > 0 
-                        ? `🔴 賣出 $${Math.round(diff).toLocaleString()}${shareText}` 
-                        : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}${shareText}`;
+                    return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()}${shareText}` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()}${shareText}`;
                 };
 
                 setTxt('uproAction', getAction(diffU, sf('uproPrice')));
@@ -859,21 +879,12 @@
                 const coreCap = totalValue * 0.9;
                 let vixText = "無";
                 let vixClass = "text-slate-500";
-                
-                // Calculate Target UPRO Shares for hedging info
                 const uproP = sf('uproPrice');
                 const targetUproShares = uproP > 0 ? Math.round(targetUproVal / uproP) : 0;
 
                 if (riskStatus === 'ON') {
-                    if (vix < 13.5) {
-                        const count = Math.round(coreCap / 10000);
-                        vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`;
-                        vixClass = "text-emerald-400 font-black"; 
-                    } else if (vix >= 13.5 && vix <= 17) {
-                        const count = Math.round(coreCap / 15000);
-                        vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`;
-                        vixClass = "text-purple-400 font-bold";
-                    }
+                    if (vix < 13.5) { const count = Math.round(coreCap / 10000); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = "text-emerald-400 font-black"; } 
+                    else if (vix >= 13.5 && vix <= 17) { const count = Math.round(coreCap / 15000); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = "text-purple-400 font-bold"; }
                 }
                 setTxt('vixSuggestion', vixText);
                 document.getElementById('vixSuggestion').className = `suggestion-val ${vixClass}`;
@@ -881,33 +892,18 @@
                 let callText = "觀望";
                 let callClass = "text-slate-500";
                 if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) {
-                    if (bias > 12) callText = "Sell Call Delta 0.30 (積極)";
-                    else if (bias > 8) callText = "Sell Call Delta 0.20-0.25 (標準)";
-                    else if (bias > 4) callText = "Sell Call Delta 0.15-0.20 (防守)";
-                    
+                    if (bias > 12) callText = "Sell Call Delta 0.30 (積極)"; else if (bias > 8) callText = "Sell Call Delta 0.20-0.25 (標準)"; else if (bias > 4) callText = "Sell Call Delta 0.15-0.20 (防守)";
                     if (bias > 4) callClass = "text-green-400 font-bold";
                 }
                 setTxt('callSuggestion', callText);
                 document.getElementById('callSuggestion').className = `suggestion-val ${callClass}`;
 
-                // GPS Highlight logic
                 const strategyItemIds = ['gps-risk-off', 'gps-rsi-buy', 'gps-bias-low', 'gps-bias-med', 'gps-bias-high', 'gps-bias-extreme'];
-                strategyItemIds.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.classList.remove('active');
-                });
-                
+                strategyItemIds.forEach(id => { document.getElementById(id).classList.remove('active'); });
                 let activeId = '';
-                if (riskStatus === 'OFF') activeId = 'gps-risk-off';
-                else if (dailyRsi < 30) activeId = 'gps-rsi-buy';
-                else if (bias > 12) activeId = 'gps-bias-extreme';
-                else if (bias > 8) activeId = 'gps-bias-high';
-                else if (bias > 4) activeId = 'gps-bias-med';
-                else activeId = 'gps-bias-low';
-                
+                if (riskStatus === 'OFF') activeId = 'gps-risk-off'; else if (dailyRsi < 30) activeId = 'gps-rsi-buy'; else if (bias > 12) activeId = 'gps-bias-extreme'; else if (bias > 8) activeId = 'gps-bias-high'; else if (bias > 4) activeId = 'gps-bias-med'; else activeId = 'gps-bias-low';
                 const activeEl = document.getElementById(activeId);
                 if (activeEl) activeEl.classList.add('active');
-
                 updateSimulation();
             }
         }
@@ -919,9 +915,7 @@
             const sgov = document.getElementById('sgovAction').innerText;
             const ibit = document.getElementById('ibitAction').innerText;
             const vix = document.getElementById('vixSuggestion').innerText;
-            
             const noteText = `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}`;
-            
             document.getElementById('recordNote').value = noteText;
             switchView('inputs'); 
             showToast("✅ 策略指令已寫入備註", "success");
@@ -933,157 +927,71 @@
         }
 
         function toggleAnnualExpansion() {
+            isAnnualExpanded = !isAnnualExpanded;
             const container = document.getElementById('annualSummaryContainer');
             const icon = document.getElementById('annualToggleIcon');
-            
-            isAnnualExpanded = !isAnnualExpanded;
-            
-            if(isAnnualExpanded) {
-                container.classList.remove('hidden');
-                icon.innerText = "⬆️ 收合";
-                renderAnnualSummary();
-            } else {
-                container.classList.add('hidden');
-                icon.innerText = "⬇️ 展開";
-            }
+            if(isAnnualExpanded) { container.classList.remove('hidden'); icon.innerText = "⬆️ 收合"; renderAnnualSummary(); } else { container.classList.add('hidden'); icon.innerText = "⬇️ 展開"; }
         }
 
         function toggleMonthlyExpansion() {
+            isMonthlyExpanded = !isMonthlyExpanded;
             const container = document.getElementById('monthlySummaryContainer');
             const icon = document.getElementById('monthlyToggleIcon');
-            
-            isMonthlyExpanded = !isMonthlyExpanded;
-            
-            if(isMonthlyExpanded) {
-                container.classList.remove('hidden');
-                icon.innerText = "⬆️ 收合";
-                renderMonthlySummary();
-            } else {
-                container.classList.add('hidden');
-                icon.innerText = "⬇️ 展開";
-            }
+            if(isMonthlyExpanded) { container.classList.remove('hidden'); icon.innerText = "⬆️ 收合"; renderMonthlySummary(); } else { container.classList.add('hidden'); icon.innerText = "⬇️ 展開"; }
         }
 
         function renderMonthlySummary() {
             if (globalHistoryData.length === 0) return;
-
             const months = {};
-            globalHistoryData.forEach(d => {
-                const monthKey = d.manualDate.slice(0,7); 
-                if (!months[monthKey]) months[monthKey] = [];
-                months[monthKey].push(d);
-            });
-
+            globalHistoryData.forEach(d => { const monthKey = d.manualDate.slice(0,7); if (!months[monthKey]) months[monthKey] = []; months[monthKey].push(d); });
             const sortedMonths = Object.keys(months).sort((a,b) => b.localeCompare(a));
             const tbody = document.getElementById('monthlySummaryBody');
             tbody.innerHTML = '';
-
             sortedMonths.forEach(monthKey => {
                 const records = months[monthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
                 if(records.length === 0) return;
-
                 const lastRecord = records[records.length - 1];
                 const endNav = lastRecord.totalValue;
                 const monthlyPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
-
                 let startNav;
-                const dateObj = new Date(monthKey + "-01");
-                dateObj.setMonth(dateObj.getMonth() - 1);
-                const prevMonthKey = dateObj.toISOString().slice(0,7);
-
-                if (months[prevMonthKey]) {
-                    const prevRecords = months[prevMonthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
-                    startNav = prevRecords[prevRecords.length - 1].totalValue;
-                } else {
-                    startNav = records[0].totalValue;
-                }
-
-                let returnPct = 0;
-                if (startNav > 0) {
-                    returnPct = ((endNav - startNav) / startNav) * 100;
-                }
-
+                const dateObj = new Date(monthKey + "-01"); dateObj.setMonth(dateObj.getMonth() - 1); const prevMonthKey = dateObj.toISOString().slice(0,7);
+                if (months[prevMonthKey]) { const prevRecords = months[prevMonthKey].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); startNav = prevRecords[prevRecords.length - 1].totalValue; } else { startNav = records[0].totalValue; }
+                let returnPct = 0; if (startNav > 0) { returnPct = ((endNav - startNav) / startNav) * 100; }
                 const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
                 const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
-
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="pl-4">${monthKey}</td>
-                    <td>$${Math.round(endNav/1000).toLocaleString()}k</td>
-                    <td class="${returnClass} font-bold">${returnStr}</td>
-                    <td class="pr-4 text-slate-300">$${Math.round(monthlyPremium).toLocaleString()}</td>
-                `;
+                tr.innerHTML = `<td class="pl-4">${monthKey}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td class="${returnClass} font-bold">${returnStr}</td><td class="pr-4 text-slate-300">$${Math.round(monthlyPremium).toLocaleString()}</td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function renderAnnualSummary() {
             if (globalHistoryData.length === 0) return;
-
             const years = {};
-            globalHistoryData.forEach(d => {
-                const year = d.manualDate.slice(0,4);
-                if (!years[year]) years[year] = [];
-                years[year].push(d);
-            });
-
+            globalHistoryData.forEach(d => { const year = d.manualDate.slice(0,4); if (!years[year]) years[year] = []; years[year].push(d); });
             const sortedYears = Object.keys(years).sort((a,b) => b-a);
             const tbody = document.getElementById('annualSummaryBody');
             tbody.innerHTML = '';
-
             sortedYears.forEach((year, index) => {
                 const records = years[year].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
                 if (records.length === 0) return;
-
                 const lastRecord = records[records.length - 1];
                 const endNav = lastRecord.totalValue;
                 const annualPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0);
-
                 let startNav;
                 const prevYear = (parseInt(year) - 1).toString();
-                
                 const prevYearRecords = globalHistoryData.filter(d => d.manualDate.startsWith(prevYear));
-
-                if (prevYearRecords.length > 0) {
-                     const sortedPrev = prevYearRecords.sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate));
-                     startNav = sortedPrev[sortedPrev.length - 1].totalValue;
-                } else {
-                    startNav = records[0].totalValue;
-                }
-
-                let gain = 0;
-                let returnPct = 0;
-                let premRatio = 0;
-
-                if (startNav > 0) {
-                    gain = endNav - startNav;
-                    returnPct = (gain / startNav) * 100;
-                    if (gain > 0) {
-                        premRatio = (annualPremium / gain) * 100;
-                    }
-                }
-
-                let peak = -Infinity;
-                let maxDrawdown = 0;
-                records.forEach(r => {
-                    if (r.totalValue > peak) peak = r.totalValue;
-                    const dd = (peak - r.totalValue) / peak;
-                    if (dd > maxDrawdown) maxDrawdown = dd;
-                });
+                if (prevYearRecords.length > 0) { const sortedPrev = prevYearRecords.sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); startNav = sortedPrev[sortedPrev.length - 1].totalValue; } else { startNav = records[0].totalValue; }
+                let gain = 0; let returnPct = 0; let premRatio = 0;
+                if (startNav > 0) { gain = endNav - startNav; returnPct = (gain / startNav) * 100; if (gain > 0) { premRatio = (annualPremium / gain) * 100; } }
+                let peak = -Infinity; let maxDrawdown = 0;
+                records.forEach(r => { if (r.totalValue > peak) peak = r.totalValue; const dd = (peak - r.totalValue) / peak; if (dd > maxDrawdown) maxDrawdown = dd; });
                 const mddPct = maxDrawdown * 100;
-
                 const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400';
                 const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`;
                 const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(annualPremium)})`;
-                
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="pl-4">${year}</td>
-                    <td>$${Math.round(endNav/1000).toLocaleString()}k</td>
-                    <td><span class="${returnClass} font-bold">${returnStr}</span> <span class="text-[10px] text-slate-500">${premStr}</span></td>
-                    <td class="text-red-400">-${mddPct.toFixed(2)}%</td>
-                    <td class="pr-4 text-slate-300 font-bold">$${Math.round(annualPremium).toLocaleString()}</td>
-                `;
+                tr.innerHTML = `<td class="pl-4">${year}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td><span class="${returnClass} font-bold">${returnStr}</span> <span class="text-[10px] text-slate-500">${premStr}</span></td><td class="text-red-400">-${mddPct.toFixed(2)}%</td><td class="pr-4 text-slate-300 font-bold">$${Math.round(annualPremium).toLocaleString()}</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -1095,410 +1003,111 @@
                 const set = (id,v) => { if(document.getElementById(id)) document.getElementById(id).value = v||''; }; 
                 if(force) set('recordDate',l.manualDate); 
                 set('vooClose',l.vooClose); 
-                set('wema20',l.wema20); 
-                set('wema12',l.wema12); 
-                set('wema5',l.wema5); 
-                set('vixIndex',l.vix); 
-                set('dailyRsi',l.dailyRsi); 
-                set('uproShares',l.uproShares); 
-                set('uproPrice',l.uproPrice); 
-                set('sgovShares',l.sgovShares); 
-                set('sgovPrice',l.sgovPrice); 
-                set('ibitShares',l.ibitShares); 
-                set('ibitPrice',l.ibitPrice); 
+                set('wema20',l.wema20); set('wema12',l.wema12); set('wema5',l.wema5); 
+                set('vixIndex',l.vix); set('dailyRsi',l.dailyRsi); 
+                set('uproShares',l.uproShares); set('uproPrice',l.uproPrice); 
+                set('sgovShares',l.sgovShares); set('sgovPrice',l.sgovPrice); 
+                set('ibitShares',l.ibitShares); set('ibitPrice',l.ibitPrice); 
                 set('cashAmount',l.cashAmount); 
                 calculateStrategy(); 
-                if(force) {
-                    switchView('inputs'); 
-                    showToast("✅ 最新資料已帶入", "success");
-                }
-            } else {
-                showToast("⚠️ 無歷史資料可帶入", "normal");
-            }
+                if(force) { switchView('inputs'); showToast("✅ 最新資料已帶入", "success"); }
+            } else { showToast("⚠️ 無歷史資料可帶入", "normal"); }
         }
 
         function handleInput() { 
             clearTimeout(calculationTimer); 
             calculationTimer = setTimeout(calculateStrategy, 300); 
             const d={}; 
-            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent' && e.id !=='optionStatus') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); 
+            document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='editDocId' && e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id!=='simPercent' && e.id !=='optionStatus' && e.id !=='finnHubKeyInput') d[e.id] = e.type==='checkbox'?e.checked:e.value; }); 
             localStorage.setItem('upro_v9_draft', JSON.stringify(d)); 
         }
 
         function restoreDraft() { 
             const d = JSON.parse(localStorage.getItem('upro_v9_draft')); 
-            if(d) {
-                Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; });
-                updateOptUi(); 
-                calculateStrategy(); 
-            }
+            if(d) { Object.keys(d).forEach(k => { const e=document.getElementById(k); if(e) e.type==='checkbox'?e.checked=d[k]:e.value=d[k]; }); updateOptUi(); calculateStrategy(); }
         }
         
         function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); document.getElementById(`view-${v}`).classList.add('active'); document.getElementById(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
-
-        function openSettings() { openModal('settingsModal'); if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
+        function openSettings() { openModal('settingsModal'); const k = localStorage.getItem('finnhub_key'); if(k) document.getElementById('finnHubKeyInput').value = k; if(realUserId) document.getElementById('myUserIdDisplay').value = realUserId; const t = localStorage.getItem('upro_target_uid'); if(t) document.getElementById('targetUserIdInput').value = t; }
         function closeSettings() { closeModal('settingsModal'); }
         function closeDetails() { closeModal('detailsModal'); }
-        
-        function exportJson() {
-            if(!globalHistoryData.length) return;
-            const a = document.createElement('a');
-            a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"}));
-            a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-        }
-
+        function exportJson() { if(!globalHistoryData.length) return; const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalHistoryData, null, 2)], {type: "application/json"})); a.download=`upro_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
         function importJson(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async (e) => { try { const data = JSON.parse(e.target.result); if(Array.isArray(data) && confirm(`匯入 ${data.length} 筆?`)) { for(const item of data) { const { id, timestamp, ...rest } = item; await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...rest, timestamp: serverTimestamp() }); } alert(`成功`); closeSettings(); } } catch(err) { alert("格式錯誤"); } }; reader.readAsText(file); }
-        
         function setChartRange(range) { currentChartRange = range; renderAssetHistoryChart(); }
         function toggleChartType() { chartMode = chartMode === 'line' ? 'income' : 'line'; document.getElementById('chartTypeBtn').textContent = chartMode === 'line' ? '📉 收益圖' : '📊 淨值圖'; renderAssetHistoryChart(); }
 
         async function saveRecord() {
-            const btn = document.getElementById('saveBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>';
-            btn.disabled = true;
-
+            const btn = document.getElementById('saveBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>'; btn.disabled = true;
             try {
-                const docId = document.getElementById('editDocId').value;
-                const recordDate = document.getElementById('recordDate').value;
-                
+                const docId = document.getElementById('editDocId').value; const recordDate = document.getElementById('recordDate').value;
                 if(!recordDate) throw new Error("日期為必填");
-
-                const data = {
-                    manualDate: recordDate,
-                    vooClose: sf('vooClose'),
-                    wema5: sf('wema5'),
-                    wema12: sf('wema12'),
-                    wema20: sf('wema20'),
-                    vix: sf('vixIndex'),
-                    dailyRsi: sf('dailyRsi'),
-                    uproShares: sf('uproShares'),
-                    uproPrice: sf('uproPrice'),
-                    sgovShares: sf('sgovShares'),
-                    sgovPrice: sf('sgovPrice'),
-                    ibitShares: sf('ibitShares'),
-                    ibitPrice: sf('ibitPrice'),
-                    cashAmount: sf('cashAmount'),
-                    note: document.getElementById('recordNote').value,
-                    optType: document.getElementById('optType').value,
-                    optPremium: sf('optPremium'),
-                    optionStatus: document.getElementById('optionStatus').value || 'Open' 
-                };
-
-                // Calculated fields
-                data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount;
-                data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
-
-                if (docId) {
-                    // Update
-                    await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data);
-                    showToast("✅ 紀錄已更新", "success");
-                    cancelEdit();
-                } else {
-                    // Create
-                    await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), {
-                        ...data,
-                        timestamp: serverTimestamp()
-                    });
-                    showToast("✅ 紀錄已儲存", "success");
-                     document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus') e.value = ''; });
-                     document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
-                     updateOptUi();
-                }
-                
-            } catch (e) {
-                console.error(e);
-                showToast("❌ 錯誤: " + e.message, "normal");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                lucide.createIcons();
-            }
+                const data = { manualDate: recordDate, vooClose: sf('vooClose'), wema5: sf('wema5'), wema12: sf('wema12'), wema20: sf('wema20'), vix: sf('vixIndex'), dailyRsi: sf('dailyRsi'), uproShares: sf('uproShares'), uproPrice: sf('uproPrice'), sgovShares: sf('sgovShares'), sgovPrice: sf('sgovPrice'), ibitShares: sf('ibitShares'), ibitPrice: sf('ibitPrice'), cashAmount: sf('cashAmount'), note: document.getElementById('recordNote').value, optType: document.getElementById('optType').value, optPremium: sf('optPremium'), optionStatus: document.getElementById('optionStatus').value || 'Open' };
+                data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount; data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
+                if (docId) { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data); showToast("✅ 紀錄已更新", "success"); cancelEdit(); } 
+                else { await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); showToast("✅ 紀錄已儲存", "success"); document.querySelectorAll('input, select, textarea').forEach(e => { if(e.id!=='importFile' && e.id!=='targetUserIdInput' && e.id !=='simPercent' && e.id !== 'optionStatus' && e.id !=='finnHubKeyInput') e.value = ''; }); document.getElementById('recordDate').value = new Date().toISOString().slice(0,10); updateOptUi(); }
+            } catch (e) { console.error(e); showToast("❌ 錯誤: " + e.message, "normal"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
         }
 
         function loadHistory() {
             if(!currentDataUserId) return;
             const q = query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('manualDate', 'desc'));
-            
-            // Using onSnapshot for real-time updates
             onSnapshot(q, (snapshot) => {
                 globalHistoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderHistoryTable();
-                calculateTotals();
-                renderAssetHistoryChart();
-                renderAnnualSummary();
-                renderMonthlySummary(); 
-                
-                if(globalHistoryData.length > 0) {
-                    const latest = globalHistoryData[0];
-                    document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`;
-                }
-            }, (error) => {
-                console.error("Error loading history:", error);
-                document.getElementById('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>';
-            });
+                renderHistoryTable(); calculateTotals(); renderAssetHistoryChart(); renderAnnualSummary(); renderMonthlySummary();
+                if(globalHistoryData.length > 0) { const latest = globalHistoryData[0]; document.getElementById('totalValueDisplay').innerText = `$${Math.round(latest.totalValue).toLocaleString()}`; }
+            }, (error) => { console.error("Error loading history:", error); document.getElementById('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>'; });
         }
 
         function renderHistoryTable() {
-            const tbody = document.getElementById('historyList');
-            tbody.innerHTML = '';
-            
-            if (globalHistoryData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>';
-                const toggleBtn = document.getElementById('historyToggleBtn');
-                if(toggleBtn) toggleBtn.remove(); 
-                return;
-            }
-
-            // Slice data based on expansion state
+            const tbody = document.getElementById('historyList'); tbody.innerHTML = '';
+            if (globalHistoryData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>'; const toggleBtn = document.getElementById('historyToggleBtn'); if(toggleBtn) toggleBtn.remove(); return; }
             const displayData = isHistoryExpanded ? globalHistoryData : globalHistoryData.slice(0, 5);
-
             displayData.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors';
-                
-                let statusBadge = '';
-                if (item.optType) {
-                    const status = item.optionStatus || 'Open';
-                    let badgeClass = status === 'Open' ? 'badge-open' : (status === 'Exercised' ? 'badge-exercised' : 'badge-closed');
-                    let label = status === 'Open' ? '持倉' : (status === 'Exercised' ? '行權' : '平倉');
-                    statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`;
-                }
-
-                const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500');
-                const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : '';
-
-                tr.innerHTML = `
-                    <td class="py-3 pl-2">
-                        <div class="font-bold text-slate-200 text-sm">${item.manualDate.slice(5)}</div>
-                        <div class="text-[10px] text-slate-500">${item.manualDate.slice(0,4)}</div>
-                    </td>
-                    <td class="py-3">
-                        <div class="flex items-center">
-                            ${statusBadge || '<span class="text-slate-600 text-[10px]">-</span>'}
-                        </div>
-                    </td>
-                    <td class="py-3 text-right">
-                        <div class="font-bold text-slate-200 text-sm">$${Math.round(item.totalValue/1000)}k</div>
-                    </td>
-                    <td class="py-3 text-right">
-                        <div class="text-xs font-bold">${incomeStr}</div>
-                        ${item.optType ? `<div class="text-[10px] text-indigo-300">${item.optType}</div>` : ''}
-                    </td>
-                    <td class="py-3 pr-2 text-right">
-                        <button onclick="showDetails('${item.id}')" class="p-2 text-slate-400 hover:text-white"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
-                        <button onclick="showDeleteModal('${item.id}', event)" class="p-2 text-red-400/50 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                `;
+                const tr = document.createElement('tr'); tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors';
+                let statusBadge = ''; if (item.optType) { const status = item.optionStatus || 'Open'; let badgeClass = status === 'Open' ? 'badge-open' : (status === 'Exercised' ? 'badge-exercised' : 'badge-closed'); let label = status === 'Open' ? '持倉' : (status === 'Exercised' ? '行權' : '平倉'); statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`; }
+                const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500'); const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : '';
+                tr.innerHTML = `<td class="py-3 pl-2"><div class="font-bold text-slate-200 text-sm">${item.manualDate.slice(5)}</div><div class="text-[10px] text-slate-500">${item.manualDate.slice(0,4)}</div></td><td class="py-3"><div class="flex items-center">${statusBadge || '<span class="text-slate-600 text-[10px]">-</span>'}</div></td><td class="py-3 text-right"><div class="font-bold text-slate-200 text-sm">$${Math.round(item.totalValue/1000)}k</div></td><td class="py-3 text-right"><div class="text-xs font-bold">${incomeStr}</div>${item.optType ? `<div class="text-[10px] text-indigo-300">${item.optType}</div>` : ''}</td><td class="py-3 pr-2 text-right"><button onclick="showDetails('${item.id}')" class="p-2 text-slate-400 hover:text-white"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button><button onclick="showDeleteModal('${item.id}', event)" class="p-2 text-red-400/50 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
                 tbody.appendChild(tr);
             });
-
-            // Toggle Button Logic
-            if (globalHistoryData.length > 5) {
-                const btnRow = document.createElement('tr');
-                const btnText = isHistoryExpanded ? '⬆️ 收合 (只看最近 5 筆)' : `⬇️ 展開完整紀錄 (還有 ${globalHistoryData.length - 5} 筆)`;
-                btnRow.id = 'historyToggleBtnRow';
-                btnRow.innerHTML = `
-                    <td colspan="5" class="p-3 text-center">
-                        <button id="historyToggleBtn" onclick="toggleHistoryExpansion()" class="text-xs font-bold text-blue-400 hover:text-blue-300 py-2 w-full border border-blue-500/30 rounded-lg bg-blue-500/10 transition-colors">
-                            ${btnText}
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(btnRow);
-            }
-
+            if (globalHistoryData.length > 5) { const btnRow = document.createElement('tr'); const btnText = isHistoryExpanded ? '⬆️ 收合 (只看最近 5 筆)' : `⬇️ 展開完整紀錄 (還有 ${globalHistoryData.length - 5} 筆)`; btnRow.id = 'historyToggleBtnRow'; btnRow.innerHTML = `<td colspan="5" class="p-3 text-center"><button id="historyToggleBtn" onclick="toggleHistoryExpansion()" class="text-xs font-bold text-blue-400 hover:text-blue-300 py-2 w-full border border-blue-500/30 rounded-lg bg-blue-500/10 transition-colors">${btnText}</button></td>`; tbody.appendChild(btnRow); }
             lucide.createIcons();
         }
 
         function calculateTotals() {
-            const currentYear = new Date().getFullYear().toString();
-            const lastYear = (new Date().getFullYear() - 1).toString();
-            const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
-            
+            const currentYear = new Date().getFullYear().toString(); const lastYear = (new Date().getFullYear() - 1).toString(); const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear));
             const ytdIncome = currentYearData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0);
             document.getElementById('totalIncomeDisplay').innerText = `$${ytdIncome.toLocaleString()}`;
-
-            let mddPct = 0;
-            if (currentYearData.length > 0) {
-                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-                let peak = -Infinity;
-                let maxDrawdown = 0;
-                
-                sortedData.forEach(d => {
-                    if (d.totalValue > peak) peak = d.totalValue;
-                    const drawdown = (peak - d.totalValue) / peak;
-                    if (drawdown > maxDrawdown) maxDrawdown = drawdown;
-                });
-                mddPct = maxDrawdown * 100;
-            }
-            
-            const mddEl = document.getElementById('mddDisplay');
-            mddEl.innerText = `-${mddPct.toFixed(2)}%`;
-            if (mddPct > 20) mddEl.className = "text-lg font-black text-red-500";
-            else if (mddPct > 10) mddEl.className = "text-lg font-black text-orange-400";
-            else mddEl.className = "text-lg font-black text-green-400";
-
-            const ytdEl = document.getElementById('ytdDisplay');
-            if (currentYearData.length > 0) {
-                const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-                const currentVal = sortedData[sortedData.length - 1].totalValue;
-                
-                let startVal = sortedData[0].totalValue; 
-                const lastYearData = globalHistoryData.filter(d => d.manualDate.startsWith(lastYear));
-                if (lastYearData.length > 0) {
-                     const sortedLastYear = lastYearData.sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-                     startVal = sortedLastYear[sortedLastYear.length - 1].totalValue;
-                }
-
-                const gainVal = currentVal - startVal;
-                let ytdStr = "0.00%";
-                let premPctStr = "";
-
-                if (startVal > 0) {
-                    const ytd = (gainVal / startVal) * 100;
-                    ytdStr = (ytd >= 0 ? '+' : '') + ytd.toFixed(2) + '%';
-                    ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`;
-                    
-                    if (gainVal > 0) {
-                        const contribution = (ytdIncome / gainVal) * 100;
-                        premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round(contribution)}%)</span>`;
-                    } else {
-                         premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`;
-                    }
-                }
-                ytdEl.innerHTML = `${ytdStr}${premPctStr}`;
-            } else {
-                ytdEl.innerText = "--%";
-            }
+            let mddPct = 0; if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); let peak = -Infinity; let maxDrawdown = 0; sortedData.forEach(d => { if (d.totalValue > peak) peak = d.totalValue; const drawdown = (peak - d.totalValue) / peak; if (drawdown > maxDrawdown) maxDrawdown = drawdown; }); mddPct = maxDrawdown * 100; }
+            const mddEl = document.getElementById('mddDisplay'); mddEl.innerText = `-${mddPct.toFixed(2)}%`; if (mddPct > 20) mddEl.className = "text-lg font-black text-red-500"; else if (mddPct > 10) mddEl.className = "text-lg font-black text-orange-400"; else mddEl.className = "text-lg font-black text-green-400";
+            const ytdEl = document.getElementById('ytdDisplay'); if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const currentVal = sortedData[sortedData.length - 1].totalValue; let startVal = sortedData[0].totalValue; const lastYearData = globalHistoryData.filter(d => d.manualDate.startsWith(lastYear)); if (lastYearData.length > 0) { const sortedLastYear = lastYearData.sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); startVal = sortedLastYear[sortedLastYear.length - 1].totalValue; } const gainVal = currentVal - startVal; let ytdStr = "0.00%"; let premPctStr = ""; if (startVal > 0) { const ytd = (gainVal / startVal) * 100; ytdStr = (ytd >= 0 ? '+' : '') + ytd.toFixed(2) + '%'; ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`; if (gainVal > 0) { const contribution = (ytdIncome / gainVal) * 100; premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round(contribution)}%)</span>`; } else { premPctStr = `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`; } } ytdEl.innerHTML = `${ytdStr}${premPctStr}`; } else { ytdEl.innerText = "--%"; }
         }
 
         function renderAssetHistoryChart() {
-            const ctx = document.getElementById('assetChart').getContext('2d');
-            if (assetChartInstance) assetChartInstance.destroy();
-
-            const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate));
-            const labels = chartData.map(d => d.manualDate.slice(5));
-            let dataset = {};
-            
-            if (chartMode === 'line') {
-                dataset = {
-                    type: 'line',
-                    label: '總資產淨值',
-                    data: chartData.map(d => d.totalValue),
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 0
-                };
-            } else {
-                let runningTotal = 0;
-                const incomeData = chartData.map(d => {
-                    runningTotal += (parseFloat(d.optionsIncome) || 0);
-                    return runningTotal;
-                });
-                 dataset = {
-                    type: 'line',
-                    label: '累計權利金收益',
-                    data: incomeData,
-                    borderColor: '#4ade80',
-                    backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 0
-                };
-            }
-
-            assetChartInstance = new Chart(ctx, {
-                data: { labels: labels, datasets: [dataset] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleColor: '#94a3b8',
-                            bodyColor: '#f8fafc',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1
-                        }
-                    },
-                    scales: {
-                        x: { display: false },
-                        y: {
-                            display: true,
-                            position: 'right',
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' }
-                        }
-                    },
-                    interaction: { mode: 'nearest', axis: 'x', intersect: false }
-                }
-            });
+            const ctx = document.getElementById('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy();
+            const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const labels = chartData.map(d => d.manualDate.slice(5)); let dataset = {};
+            if (chartMode === 'line') { dataset = { type: 'line', label: '總資產淨值', data: chartData.map(d => d.totalValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } 
+            else { let runningTotal = 0; const incomeData = chartData.map(d => { runningTotal += (parseFloat(d.optionsIncome) || 0); return runningTotal; }); dataset = { type: 'line', label: '累計權利金收益', data: incomeData, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; }
+            assetChartInstance = new Chart(ctx, { data: { labels: labels, datasets: [dataset] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#94a3b8', bodyColor: '#f8fafc', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { display: false }, y: { display: true, position: 'right', grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' } } }, interaction: { mode: 'nearest', axis: 'x', intersect: false } } });
         }
 
-        // --- GLOBAL EXPORTS ---
-        window.handleInput = handleInput;
-        window.fillLatestData = fillLatestData;
-        window.calculateStrategy = calculateStrategy;
-        window.updateSimulation = updateSimulation;
-        window.cancelEdit = cancelEdit;
-        window.loadRecordForEdit = loadRecordForEdit;
-        window.showDetails = showDetails;
-        window.confirmDelete = confirmDelete;
-        window.saveOptionStatus = saveOptionStatus;
-        window.closeStatusModal = closeStatusModal;
-        window.openStatusModal = openStatusModal;
-        window.updateOptUi = updateOptUi;
-        window.selectOpt = selectOpt;
-        window.showDeleteModal = showDeleteModal;
-        window.closeDeleteModal = closeDeleteModal;
-        window.saveTargetUserId = saveTargetUserId;
-        window.copyUserId = copyUserId;
-        window.showToast = showToast;
-        window.openSettings = openSettings;
-        window.closeSettings = closeSettings;
-        window.closeDetails = closeDetails;
-        window.importJson = importJson;
-        window.exportJson = exportJson;
-        window.saveRecord = saveRecord;
-        window.switchView = switchView;
-        window.toggleChartType = toggleChartType;
-        window.fillStrategyNote = fillStrategyNote;
-        window.toggleHistoryExpansion = toggleHistoryExpansion;
-        window.toggleAnnualExpansion = toggleAnnualExpansion;
-        window.toggleMonthlyExpansion = toggleMonthlyExpansion;
+        window.handleInput = handleInput; window.fillLatestData = fillLatestData; window.calculateStrategy = calculateStrategy; window.updateSimulation = updateSimulation; window.cancelEdit = cancelEdit; window.loadRecordForEdit = loadRecordForEdit; window.showDetails = showDetails; window.confirmDelete = confirmDelete; window.saveOptionStatus = saveOptionStatus; window.closeStatusModal = closeStatusModal; window.openStatusModal = openStatusModal; window.updateOptUi = updateOptUi; window.selectOpt = selectOpt; window.showDeleteModal = showDeleteModal; window.closeDeleteModal = closeDeleteModal; window.saveTargetUserId = saveTargetUserId; window.copyUserId = copyUserId; window.showToast = showToast; window.openSettings = openSettings; window.closeSettings = closeSettings; window.closeDetails = closeDetails; window.importJson = importJson; window.exportJson = exportJson; window.saveRecord = saveRecord; window.switchView = switchView; window.toggleChartType = toggleChartType; window.fillStrategyNote = fillStrategyNote; window.toggleHistoryExpansion = toggleHistoryExpansion; window.toggleAnnualExpansion = toggleAnnualExpansion; window.toggleMonthlyExpansion = toggleMonthlyExpansion;
+        window.fetchLivePrices = fetchLivePrices; window.saveApiKey = saveApiKey;
 
-        // INIT
-        document.getElementById('recordDate').value = new Date().toISOString().slice(0,10);
+        // Init Date with Timezone correction
+        const today = new Date();
+        const localIso = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        document.getElementById('recordDate').value = localIso;
+
         async function init() {
             try { 
                 const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); 
                 if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken); else await signInAnonymously(auth); 
-                onAuthStateChanged(auth, u => { 
-                    if(u){ 
-                        realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; 
-                        if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; 
-                        document.getElementById('connDot').className = 'conn-dot conn-online';
-                        document.getElementById('connText').innerText = 'Online';
-                        document.getElementById('connText').className = 'text-xs text-green-400 font-bold';
-                        loadHistory(); 
-                    } 
-                }); 
-            } catch(e) { 
-                document.getElementById('connText').innerText = 'Offline';
-                alert("連線失敗: " + e.message); 
-            } 
+                onAuthStateChanged(auth, u => { if(u){ realUserId = u.uid; currentDataUserId = localStorage.getItem('upro_target_uid') || realUserId; if(document.getElementById('myUserIdDisplay')) document.getElementById('myUserIdDisplay').value = realUserId; document.getElementById('connDot').className = 'conn-dot conn-online'; document.getElementById('connText').innerText = 'Online'; document.getElementById('connText').className = 'text-xs text-green-400 font-bold'; loadHistory(); } }); 
+            } catch(e) { document.getElementById('connText').innerText = 'Offline'; alert("連線失敗: " + e.message); } 
         }
         init();
         lucide.createIcons();
     </script>
 </body>
 </html>
+```eof

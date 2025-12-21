@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V12.7.1 Stable</title>
+    <title>UPRO V12.9 Final</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -49,7 +49,7 @@
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.7.1</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-blue-500">V12.9 Final</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -83,9 +83,10 @@
                             <div><label class="text-[10px]">12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
                             <div><label class="text-[10px]">20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-3 gap-3">
                             <div><label class="text-[10px]">VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
                             <div><label class="text-[10px]">RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
+                            <div><label class="text-[10px] text-pink-400 font-bold">IBIT 50MA</label><input type="number" id="ibitWema50" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm border-pink-500/30"></div>
                         </div>
                     </div>
                 </div>
@@ -203,7 +204,8 @@
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
                             <div class="text-[10px] text-pink-400 font-bold uppercase">IBIT 衛星</div>
-                            <div class="text-xl font-black text-white">10% <span class="text-xs text-slate-500 font-normal" id="targetIbitVal">($--)</span></div>
+                            <div class="text-xl font-black text-white"><span id="ibitPctDisplay">10%</span> <span class="text-xs text-slate-500 font-normal" id="targetIbitVal">($--)</span></div>
+                            <div id="ibitReason" class="text-[10px] text-slate-500">Wait...</div>
                         </div>
                         <div class="text-right">
                             <div class="text-[10px] text-slate-400">操作</div>
@@ -591,6 +593,7 @@
                         <div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VIX</div><div class="font-bold text-white">${formatNum(data.vix)}</div></div>
                     </div>
                     <div class="text-[10px] text-slate-500 text-center">EMAs: ${formatNum(data.wema5)} / ${formatNum(data.wema12)} / ${formatNum(data.wema20)}</div>
+                    ${data.ibitWema50 ? `<div class="text-[10px] text-pink-400 text-center mt-2">IBIT 50MA: ${formatNum(data.ibitWema50)}</div>` : ''}
                 </div>
                 <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
                     <h4 class="text-xs text-blue-300 font-bold uppercase mb-3">庫存快照</h4>
@@ -611,7 +614,7 @@
 
         function loadRecordForEdit(data) {
             closeDetails();
-            const fields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount'];
+            const fields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50'];
             
             // Map data to inputs
             setVal('recordDate', data.manualDate);
@@ -730,6 +733,27 @@
                 const wema20 = sf('wema20');
                 const dailyRsi = sf('dailyRsi');
                 
+                // IBIT Strategy
+                const ibitPrice = sf('ibitPrice');
+                const ibitWema50 = sf('ibitWema50');
+                let ibitAllocPct = 0.1; // Default Target 10%
+                let ibitReason = "Satellite 10%";
+                
+                if (ibitWema50 > 0) {
+                    if (ibitPrice > ibitWema50) {
+                        ibitReason = "Risk ON (>50MA)";
+                    } else {
+                        ibitAllocPct = 0; // Sell All
+                        ibitReason = "Risk OFF (<50MA) -> SGOV";
+                    }
+                } else {
+                    ibitReason = "No 50MA (Default 10%)";
+                }
+                
+                setTxt('ibitPctDisplay', `${(ibitAllocPct*100).toFixed(0)}%`);
+                setTxt('ibitReason', ibitReason);
+                
+                // UPRO Strategy
                 if(vooClose && wema20) {
                     const riskStatus = vooClose > wema20 ? 'ON' : 'OFF';
                     const card = $('statusCard');
@@ -757,18 +781,23 @@
                     setTxt('targetUproPct', `${finalUproPct}%`);
                     setTxt('uproReason', reason);
 
-                    const coreCapital = totalValue * 0.9;
-                    const targetUproVal = coreCapital * (finalUproPct / 100);
-                    const targetSgovVal = coreCapital - targetUproVal;
+                    // New Allocation Logic incorporating IBIT
+                    const targetUproVal = (totalValue * 0.9) * (finalUproPct / 100); // 90% Core
+                    const targetIbitVal = totalValue * ibitAllocPct;
+                    // SGOV takes whatever is left (Cash buffer + IBIT sell-off + UPRO sell-off)
+                    const targetSgovVal = totalValue - targetUproVal - targetIbitVal;
                     
                     setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`);
                     setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`);
-                    setTxt('targetIbitVal', `($${Math.round(totalValue * 0.1).toLocaleString()})`);
-                    setTxt('targetSgovPct', `${(100 - finalUproPct)}%`);
+                    setTxt('targetIbitVal', `($${Math.round(targetIbitVal).toLocaleString()})`);
+                    
+                    // Safe Percentage Display
+                    const sgovPct = totalValue > 0 ? ((targetSgovVal/totalValue)*100).toFixed(0) : '0';
+                    setTxt('targetSgovPct', `${sgovPct}%`);
 
                     const diffU = (sf('uproShares') * sf('uproPrice')) - targetUproVal;
                     const diffS = (sf('sgovShares') * sf('sgovPrice')) - targetSgovVal;
-                    const diffI = (sf('ibitShares') * sf('ibitPrice')) - (totalValue * 0.1);
+                    const diffI = (sf('ibitShares') * sf('ibitPrice')) - targetIbitVal;
 
                     const getAction = (diff, price) => {
                         if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`;
@@ -782,6 +811,7 @@
 
                     // Strategy Suggestions
                     const vix = sf('vixIndex');
+                    const coreCapital = totalValue * 0.9; // Base for options
                     const targetUproShares = sf('uproPrice') > 0 ? Math.round(targetUproVal / sf('uproPrice')) : 0;
                     let vixText = "無";
                     let vixClass = "text-slate-500";
@@ -936,7 +966,7 @@
             if(globalHistoryData.length) { 
                 const l = globalHistoryData[0]; 
                 if(force) setVal('recordDate',l.manualDate); 
-                ['vooClose', 'wema20', 'wema12', 'wema5', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount'].forEach(id => {
+                ['vooClose', 'wema20', 'wema12', 'wema5', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50'].forEach(id => {
                     const key = id === 'vixIndex' ? 'vix' : id;
                     setVal(id, l[key]);
                 });
@@ -976,7 +1006,7 @@
                 if(!recordDate) throw new Error("日期為必填");
 
                 // Optimized Data Collection
-                const numFields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'optPremium'];
+                const numFields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'optPremium', 'ibitWema50'];
                 const data = { manualDate: recordDate, note: getVal('recordNote'), optType: getVal('optType'), optionStatus: getVal('optionStatus') || 'Open' };
                 
                 numFields.forEach(f => {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V15.2 Final Check</title>
+    <title>UPRO V15.5 Mobile & Chart Fix</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,7 +14,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
         :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); }
         
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; padding-top: max(1rem, var(--safe-top)); padding-bottom: calc(90px + var(--safe-bottom)); -webkit-tap-highlight-color: transparent; user-select: none; }
+        /* 增加底部 Padding 以防手機版被遮擋 */
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; padding-top: max(1rem, var(--safe-top)); padding-bottom: calc(130px + var(--safe-bottom)); -webkit-tap-highlight-color: transparent; user-select: none; }
+        
         input, select, textarea { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important; border-radius: 0.8rem !important; padding: 0 1rem !important; font-size: 16px !important; height: 52px !important; width: 100%; appearance: none; }
         input:focus, textarea:focus { border-color: #60a5fa !important; background-color: #0f172a !important; outline: none; }
         label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
@@ -74,13 +76,17 @@
         .matrix-table td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
         .tag-risk-off { color: #f87171; font-weight: bold; }
         .tag-risk-on { color: #4ade80; font-weight: bold; }
+        
+        .badge-open { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .badge-closed { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; }
+        .badge-exercised { background: rgba(168, 85, 247, 0.1); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; }
     </style>
 </head>
 <body class="p-4 md:p-6 max-w-lg mx-auto lg:max-w-6xl">
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-amber-500">V15.2 Final</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-amber-500">V15.5 Mobile Fix</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -183,6 +189,8 @@
                 <textarea id="recordNote" rows="2" placeholder="紀錄心情或筆記..." class="mb-4 bg-slate-900 border-slate-700 w-full rounded-xl"></textarea>
                 <button id="saveBtn" onclick="saveRecord()" class="btn-main btn-save active:scale-95 transition-transform"><i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span></button>
             </div>
+            
+            <div class="h-20 lg:hidden"></div>
         </div>
         
         <!-- VIEW 2: DASHBOARD (Strategy) -->
@@ -268,6 +276,40 @@
                 </div>
             </div>
 
+            <!-- RESTORED: SIMULATION LAB -->
+            <div class="card p-5 border border-purple-500/30 bg-[#162032]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2"><i data-lucide="flask-conical" class="w-5 h-5 text-purple-400"></i><h3 class="text-sm font-bold text-purple-200 uppercase tracking-wide">情境模擬實驗室</h3></div>
+                </div>
+                
+                <div id="simError" class="hidden text-center text-xs text-red-400 mb-3 font-bold bg-red-900/20 py-2 rounded">⚠️ 請先輸入 VOO 與 UPRO 價格</div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <label class="text-[10px] text-slate-400 mb-1">手動輸入 VOO 漲跌</label>
+                        <div class="relative">
+                            <input type="number" id="simPercent" value="-5" oninput="updateSimulation()" class="!h-10 text-lg font-bold text-center pl-2 pr-8 border-purple-500/30 bg-purple-900/10">
+                            <span class="absolute right-3 top-2 text-purple-400 text-xs font-bold">%</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 text-right">
+                        <span class="text-[10px] text-slate-500 uppercase block">預估總資產損益</span>
+                        <span id="simAssetResult" class="text-lg font-black text-slate-300">--</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-700/50">
+                    <table class="w-full sim-table">
+                        <thead>
+                            <tr><th>目標均線</th><th>價格</th><th>距離</th><th>預估損益</th></tr>
+                        </thead>
+                        <tbody id="emaSimBody">
+                            <tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- GPS -->
             <div class="card p-5 border border-slate-700/50 bg-[#162032]">
                 <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
@@ -280,7 +322,8 @@
                     <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias &gt; 12% (危險)</div><div class="strategy-text text-xs">乖離護欄上限 50%。</div></div>
                 </div>
             </div>
-
+            
+            <div class="h-20 lg:hidden"></div>
         </div>
 
         <!-- VIEW 3: NUCLEAR (Independent) -->
@@ -361,7 +404,7 @@
                                  </div>
                              </div>
                              <div class="flex justify-between items-center pt-2 border-t border-slate-800">
-                                 <span class="text-[10px] text-slate-400">停利目標 (+20%)</span>
+                                 <span class="text-[10px] text-slate-400">停利目標 (+50%)</span>
                                  <span id="loanTargetPrice" class="text-xs font-bold text-green-400">--</span>
                              </div>
                         </div>
@@ -379,6 +422,76 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="h-20 lg:hidden"></div>
+        </div>
+
+        <!-- VIEW 4: HISTORY (RESTORED) -->
+        <div id="view-history" class="mobile-view lg:col-span-12 lg:order-4">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="card p-3 border-t-4 border-green-400">
+                    <div class="text-[10px] text-slate-500 uppercase">YTD 報酬</div>
+                    <div id="ytdDisplay" class="text-lg font-black text-white">--%</div>
+                </div>
+                <div class="card p-3 border-t-4 border-emerald-500">
+                    <div class="text-[10px] text-slate-500 uppercase">今年權利金</div>
+                    <div id="totalIncomeDisplay" class="text-lg font-black text-emerald-400">--</div>
+                </div>
+                <div class="card p-3 border-t-4 border-red-500">
+                    <div class="text-[10px] text-slate-500 uppercase">年度 MDD</div>
+                    <div id="mddDisplay" class="text-lg font-black text-red-500">--%</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card p-4 mb-4 bg-[#162032] border border-slate-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase">資產趨勢圖</h3>
+                    <button id="chartTypeBtn" onclick="toggleChartType()" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded border border-slate-600">📉 收益圖</button>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="assetChart"></canvas>
+                </div>
+            </div>
+
+            <!-- History List -->
+            <div class="card bg-[#1e293b] border border-slate-700 overflow-hidden">
+                <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="font-bold text-white flex items-center"><i data-lucide="history" class="w-4 h-4 mr-2 text-blue-400"></i> 交易紀錄</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-900/50 text-[10px] uppercase text-slate-400">
+                            <tr>
+                                <th class="py-3 pl-4">日期</th>
+                                <th class="py-3">狀態</th>
+                                <th class="py-3 text-right">總值</th>
+                                <th class="py-3 text-right">損益</th>
+                                <th class="py-3 pr-4 text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyList" class="text-sm divide-y divide-slate-800">
+                            <!-- JS Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Annual/Monthly Summaries (Hidden by default) -->
+            <div class="mt-4">
+                 <button onclick="toggleAnnualExpansion()" class="flex items-center text-xs font-bold text-slate-400 mb-2 w-full"><span id="annualToggleIcon" class="mr-2">⬇️ 展開</span> 年度績效表</button>
+                 <div id="annualSummaryContainer" class="hidden card overflow-hidden mb-4">
+                     <table class="w-full summary-table"><thead><tr><th class="pl-4">年份</th><th>期末淨值</th><th>報酬率</th><th>MDD</th><th class="pr-4">權利金</th></tr></thead><tbody id="annualSummaryBody"></tbody></table>
+                 </div>
+
+                 <button onclick="toggleMonthlyExpansion()" class="flex items-center text-xs font-bold text-slate-400 mb-2 w-full"><span id="monthlyToggleIcon" class="mr-2">⬇️ 展開</span> 月度績效表</button>
+                 <div id="monthlySummaryContainer" class="hidden card overflow-hidden">
+                     <table class="w-full summary-table"><thead><tr><th class="pl-4">月份</th><th>期末淨值</th><th>報酬率</th><th class="pr-4">權利金</th></tr></thead><tbody id="monthlySummaryBody"></tbody></table>
+                 </div>
+            </div>
+            
+            <div class="h-24 lg:hidden"></div>
         </div>
 
         <!-- VIEW 5: RULES (TEXT PROTOCOL) -->
@@ -386,7 +499,7 @@
             <div class="card p-6 bg-[#0f172a] border border-blue-900/50">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
                     <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2"><i data-lucide="shield" class="w-6 h-6 text-blue-500"></i> V5.2 戰略白皮書</h2>
-                    <span class="text-[10px] text-slate-500 font-mono">REVISION.4</span>
+                    <span class="text-[10px] text-slate-500 font-mono">REVISION.5</span>
                 </div>
 
                 <div class="space-y-6">
@@ -499,12 +612,14 @@
                         <div class="text-[10px] font-bold text-slate-500 uppercase mb-2">外掛模組: 核武器 (A方案)</div>
                         <div class="text-[10px] text-slate-500 bg-slate-900/50 p-2 rounded">
                             <p><strong>目標：</strong> 零成本存股 (Free Ride)。</p>
-                            <p><strong>SOP：</strong> 借貸停泊 SGOV &rarr; 暴跌時買入 VOO (1x) &rarr; 獲利 20% 強制還本 &rarr; 留下免費 VOO。</p>
+                            <p><strong>SOP：</strong> 借貸停泊 SGOV &rarr; 暴跌時買入 VOO (1x) &rarr; 獲利 50% 強制還本 &rarr; 留下免費 VOO。</p>
                         </div>
                     </div>
 
                 </div>
             </div>
+            
+            <div class="h-20 lg:hidden"></div>
         </div>
 
     </div>
@@ -824,32 +939,7 @@
 
         function updateSimulation() { try { const vooPrice = sf('vooClose'); const uproPrice = sf('uproPrice'); const uproShares = sf('uproShares'); const currentTotal = getAssetTotal(); const errorEl = $('simError'); if(!vooPrice || !uproPrice) { if(errorEl) errorEl.classList.remove('hidden'); setTxt('simAssetResult', "--"); $('emaSimBody').innerHTML = '<tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>'; return; } else { if(errorEl) errorEl.classList.add('hidden'); } const pct = parseFloat(getVal('simPercent')) || 0; const leverage = pct < 0 ? 2.8 : 3.0; const calculateSim = (pChange) => { const newUproPrice = uproPrice * (1 + (pChange * leverage / 100)); const newIbitPrice = sf('ibitPrice') * (1 + (pChange * 1.5 / 100)); const newUproVal = newUproPrice * uproShares; const newIbitVal = newIbitPrice * sf('ibitShares'); const fixedVal = (sf('sgovShares') * sf('sgovPrice')) + sf('cashAmount'); return (newUproVal + newIbitVal + fixedVal) - currentTotal; }; const pl = calculateSim(pct); const el = $('simAssetResult'); el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`; el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`; $('simPercent').style.color = pct > 0 ? '#4ade80' : (pct < 0 ? '#f87171' : '#ffffff'); const emas = [{ label: '5MA', val: sf('wema5') }, { label: '12MA', val: sf('wema12') }, { label: '20MA', val: sf('wema20') }]; const tbody = $('emaSimBody'); tbody.innerHTML = ''; emas.forEach(ema => { if(ema.val > 0) { const emaPct = ((ema.val - vooPrice) / vooPrice) * 100; const emaPl = calculateSim(emaPct); const row = document.createElement('tr'); const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400'; const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'; row.innerHTML = `<td>${ema.label}</td><td>${ema.val.toFixed(2)}</td><td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td><td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>`; tbody.appendChild(row); } else { tbody.innerHTML += `<tr><td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td></tr>`; } }); } catch(e) { console.warn("Sim Error", e); } }
 
-        function calculateStrategy() { try { const totalValue = getAssetTotal(); const netEquity = getNetEquity(); 
-        
-        // VISUAL FIX: Switch Logic
-        // If loan is active (>0), show "Total Assets (-Loan)"
-        // If loan is 0, show "Net Equity"
-        const loanAmt = sf('activeLoanAmount');
-        
-        if($('netEquityLabel')) {
-            if(loanAmt > 0) {
-                 $('netEquityLabel').innerText = "真實淨值 (含信貸)";
-                 $('netEquityDisplay').innerHTML = `$${Math.round(totalValue).toLocaleString()} <span class="text-lg text-red-400 font-bold block sm:inline">(-$${Math.round(loanAmt).toLocaleString()})</span>`;
-                 if($('totalExposureDisplay')) {
-                     // In this mode, maybe show "Net Equity" in small text
-                     $('exposureLabel').innerText = "淨值";
-                     $('totalExposureDisplay').innerText = `$${Math.round(netEquity).toLocaleString()}`;
-                 }
-            } else {
-                 $('netEquityLabel').innerText = "真實淨值 (Equity)";
-                 $('netEquityDisplay').innerText = `$${Math.round(netEquity).toLocaleString()}`;
-                 if($('totalExposureDisplay')) {
-                     $('exposureLabel').innerText = "總曝險";
-                     $('totalExposureDisplay').innerText = `$${Math.round(totalValue).toLocaleString()}`;
-                 }
-            }
-        }
-        
+        function calculateStrategy() { try { const totalValue = getAssetTotal(); const netEquity = getNetEquity(); if($('totalValueDisplay')) setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`); if($('netEquityDisplay')) setTxt('netEquityDisplay', `$${Math.round(netEquity).toLocaleString()}`); if($('totalExposureDisplay')) setTxt('totalExposureDisplay', `$${Math.round(totalValue).toLocaleString()}`); 
         
         // Loan Monitor Logic
         const loanActive = $('loanActive').checked;
@@ -860,16 +950,17 @@
             const current = sf('uproPrice');
             if(entry > 0 && current > 0) {
                 const gain = ((current - entry) / entry) * 100;
-                const target = entry * 1.2;
+                // CHANGED: Target logic from 20% to 50%
+                const target = entry * 1.5; 
                 const gainEl = $('loanPnLDisplay');
                 if(gainEl) {
                     gainEl.innerText = `${gain >= 0 ? '+' : ''}${gain.toFixed(2)}%`;
-                    gainEl.className = `text-xl font-black ${gain >= 20 ? 'text-emerald-400 animate-pulse' : (gain >= 0 ? 'text-green-400' : 'text-red-400')}`;
+                    gainEl.className = `text-xl font-black ${gain >= 50 ? 'text-emerald-400 animate-pulse' : (gain >= 0 ? 'text-green-400' : 'text-red-400')}`;
                 }
                 
-                // Alert if target reached
-                if($('loanTargetPrice')) $('loanTargetPrice').innerText = `$${target.toFixed(2)} (+20%)`;
-                if(gain >= 20) {
+                // Alert if target reached (50%)
+                if($('loanTargetPrice')) $('loanTargetPrice').innerText = `$${target.toFixed(2)} (+50%)`;
+                if(gain >= 50) {
                     if($('nuclearStatus')) {
                         $('nuclearStatus').innerText = "🎉 任務達成 (還款)";
                         $('nuclearStatus').className = "text-lg font-black text-emerald-400 animate-bounce";

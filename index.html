@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0f172a">
-    <title>UPRO V13.7 Ultimate Sniper</title>
+    <title>UPRO V15.2 Final Check</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -21,9 +21,12 @@
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); overflow: hidden; margin-bottom: 1.5rem; }
         .mobile-view { display: none; animation: fadeIn 0.2s ease-out; } .mobile-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; display: flex; justify-content: space-between; padding: 0.6rem 1.5rem; z-index: 100; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); }
-        .bottom-nav-btn { color: #64748b; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; } 
-        .bottom-nav-btn.active { color: #ffffff; background: #3b82f6; transform: translateY(-2px); }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 420px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; display: flex; justify-content: space-between; padding: 0.6rem 1.2rem; z-index: 100; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); }
+        .bottom-nav-btn { color: #64748b; padding: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; } 
+        .bottom-nav-btn.active { color: #ffffff; background: #3b82f6; transform: translateY(-4px); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        .bottom-nav-btn.active-nuclear { color: #ffffff; background: #f59e0b; transform: translateY(-4px); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
+        .bottom-nav-btn.active-rules { color: #ffffff; background: #10b981; transform: translateY(-4px); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        
         .status-on { border-top: 4px solid #22c55e; } .status-off { border-top: 4px solid #ef4444; }
         .strategy-item { opacity: 0.5; padding: 12px; border-left: 3px solid transparent; margin-bottom: 8px; background: rgba(15, 23, 42, 0.5); border-radius: 0.5rem; }
         .strategy-item.active { opacity: 1; background: rgba(59, 130, 246, 0.15); border-left-color: #3b82f6; transform: scale(1.02); }
@@ -32,7 +35,6 @@
         .btn-save { background: linear-gradient(135deg, #db2777, #e11d48); color: white; }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
         .btn-nuclear { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
-        .btn-safe { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
         .opt-btn { background: #334155; color: #94a3b8; border: 1px solid transparent; transition: all 0.2s; }
         .opt-btn.active { background: #4f46e5; color: white; border-color: #818cf8; font-weight: 900; }
         .action-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem; padding: 1.5rem; z-index: 200; transform: translateY(100%); transition: transform 0.3s; border-top: 1px solid #334155; }
@@ -45,18 +47,40 @@
         .conn-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .conn-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; } .conn-offline { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
         .spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
-        /* Nuclear Style */
-        .sop-step { transition: all 0.3s ease; opacity: 0.4; border-left: 2px solid transparent; padding-left: 8px; filter: grayscale(0.8); }
-        .sop-step.active { opacity: 1; border-left-color: #34d399; filter: grayscale(0); background: rgba(52, 211, 153, 0.1); border-radius: 0 8px 8px 0; }
-        .sop-step.active-fire { opacity: 1; border-left-color: #f59e0b; filter: grayscale(0); background: rgba(245, 158, 11, 0.1); border-radius: 0 8px 8px 0; }
-        .sop-step.active-harvest { opacity: 1; border-left-color: #10b981; filter: grayscale(0); background: rgba(16, 185, 129, 0.1); border-radius: 0 8px 8px 0; }
+        
+        /* Panic Control Styles */
+        .panic-card { background: rgba(220, 38, 38, 0.1); border: 1px solid #ef4444; border-left-width: 4px; }
+        .panic-text { color: #fca5a5; font-size: 0.8rem; line-height: 1.5; font-weight: 500; }
+        .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; font-weight: bold; margin-right: 8px; }
+        .step-wait { background: #475569; color: #94a3b8; }
+        .step-ready { background: #eab308; color: #000; animation: pulse 2s infinite; }
+        .step-fire { background: #22c55e; color: #000; box-shadow: 0 0 10px #22c55e; }
+        
+        /* SOP Step Row Styles */
+        .sop-step { transition: all 0.3s ease; opacity: 0.5; border-left: 3px solid transparent; filter: grayscale(0.6); }
+        .sop-step.active { opacity: 1; border-left-color: #34d399; filter: grayscale(0); background: rgba(52, 211, 153, 0.1); }
+        .sop-step.active-fire { opacity: 1; border-left-color: #f59e0b; filter: grayscale(0); background: rgba(245, 158, 11, 0.1); }
+        
+        /* Protocol Page specific */
+        .protocol-section { margin-bottom: 2rem; }
+        .protocol-title { font-size: 0.85rem; font-weight: 900; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 4px; }
+        .protocol-content { font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; }
+        .highlight-box { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 0.5rem; padding: 1rem; }
+        .rule-item { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .rule-icon { color: #f59e0b; flex-shrink: 0; margin-top: 4px; }
+        
+        .matrix-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 8px; }
+        .matrix-table th { text-align: left; color: #94a3b8; border-bottom: 1px solid #334155; padding: 4px; font-weight: bold; }
+        .matrix-table td { padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
+        .tag-risk-off { color: #f87171; font-weight: bold; }
+        .tag-risk-on { color: #4ade80; font-weight: bold; }
     </style>
 </head>
 <body class="p-4 md:p-6 max-w-lg mx-auto lg:max-w-6xl">
 
     <div class="flex justify-between items-center mb-6 px-1">
         <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-emerald-400">V13.7 Ultimate</span></h1>
+            <h1 class="text-2xl font-black text-white tracking-tight">UPRO <span class="text-amber-500">V15.2 Final</span></h1>
             <div class="flex items-center mt-1 opacity-60">
                 <div id="connDot" class="conn-dot conn-offline"></div>
                 <p id="connText" class="text-xs text-slate-400 font-medium">連線中...</p>
@@ -67,6 +91,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
 
+        <!-- VIEW 1: INPUTS (Daily Routine) -->
         <div id="view-inputs" class="mobile-view active lg:col-span-4 lg:order-1">
             <!-- Market Data -->
             <div class="card p-5 border-l-4 border-indigo-500">
@@ -87,14 +112,14 @@
                             <a id="chartLink" href="#" target="_blank" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded flex items-center transition-colors"><i data-lucide="external-link" class="w-3 h-3 mr-1"></i> 📈 圖表</a>
                         </div>
                         <div class="grid grid-cols-3 gap-3 mb-3">
-                            <div><label class="text-[10px]">5 WEMA</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm border-amber-500/30"></div>
+                            <div><label class="text-[10px] text-amber-400 font-bold">5 MA (動能)</label><input type="number" id="wema5" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm border-amber-500/50"></div>
                             <div><label class="text-[10px]">12 WEMA</label><input type="number" id="wema12" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
                             <div><label class="text-[10px]">20 WEMA</label><input type="number" id="wema20" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm"></div>
                         </div>
                         <div class="grid grid-cols-3 gap-3">
                             <div><label class="text-[10px]">VIX</label><input type="number" id="vixIndex" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
-                            <div><label class="text-[10px]">RSI (週/日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm"></div>
-                            <div><label class="text-[10px] text-pink-400 font-bold">IBIT 50MA</label><input type="number" id="ibitWema50" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm border-pink-500/30"></div>
+                            <div><label class="text-[10px] text-amber-400 font-bold">RSI (日)</label><input type="number" id="dailyRsi" inputmode="decimal" step="0.1" oninput="handleInput()" class="!h-10 text-sm border-amber-500/50"></div>
+                            <div><label class="text-[10px] text-pink-400">IBIT 50MA</label><input type="number" id="ibitWema50" inputmode="decimal" step="0.01" oninput="handleInput()" class="!h-10 text-sm border-pink-500/30"></div>
                         </div>
                     </div>
                 </div>
@@ -160,6 +185,7 @@
             </div>
         </div>
         
+        <!-- VIEW 2: DASHBOARD (Strategy) -->
         <div id="view-dashboard" class="mobile-view lg:col-span-8 lg:order-2">
             <h2 class="text-xl font-bold text-slate-200 lg:hidden px-1 mb-4">策略儀表板</h2>
 
@@ -176,8 +202,9 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">總資產淨值</div>
-                        <div id="totalValueDisplay" class="text-3xl font-black text-yellow-400 tracking-tighter">$0</div>
+                        <div class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2" id="netEquityLabel">真實淨值 (含信貸)</div>
+                        <div id="netEquityDisplay" class="text-3xl font-black text-yellow-400 tracking-tighter">$0</div>
+                        <div class="text-[10px] text-slate-500 mt-1" id="exposureContainer"><span id="exposureLabel">總曝險</span>: <span id="totalExposureDisplay">$0</span></div>
                     </div>
                 </div>
             </div>
@@ -192,7 +219,7 @@
                 <div class="space-y-3 mb-4">
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
-                            <div class="text-[10px] text-red-400 font-bold uppercase">UPRO 核心</div>
+                            <div class="text-[10px] text-red-400 font-bold uppercase">UPRO 核心 (90%)</div>
                             <div class="text-xl font-black text-white"><span id="targetUproPct">--%</span> <span class="text-xs text-slate-500 font-normal" id="targetUproVal">($--)</span></div>
                             <div id="uproReason" class="text-[10px] text-slate-500">Wait...</div>
                         </div>
@@ -215,7 +242,7 @@
 
                     <div class="bg-slate-900 p-3 rounded-xl border border-slate-700/50 flex justify-between items-center">
                         <div>
-                            <div class="text-[10px] text-pink-400 font-bold uppercase">IBIT 衛星</div>
+                            <div class="text-[10px] text-pink-400 font-bold uppercase">IBIT 衛星 (10%)</div>
                             <div class="text-xl font-black text-white"><span id="ibitPctDisplay">10%</span> <span class="text-xs text-slate-500 font-normal" id="targetIbitVal">($--)</span></div>
                             <div id="ibitReason" class="text-[10px] text-slate-500">Wait...</div>
                         </div>
@@ -241,20 +268,37 @@
                 </div>
             </div>
 
-            <!-- NUCLEAR WEAPON CARD (NEW) -->
-            <div class="card p-5 border border-emerald-600/50 bg-[#162032] relative overflow-hidden" id="nuclearCard">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-900 via-emerald-500 to-emerald-900"></div>
+            <!-- GPS -->
+            <div class="card p-5 border border-slate-700/50 bg-[#162032]">
+                <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
+                <div class="space-y-1" id="strategyGPS">
+                    <div class="strategy-item" id="gps-risk-off" data-state="risk-off"><div class="strategy-title">Risk OFF (20MA 下)</div><div class="strategy-text text-xs">清倉 UPRO，保留現金/SGOV，等待站回 (需2週)。</div></div>
+                    <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy"><div class="strategy-title">暴利濾網 (RSI &lt; 30)</div><div class="strategy-text text-xs">強制滿倉 UPRO，無視減碼訊號。</div></div>
+                    <div class="strategy-item" id="gps-bias-low" data-state="bias-low"><div class="strategy-title">Bias &lt; 4% (全速)</div><div class="strategy-text text-xs">乖離護欄上限 100%。</div></div>
+                    <div class="strategy-item" id="gps-bias-med" data-state="bias-med"><div class="strategy-title">Bias 4-8% (微調)</div><div class="strategy-text text-xs">乖離護欄上限 80%。</div></div>
+                    <div class="strategy-item" id="gps-bias-high" data-state="bias-high"><div class="strategy-title">Bias 8-12% (警戒)</div><div class="strategy-text text-xs">乖離護欄上限 60%。</div></div>
+                    <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias &gt; 12% (危險)</div><div class="strategy-text text-xs">乖離護欄上限 50%。</div></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- VIEW 3: NUCLEAR (Independent) -->
+        <div id="view-nuclear" class="mobile-view lg:col-span-12 lg:order-3">
+             <!-- NUCLEAR WEAPON CARD (B-MODE) -->
+            <div class="card p-5 border border-amber-600/50 bg-[#162032] relative overflow-hidden" id="nuclearCard">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 via-amber-500 to-amber-900"></div>
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
-                        <div class="bg-emerald-900/40 p-2 rounded-lg"><i data-lucide="shield-check" class="w-5 h-5 text-emerald-500" id="nuclearIcon"></i></div>
-                        <h3 class="text-sm font-black text-emerald-500 uppercase tracking-wide">核武器 (狙擊手模式)</h3>
+                        <div class="bg-amber-900/40 p-2 rounded-lg"><i data-lucide="crosshair" class="w-5 h-5 text-amber-500" id="nuclearIcon"></i></div>
+                        <h3 class="text-sm font-black text-amber-500 uppercase tracking-wide">核武器 (B方案: 激進狙擊)</h3>
                     </div>
-                    <button onclick="openNuclearModal()" class="text-[10px] bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-lg active:scale-95 transition-all flex items-center border border-emerald-500/50"><i data-lucide="settings-2" class="w-3 h-3 mr-1"></i> 參數</button>
+                    <button onclick="openNuclearModal()" class="text-[10px] bg-amber-700 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-lg active:scale-95 transition-all flex items-center border border-amber-500/50"><i data-lucide="settings-2" class="w-3 h-3 mr-1"></i> 參數</button>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3 mb-2">
                     <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700">
-                        <div class="text-[10px] text-slate-500 font-bold uppercase mb-1">信貸發射指令</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase mb-1">發射狀態</div>
                         <div id="nuclearStatus" class="text-lg font-black text-slate-400">待命 HOLD</div>
                     </div>
                     <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700">
@@ -262,109 +306,224 @@
                         <div id="arbitrageDisplay" class="text-lg font-black text-green-400">+0.00%</div>
                     </div>
                 </div>
-                <div id="nuclearReason" class="text-[10px] text-slate-400 bg-slate-900 p-2 rounded border border-slate-700/50 mt-1">
-                    資金停泊中。SGOV 殖利率 > 貸款利率，正在賺取無風險利差。
-                </div>
-            </div>
-
-            <!-- GPS -->
-            <div class="card p-5 border border-slate-700/50 bg-[#162032]">
-                <div class="flex items-center gap-2 mb-4"><i data-lucide="compass" class="w-4 h-4 text-blue-500"></i><h3 class="text-xs font-bold text-slate-200 uppercase tracking-wide">V5.2 策略導航</h3></div>
-                <div class="space-y-1" id="strategyGPS">
-                    <div class="strategy-item" id="gps-risk-off" data-state="risk-off"><div class="strategy-title">Risk OFF (20MA 下)</div><div class="strategy-text text-xs">清倉 UPRO，保留現金/SGOV，等待站回 (需2週)。</div></div>
-                    <div class="strategy-item" id="gps-rsi-buy" data-state="rsi-buy"><div class="strategy-title">暴利濾網 (RSI < 30)</div><div class="strategy-text text-xs">強制滿倉 UPRO，<span class="text-emerald-400 font-bold">啟動核武器 (信貸)</span>。</div></div>
-                    <div class="strategy-item" id="gps-bias-low" data-state="bias-low"><div class="strategy-title">Bias < 4% (全速)</div><div class="strategy-text text-xs">乖離護欄上限 100%。</div></div>
-                    <div class="strategy-item" id="gps-bias-med" data-state="bias-med"><div class="strategy-title">Bias 4-8% (微調)</div><div class="strategy-text text-xs">乖離護欄上限 80%。</div></div>
-                    <div class="strategy-item" id="gps-bias-high" data-state="bias-high"><div class="strategy-title">Bias 8-12% (警戒)</div><div class="strategy-text text-xs">乖離護欄上限 60%。</div></div>
-                    <div class="strategy-item" id="gps-bias-extreme" data-state="bias-extreme"><div class="strategy-title">Bias > 12% (危險)</div><div class="strategy-text text-xs">乖離護欄上限 50%。</div></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-history" class="mobile-view lg:col-span-12 lg:order-3">
-            <!-- History Card (Same as V12.9) -->
-             <div class="card p-5">
-                <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-xl font-bold text-slate-200">歷史紀錄</h2>
-                    <button onclick="toggleChartType()" id="chartTypeBtn" class="text-xs bg-slate-700 px-3 py-2 rounded-lg text-white font-bold border border-slate-600 active:scale-95 transition-transform">📉 收益圖</button>
-                </div>
-                <div class="grid grid-cols-3 gap-3 mb-6">
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年漲幅 (YTD)</div>
-                        <div id="ytdDisplay" class="text-lg font-black text-slate-200">--%</div>
-                    </div>
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年最大回撤</div>
-                        <div id="mddDisplay" class="text-lg font-black text-red-400">--%</div>
-                    </div>
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-                        <div class="text-[10px] text-slate-400 font-bold uppercase mb-1">今年權利金</div>
-                        <div id="totalIncomeDisplay" class="text-lg font-black text-green-400">$0</div>
-                    </div>
-                </div>
                 
-                <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
-                    <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleAnnualExpansion()">
-                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">年度績效總結</span>
-                        <div class="text-xs text-blue-400" id="annualToggleIcon">⬇️ 展開</div>
+                <div id="nuclearReason" class="text-[10px] text-slate-400 bg-slate-900 p-2 rounded border border-slate-700/50 mt-1 mb-4">
+                    系統鎖定中。等待 RSI &lt; 30 後的黃金交叉訊號。
+                </div>
+
+                <!-- B-MODE PROTOCOL CARD (Always Visible) -->
+                <div class="bg-slate-800/60 rounded-xl border border-amber-500/30 overflow-hidden mb-4">
+                    <div class="bg-amber-900/20 px-3 py-2 border-b border-amber-500/20 flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-amber-500 uppercase flex items-center"><i data-lucide="shield-alert" class="w-3 h-3 mr-1"></i> 低轉高狙擊 SOP</span>
+                        <span class="text-[9px] text-amber-400/70 bg-amber-900/40 px-1.5 py-0.5 rounded">嚴格執行</span>
                     </div>
-                    <div id="annualSummaryContainer" class="hidden overflow-x-auto">
-                        <table class="w-full summary-table">
-                            <thead>
-                                <tr>
-                                    <th class="pl-4 text-left">年份</th>
-                                    <th>年底淨值</th>
-                                    <th>年度漲幅 (權利金%)</th>
-                                    <th>最大回撤</th>
-                                    <th class="pr-4">年度權利金</th>
-                                </tr>
-                            </thead>
-                            <tbody id="annualSummaryBody">
-                            </tbody>
-                        </table>
+                    <div class="p-3 space-y-2">
+                        <div id="sop-step-1" class="sop-step flex items-center text-[11px] text-slate-300 p-1 rounded">
+                            <span class="step-badge step-wait" id="step1-badge">1</span>
+                            <span class="flex-1">等待 <span class="text-red-400 font-bold">RSI &lt; 30</span> (解鎖安全栓)</span>
+                        </div>
+                        <div id="sop-step-2" class="sop-step flex items-center text-[11px] text-slate-300 p-1 rounded">
+                            <span class="step-badge step-wait" id="step2-badge">2</span>
+                            <span class="flex-1">確認 <span class="text-amber-400 font-bold">RSI 上穿 30</span> + <span class="text-amber-400 font-bold">站上 5MA</span> (發射)</span>
+                        </div>
+                        <div id="sop-step-3" class="sop-step flex items-center text-[11px] text-slate-300 p-1 rounded">
+                            <span class="step-badge step-wait" id="step3-badge">3</span>
+                            <span class="flex-1">買入 <span class="text-white font-bold">UPRO</span>。若破進場低點，<span class="text-red-500 font-bold underline">強制砍單</span>。</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-6 overflow-hidden rounded-xl border border-slate-700/50 bg-[#162032]">
-                    <div class="px-4 py-3 bg-slate-800/50 border-b border-slate-700/50 flex justify-between items-center cursor-pointer" onclick="toggleMonthlyExpansion()">
-                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">月度績效詳情</span>
-                        <div class="text-xs text-blue-400" id="monthlyToggleIcon">⬇️ 展開</div>
+                <!-- NEW: LIABILITY MANAGEMENT CARD -->
+                <div class="card p-5 border border-red-900/50 bg-[#1e293b]">
+                     <div class="flex justify-between items-center mb-4">
+                         <h3 class="text-sm font-bold text-red-300 flex items-center"><i data-lucide="landmark" class="w-5 h-5 mr-2"></i> 負債管理 (會計)</h3>
+                         <div class="flex items-center gap-2">
+                            <label class="text-[10px] text-slate-500 !mb-0">啟動監控</label>
+                            <input type="checkbox" id="loanActive" class="w-4 h-4 !h-4 !w-4 rounded-sm border-slate-600 bg-slate-800" onchange="handleInput()">
+                         </div>
                     </div>
-                    <div id="monthlySummaryContainer" class="hidden overflow-x-auto">
-                        <table class="w-full summary-table">
-                            <thead>
-                                <tr>
-                                    <th class="pl-4 text-left">月份</th>
-                                    <th>年底淨值</th>
-                                    <th>月漲跌</th>
-                                    <th class="pr-4">月權利金</th>
-                                </tr>
-                            </thead>
-                            <tbody id="monthlySummaryBody">
-                            </tbody>
-                        </table>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] text-slate-500">目前欠款總額 (Liability)</label>
+                            <input type="number" id="activeLoanAmount" inputmode="decimal" step="100" placeholder="0" class="text-xl font-bold text-red-300 border-red-900/30 bg-red-900/10" oninput="handleInput()">
+                        </div>
+                        
+                        <div id="loanMonitor" class="hidden bg-slate-900 p-3 rounded-lg border border-slate-700">
+                             <div class="flex gap-3 mb-2">
+                                 <div class="flex-1">
+                                     <label class="text-[10px] text-slate-500">UPRO 進場均價</label>
+                                     <input type="number" id="loanEntryPrice" inputmode="decimal" class="!h-10 text-sm bg-slate-800 border-slate-600" placeholder="例如 75.5" oninput="handleInput()">
+                                 </div>
+                                 <div class="flex-1">
+                                     <label class="text-[10px] text-slate-500">獨立損益 %</label>
+                                     <div id="loanPnLDisplay" class="text-xl font-black text-slate-500 h-10 flex items-center">--</div>
+                                 </div>
+                             </div>
+                             <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                                 <span class="text-[10px] text-slate-400">停利目標 (+20%)</span>
+                                 <span id="loanTargetPrice" class="text-xs font-bold text-green-400">--</span>
+                             </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/40 rounded-2xl p-2 border border-slate-700/30 h-60 relative mb-6"><canvas id="assetChart"></canvas></div>
-                <div class="overflow-x-auto"><table class="w-full history-table text-left"><thead class="border-b border-slate-700"><tr class="text-slate-400"><th class="pl-2">日期</th><th>狀態</th><th>淨值</th><th>備註/收益</th><th class="text-right pr-2"></th></tr></thead><tbody id="historyList"><tr><td colspan="5" class="text-center py-8 text-slate-500">載入中...</td></tr></tbody></table></div>
+                <!-- MENTAL ANCHOR -->
+                <div class="panic-card p-3 rounded-xl mt-4 flex gap-3 items-start">
+                    <div class="mt-0.5"><i data-lucide="anchor" class="w-5 h-5 text-red-500"></i></div>
+                    <div class="panic-text">
+                        <div class="text-red-400 font-bold text-xs mb-1 uppercase">戰場紀律 (防止恐慌亂砍)</div>
+                        <p>1. 這是借來的錢，不是你的錢。沒訊號絕不入場。</p>
+                        <p>2. 進場後嚴守停損 (進場日低點)，被打掉就認賠，當作繳保費。</p>
+                        <p>3. 若成功反轉，RSI 到 70 務必先還一半本金，剩下才是賺的。</p>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- VIEW 5: RULES (TEXT PROTOCOL) -->
+        <div id="view-rules" class="mobile-view lg:col-span-12 lg:order-5">
+            <div class="card p-6 bg-[#0f172a] border border-blue-900/50">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                    <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2"><i data-lucide="shield" class="w-6 h-6 text-blue-500"></i> V5.2 戰略白皮書</h2>
+                    <span class="text-[10px] text-slate-500 font-mono">REVISION.4</span>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- SECTION 1: ASSET ALLOCATION -->
+                    <div class="protocol-section">
+                        <div class="protocol-title"><i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> 一、資產配置區塊 (100%)</div>
+                        <div class="protocol-content">
+                            <div class="highlight-box">
+                                <div class="rule-item">
+                                    <i data-lucide="zap" class="rule-icon w-4 h-4"></i>
+                                    <div>
+                                        <span class="block text-white font-bold text-xs">動能核心區 (90%)</span>
+                                        <span class="text-[10px] text-slate-400">UPRO 或 SGOV/現金。</span>
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i data-lucide="moon" class="rule-icon w-4 h-4"></i>
+                                    <div>
+                                        <span class="block text-pink-400 font-bold text-xs">核心衛星區 (10%)</span>
+                                        <span class="text-[10px] text-slate-400">IBIT (獨立運作)。<br>買賣規則: 跌破 50EMA 賣出，高於 50EMA 買進。</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: CORE DISCIPLINE -->
+                    <div class="protocol-section">
+                        <div class="protocol-title"><i data-lucide="skull" class="w-4 h-4 mr-2"></i> 二、核心紀律 (20WEMA 生死線)</div>
+                        <div class="protocol-content">
+                            <ul class="list-none space-y-2">
+                                <li class="flex items-start gap-2"><span class="tag-risk-off shrink-0">RISK-OFF</span> <span class="text-xs">VOO 週收盤跌破 20WEMA &rarr; <span class="text-red-400">清倉 UPRO</span>。</span></li>
+                                <li class="flex items-start gap-2"><span class="tag-risk-on shrink-0">RISK-ON</span> <span class="text-xs">VOO 連續 2 週週收盤站上 20WEMA &rarr; <span class="text-green-400">買回 UPRO</span>。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: DYNAMIC SIZING -->
+                    <div class="protocol-section">
+                        <div class="protocol-title"><i data-lucide="sliders" class="w-4 h-4 mr-2"></i> 三、動態倉位調整 (Min 邏輯)</div>
+                        <div class="protocol-content">
+                            <p class="text-[10px] text-slate-400 mb-2">公式：實際倉位 = Min (乖離護欄上限 A, 戰術微調目標 B)</p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-[10px] font-bold text-blue-400 mb-1">A. 乖離護欄 (VOO 乖離率)</div>
+                                    <table class="matrix-table">
+                                        <tr><td>&gt; 12%</td><td class="text-right text-red-400">上限 50%</td></tr>
+                                        <tr><td>8% ~ 12%</td><td class="text-right text-amber-400">上限 60%</td></tr>
+                                        <tr><td>4% ~ 8%</td><td class="text-right text-yellow-400">上限 80%</td></tr>
+                                        <tr><td>&lt; 4%</td><td class="text-right text-green-400">上限 100%</td></tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] font-bold text-blue-400 mb-1">B. 戰術微調 (均線防守)</div>
+                                    <table class="matrix-table">
+                                        <tr><td>跌破 5WEMA</td><td class="text-right text-amber-400">目標 70%</td></tr>
+                                        <tr><td>跌破 12WEMA</td><td class="text-right text-red-400">目標 50%</td></tr>
+                                        <tr><td>站上 5WEMA</td><td class="text-right text-green-400">目標 100%</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4: EXECUTION LOCK -->
+                    <div class="protocol-section">
+                        <div class="protocol-title"><i data-lucide="lock" class="w-4 h-4 mr-2"></i> 四、執行鎖定 (防洗盤)</div>
+                        <div class="protocol-content">
+                            <ul class="list-disc pl-4 text-xs space-y-1">
+                                <li><strong class="text-white">加碼 (Buy)：</strong> 需受 2 週鎖定期限制。</li>
+                                <li><strong class="text-white">減碼 (Sell)：</strong> 不受限，隨時可跑。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: ENHANCEMENT -->
+                    <div class="protocol-section">
+                        <div class="protocol-title"><i data-lucide="trending-up" class="w-4 h-4 mr-2"></i> 五、增強收益與避險</div>
+                        <div class="protocol-content space-y-4">
+                            
+                            <div class="bg-slate-800/50 p-2 rounded border border-red-500/30">
+                                <div class="text-xs font-bold text-red-400 mb-1">🔴 暴利濾網 (RSI &lt; 30)</div>
+                                <p class="text-[10px]">強制滿倉 UPRO (100%)，無視減碼訊號。</p>
+                            </div>
+
+                            <div class="bg-slate-800/50 p-2 rounded border border-green-500/30">
+                                <div class="text-xs font-bold text-green-400 mb-1">🟢 動態 Sell Call (階梯式收租)</div>
+                                <p class="text-[10px] mb-1">條件：Risk-ON 且 65 &le; VOO RSI &le; 75</p>
+                                <table class="matrix-table">
+                                    <tr><td>乖離 4%~8%</td><td class="text-right">賣 Delta 0.15~0.20 Call (防守)</td></tr>
+                                    <tr><td>乖離 8%~12%</td><td class="text-right">賣 Delta 0.20~0.25 Call (標準)</td></tr>
+                                    <tr><td>乖離 &gt; 12%</td><td class="text-right">賣 Delta 0.30 Call (積極)</td></tr>
+                                </table>
+                            </div>
+
+                            <div class="bg-slate-800/50 p-2 rounded border border-purple-500/30">
+                                <div class="text-xs font-bold text-purple-400 mb-1">🟣 VIX 避險 (Airbag)</div>
+                                <p class="text-[10px] mb-1">條件：Risk-ON。工具：VIX Bull Call Spread (Buy 20 / Sell 30)。</p>
+                                <ul class="list-disc pl-4 text-[10px] text-slate-400">
+                                    <li>VIX &lt; 13.5：每 1 萬鎂配置 1 組。</li>
+                                    <li>VIX 13.5 ~ 17：每 1.5 萬鎂配置 1 組。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ADDENDUM: NUCLEAR A-MODE -->
+                    <div class="mt-8 pt-4 border-t border-slate-700">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase mb-2">外掛模組: 核武器 (A方案)</div>
+                        <div class="text-[10px] text-slate-500 bg-slate-900/50 p-2 rounded">
+                            <p><strong>目標：</strong> 零成本存股 (Free Ride)。</p>
+                            <p><strong>SOP：</strong> 借貸停泊 SGOV &rarr; 暴跌時買入 VOO (1x) &rarr; 獲利 20% 強制還本 &rarr; 留下免費 VOO。</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <nav class="bottom-nav lg:hidden">
         <button onclick="switchView('inputs')" id="btn-inputs" class="bottom-nav-btn active"><i data-lucide="edit-3"></i></button>
         <button onclick="switchView('dashboard')" id="btn-dashboard" class="bottom-nav-btn"><i data-lucide="layout-dashboard"></i></button>
+        <button onclick="switchView('nuclear')" id="btn-nuclear" class="bottom-nav-btn"><i data-lucide="radiation"></i></button>
+        <button onclick="switchView('rules')" id="btn-rules" class="bottom-nav-btn"><i data-lucide="book-open"></i></button>
         <button onclick="switchView('history')" id="btn-history" class="bottom-nav-btn"><i data-lucide="history"></i></button>
     </nav>
 
-    <!-- Modals -->
+    <!-- Modals (Same as previous, omitted for brevity but logic included in script) -->
+    <!-- ... [Previous Modals Code] ... -->
+    <!-- Re-inserting necessary modals for functionality -->
     <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none backdrop-blur-md border">
         <div id="toastIcon"></div>
         <div id="toastMsg" class="text-sm font-bold text-white"></div>
     </div>
-
-    <!-- Nuclear Planner Modal -->
     <div id="nuclearModal" class="fixed inset-0 z-[160] hidden flex items-center justify-center p-4 modal-backdrop opacity-0 pointer-events-none">
         <div class="card p-0 w-full max-w-sm border border-emerald-600 shadow-2xl transform scale-95 transition-all bg-[#1e293b] max-h-[90vh] overflow-y-auto">
             <div class="p-5 bg-gradient-to-r from-emerald-900 to-[#1e293b] border-b border-emerald-700/50 flex justify-between items-center">
@@ -372,70 +531,14 @@
                 <button onclick="closeNuclearModal()" class="text-slate-400 p-1"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <div class="p-5 space-y-5">
-                
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
-                    <h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">1. 戰略模式選擇</h4>
-                    <select id="n_strategy_type" class="!h-10 text-sm bg-slate-800 border-slate-600 rounded-lg w-full mb-2 font-bold" onchange="calculateNuclear()">
-                        <option value="safe" selected>🛡️ 保守模式 (信貸買 VOO)</option>
-                        <option value="aggressive">🚀 激進模式 (信貸買 UPRO)</option>
-                    </select>
-                    <p class="text-[10px] text-slate-500 leading-tight">保守模式：信貸只買 1倍 (VOO/QQQ)。激進模式：信貸買 3倍 (UPRO)。強烈建議保守。</p>
-                </div>
-
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
-                    <h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">2. 套利利差計算 (等待期)</h4>
-                    <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div><label class="text-[10px]">信貸利率 (%)</label><input type="number" id="n_rate" value="2.5" step="0.1" inputmode="decimal" class="!h-10 text-sm"></div>
-                        <div><label class="text-[10px]">SGOV 殖利率 (%)</label><input type="number" id="n_sgov_yield" value="4.5" step="0.1" inputmode="decimal" class="!h-10 text-sm"></div>
-                    </div>
-                    <div class="bg-slate-800 p-2 rounded-lg flex justify-between items-center">
-                        <span class="text-[10px] text-slate-400">預估利差 (Arbitrage)</span>
-                        <span id="n_spread_display" class="text-sm font-black text-green-400">+0.00%</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700">
-                    <h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">3. 額度與年限</h4>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-3 gap-2">
-                            <div><label class="text-[10px]">月薪</label><input type="number" id="n_income" inputmode="decimal" class="!h-10 text-sm"></div>
-                            <div><label class="text-[10px]">家計</label><input type="number" id="n_family" inputmode="decimal" class="!h-10 text-sm"></div>
-                            <div><label class="text-[10px]">開銷</label><input type="number" id="n_living" inputmode="decimal" class="!h-10 text-sm"></div>
-                        </div>
-                        <div><label class="text-[10px]">年限 (年)</label><input type="number" id="n_years" value="7" inputmode="numeric" class="!h-10 text-sm"></div>
-                    </div>
-                </div>
-
-                <div class="bg-emerald-900/20 p-4 rounded-xl border border-emerald-600/50 text-center">
-                    <div class="text-xs text-emerald-500/80 font-bold uppercase mb-1">建議安全信貸額度</div>
-                    <div id="n_max_loan" class="text-3xl font-black text-emerald-400 mb-2">$0</div>
-                </div>
-
-                <!-- SOP SECTION (NEW - DYNAMIC) -->
-                <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-4 rounded-xl border border-blue-500/30">
-                    <h4 class="text-xs text-blue-300 font-bold uppercase mb-2 flex items-center"><i data-lucide="book-open" class="w-4 h-4 mr-1"></i> 動態戰術指引 (Active SOP)</h4>
-                    <div class="space-y-2 text-[11px] text-slate-300">
-                        <div id="sop-step-1" class="sop-step flex gap-2 p-1">
-                            <span class="font-bold text-blue-400 shrink-0">Step 1 潛伏:</span>
-                            <span>資金停泊 <span class="text-green-400 font-bold">SGOV</span>。賺取 <span class="text-green-400">正利差</span> (SGOV% > 信貸%)，無風險等待。</span>
-                        </div>
-                        <div id="sop-step-2" class="sop-step flex gap-2 p-1">
-                            <span class="font-bold text-amber-400 shrink-0">Step 2 射擊:</span>
-                            <span>訊號亮起時，解出 SGOV，買入 <span class="text-white font-bold">VOO (保守)</span>。<span class="text-red-400 font-bold block mt-1">⚠️ 停損機制: 虧損達 -5% 強制撤退。</span></span>
-                        </div>
-                        <div id="sop-step-3" class="sop-step flex gap-2 p-1">
-                            <span class="font-bold text-emerald-400 shrink-0">Step 3 收割:</span>
-                            <span>獲利達 <span class="text-green-400 font-bold">+20%</span> 時，賣出本金部位，<span class="text-red-400 font-bold underline">強制還款</span>，留下零成本股票。</span>
-                        </div>
-                    </div>
-                </div>
-
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">1. 戰略模式選擇</h4><select id="n_strategy_type" class="!h-10 text-sm bg-slate-800 border-slate-600 rounded-lg w-full mb-2 font-bold" onchange="calculateNuclear()"><option value="safe">🛡️ A方案: 保守模式 (信貸買 VOO)</option><option value="aggressive" selected>🚀 B方案: 激進模式 (信貸買 UPRO)</option></select><p class="text-[10px] text-slate-500 leading-tight">B 方案：右側確認狙擊 (RSI回勾 + 5MA)。適合追求最大報酬。</p></div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">2. 套利利差計算 (等待期)</h4><div class="grid grid-cols-2 gap-3 mb-2"><div><label class="text-[10px]">信貸利率 (%)</label><input type="number" id="n_rate" value="2.5" step="0.1" inputmode="decimal" class="!h-10 text-sm"></div><div><label class="text-[10px]">SGOV 殖利率 (%)</label><input type="number" id="n_sgov_yield" value="4.5" step="0.1" inputmode="decimal" class="!h-10 text-sm"></div></div><div class="bg-slate-800 p-2 rounded-lg flex justify-between items-center"><span class="text-[10px] text-slate-400">預估利差 (Arbitrage)</span><span id="n_spread_display" class="text-sm font-black text-green-400">+0.00%</span></div></div>
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-slate-400 font-bold uppercase mb-3 border-b border-slate-700 pb-2">3. 額度與年限</h4><div class="space-y-3"><div class="grid grid-cols-3 gap-2"><div><label class="text-[10px]">月薪</label><input type="number" id="n_income" inputmode="decimal" class="!h-10 text-sm"></div><div><label class="text-[10px]">家計</label><input type="number" id="n_family" inputmode="decimal" class="!h-10 text-sm"></div><div><label class="text-[10px]">開銷</label><input type="number" id="n_living" inputmode="decimal" class="!h-10 text-sm"></div></div><div><label class="text-[10px]">年限 (年)</label><input type="number" id="n_years" value="7" inputmode="numeric" class="!h-10 text-sm"></div></div></div>
+                <div class="bg-emerald-900/20 p-4 rounded-xl border border-emerald-600/50 text-center"><div class="text-xs text-emerald-500/80 font-bold uppercase mb-1">建議安全信貸額度</div><div id="n_max_loan" class="text-3xl font-black text-emerald-400 mb-2">$0</div></div>
                 <button onclick="saveNuclearParams()" class="w-full btn-main btn-safe"><i data-lucide="save" class="w-5 h-5 mr-2"></i> 儲存安全設定</button>
             </div>
         </div>
     </div>
-
-    <!-- Other Modals (Same as V12.9) -->
     <div id="optionStatusModal" class="fixed inset-0 z-[150] hidden modal-backdrop opacity-0 pointer-events-none"><div class="absolute inset-0" onclick="closeStatusModal()"></div><div id="statusSheet" class="action-sheet"><h3 class="text-center text-slate-400 text-sm font-bold uppercase mb-4">更改選擇權狀態</h3><input type="hidden" id="statusTargetId"><button onclick="saveOptionStatus('Open')" class="sheet-btn text-green-400"><span class="flex items-center"><i data-lucide="circle-dot" class="w-5 h-5 mr-3"></i> 持倉中 (Open)</span></button><button onclick="saveOptionStatus('Closed')" class="sheet-btn text-slate-400"><span class="flex items-center"><i data-lucide="x-circle" class="w-5 h-5 mr-3"></i> 已平倉 (Closed)</span></button><button onclick="saveOptionStatus('Exercised')" class="sheet-btn text-purple-400"><span class="flex items-center"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i> 已行權 (Exercised)</span></button><button onclick="closeStatusModal()" class="w-full py-4 mt-2 rounded-xl text-slate-500 font-bold">取消</button></div></div>
     <div id="settingsModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none"><div class="card p-6 w-full max-w-sm border border-slate-600 shadow-2xl transform scale-95 transition-all bg-[#1e293b]"><div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4"><h3 class="text-xl font-bold text-white">設定</h3><button onclick="closeSettings()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="space-y-6"><div class="bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30"><label class="text-xs text-indigo-300 font-bold uppercase mb-2 block">Finnhub API Key</label><div class="flex gap-2"><input type="text" id="finnHubKeyInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="輸入 API Key"><button onclick="saveApiKey()" class="btn-primary px-4 text-xs rounded-lg font-bold">儲存</button></div></div><div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><label class="text-xs text-slate-300 font-bold uppercase mb-2 block">帳號同步</label><div class="mb-3"><p class="text-[10px] text-slate-400 mb-1">您的 ID:</p><div class="flex gap-2"><input type="text" id="myUserIdDisplay" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" readonly><button onclick="copyUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">複製</button></div></div><div class="pt-3 border-t border-slate-700"><p class="text-[10px] text-slate-400 mb-1">讀取外部 ID:</p><div class="flex gap-2"><input type="text" id="targetUserIdInput" class="text-xs bg-slate-900 border-slate-600 font-mono flex-1 !h-12" placeholder="貼上 ID"><button onclick="saveTargetUserId()" class="btn-primary px-4 text-xs rounded-lg font-bold">讀取</button></div></div></div><div><label class="text-xs text-slate-500 font-bold uppercase mb-2 block">備份與匯出</label><div class="grid grid-cols-2 gap-3"><button onclick="exportJson()" class="p-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center"><i data-lucide="download" class="w-4 h-4 mr-1"></i> 匯出 JSON</button><button onclick="document.getElementById('importFile').click()" class="p-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold flex items-center justify-center"><i data-lucide="upload" class="w-4 h-4 mr-1"></i> 匯入 (JSON)</button><input type="file" id="importFile" class="hidden" accept=".json" onchange="importJson(this)"></div></div></div></div></div>
     <div id="detailsModal" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-6 modal-backdrop opacity-0 pointer-events-none"><div class="card p-6 w-full max-w-sm border border-blue-500/50 bg-[#1e293b] shadow-2xl max-h-[80vh] overflow-y-auto"><div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-2"><h3 class="text-lg font-bold text-white" id="detailDate">詳細資料</h3><button onclick="closeDetails()" class="text-slate-400 p-2"><i data-lucide="x" class="w-6 h-6"></i></button></div><div id="detailContent" class="space-y-4 text-sm"></div><button id="editBtnFromModal" class="w-full mt-4 btn-main btn-primary active:scale-95 transition-transform shadow-lg"><i data-lucide="edit-2" class="w-4 h-4 mr-2"></i> 編輯此紀錄</button></div></div>
@@ -512,7 +615,7 @@
             const living = parseFloat(getVal('n_living')) || 0;
             
             const safeMonthly = Math.max(0, income - family - living);
-            setTxt('n_safe_monthly', `$${safeMonthly.toLocaleString()}`);
+            // setTxt('n_safe_monthly', `$${safeMonthly.toLocaleString()}`);
 
             const rate = parseFloat(getVal('n_rate')) || 2.5;
             const years = parseFloat(getVal('n_years')) || 7;
@@ -531,9 +634,13 @@
             // Arbitrage Spread
             const spread = sgovYield - rate;
             const spreadEl = $('n_spread_display');
-            spreadEl.innerText = `${spread >= 0 ? '+' : ''}${spread.toFixed(2)}%`;
-            spreadEl.className = `text-sm font-black ${spread >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            if(spreadEl) {
+                spreadEl.innerText = `${spread >= 0 ? '+' : ''}${spread.toFixed(2)}%`;
+                spreadEl.className = `text-sm font-black ${spread >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            }
         }
+        // Exporting calculateNuclear so HTML event handlers can find it
+        window.calculateNuclear = calculateNuclear;
 
         function saveNuclearParams() {
             window.vibrate();
@@ -631,62 +738,179 @@
 
             setTxt('nuclearStatus', status);
             const statusEl = $('nuclearStatus');
-            statusEl.className = `text-lg font-black ${colorClass}`;
+            if(statusEl) statusEl.className = `text-lg font-black ${colorClass}`;
             setTxt('nuclearReason', reason);
             
             // Visual change for safe vs aggressive
             const card = $('nuclearCard');
             const icon = $('nuclearIcon');
-            if(strategyType === 'safe') {
-                card.className = "card p-5 border border-emerald-600/50 bg-[#162032] relative overflow-hidden";
-                card.querySelector('.absolute').className = "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-900 via-emerald-500 to-emerald-900";
-                card.querySelector('h3').className = "text-sm font-black text-emerald-500 uppercase tracking-wide";
-                icon.setAttribute('class', "w-5 h-5 text-emerald-500");
-            } else {
-                card.className = "card p-5 border border-amber-600/50 bg-[#162032] relative overflow-hidden";
-                card.querySelector('.absolute').className = "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 via-amber-500 to-amber-900";
-                card.querySelector('h3').className = "text-sm font-black text-amber-500 uppercase tracking-wide";
-                icon.setAttribute('class', "w-5 h-5 text-amber-500");
+            if(card && icon) {
+                if(strategyType === 'safe') {
+                    card.className = "card p-5 border border-emerald-600/50 bg-[#162032] relative overflow-hidden";
+                    card.querySelector('.absolute').className = "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-900 via-emerald-500 to-emerald-900";
+                    card.querySelector('h3').className = "text-sm font-black text-emerald-500 uppercase tracking-wide";
+                    icon.setAttribute('class', "w-5 h-5 text-emerald-500");
+                } else {
+                    card.className = "card p-5 border border-amber-600/50 bg-[#162032] relative overflow-hidden";
+                    card.querySelector('.absolute').className = "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-900 via-amber-500 to-amber-900";
+                    card.querySelector('h3').className = "text-sm font-black text-amber-500 uppercase tracking-wide";
+                    icon.setAttribute('class', "w-5 h-5 text-amber-500");
+                }
             }
 
             // Update Dynamic SOP UI
+            // Toggle Logic
+            const protoBody = $('protocolBody');
+            const protoIcon = $('protoIcon');
+            if(protoBody && protoBody.classList.contains('hidden')) {
+               // closed
+            } else {
+               // open
+            }
+            
             document.querySelectorAll('.sop-step').forEach(el => el.className = 'sop-step flex gap-2 p-1');
-            if(activeStep === 1) {
-                $('sop-step-1').classList.add('active');
-            } else if(activeStep === 2) {
-                $('sop-step-2').classList.add('active-fire');
-                // Optional: Also highlight step 3 as next goal
-                $('sop-step-3').style.opacity = '0.7'; 
+            
+            const step1 = $('sop-step-1');
+            const step2 = $('sop-step-2');
+            const step3 = $('sop-step-3');
+
+            if(step1 && step2 && step3) {
+                if(activeStep === 1) {
+                    step1.classList.add('active');
+                } else if(activeStep === 2) {
+                    step2.classList.add('active-fire');
+                    step3.style.opacity = '0.7'; 
+                }
             }
         }
+        
+        function toggleProtocol() {
+            const body = $('protocolBody');
+            const icon = $('protoIcon');
+            if(body && icon) {
+                if(body.classList.contains('hidden')) {
+                    body.classList.remove('hidden');
+                    icon.setAttribute('class', 'w-4 h-4 text-slate-500 rotate-180 transition-transform');
+                } else {
+                    body.classList.add('hidden');
+                    icon.setAttribute('class', 'w-4 h-4 text-slate-500 rotate-0 transition-transform');
+                }
+            }
+        }
+        window.toggleProtocol = toggleProtocol;
 
         // --- END NUCLEAR LOGIC ---
 
         function showDetails(id) {
             const data = globalHistoryData.find(d => d.id === id); if(!data) return; setTxt('detailDate', data.manualDate); const formatMoney = (v) => v ? `$${parseFloat(v).toLocaleString()}` : '-'; const formatNum = (v) => v ? parseFloat(v).toFixed(2) : '-';
-            $('detailContent').innerHTML = `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-indigo-300 font-bold uppercase mb-3">市場數據</h4><div class="grid grid-cols-3 gap-3 text-slate-300 mb-2"><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VOO</div><div class="font-bold text-white">${data.vooClose}</div></div><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">RSI</div><div class="font-bold text-white">${formatNum(data.dailyRsi)}</div></div><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VIX</div><div class="font-bold text-white">${formatNum(data.vix)}</div></div></div><div class="text-[10px] text-slate-500 text-center">EMAs: ${formatNum(data.wema5)} / ${formatNum(data.wema12)} / ${formatNum(data.wema20)}</div>${data.ibitWema50 ? `<div class="text-[10px] text-pink-400 text-center mt-2">IBIT 50MA: ${formatNum(data.ibitWema50)}</div>` : ''}</div><div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-blue-300 font-bold uppercase mb-3">庫存快照</h4><div class="space-y-2 text-slate-300 text-sm"><div class="flex justify-between border-b border-slate-700 pb-2"><span>UPRO</span><span>${data.uproShares || 0}股 @ ${data.uproPrice || 0}</span></div><div class="flex justify-between border-b border-slate-700 pb-2"><span>SGOV</span><span>${data.sgovShares || 0}股 @ ${data.sgovPrice || 0}</span></div><div class="flex justify-between border-b border-slate-700 pb-2"><span>IBIT</span><span>${data.ibitShares || 0}股 @ ${data.ibitPrice || 0}</span></div><div class="flex justify-between pt-1 font-bold text-white text-base"><span>總淨值</span><span>${formatMoney(data.totalValue)}</span></div><div class="text-xs text-right text-slate-500">現金: ${formatMoney(data.cashAmount)}</div></div></div>${data.optType ? `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-green-300 font-bold uppercase mb-2">選擇權收益</h4><div class="flex justify-between text-white font-bold text-base"><span>${data.optType}</span><span class="${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionsIncome > 0 ? '+' : ''}$${data.optionsIncome}</span></div></div>` : ''}${data.note ? `<div class="p-4 bg-slate-900 rounded-xl border border-slate-700 text-slate-300 italic">"${data.note}"</div>` : ''}`;
+            $('detailContent').innerHTML = `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-indigo-300 font-bold uppercase mb-3">市場數據</h4><div class="grid grid-cols-3 gap-3 text-slate-300 mb-2"><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VOO</div><div class="font-bold text-white">${data.vooClose}</div></div><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">RSI</div><div class="font-bold text-white">${formatNum(data.dailyRsi)}</div></div><div class="text-center bg-slate-900/50 p-2 rounded-lg border border-slate-700/50"><div class="text-[10px] text-slate-500">VIX</div><div class="font-bold text-white">${formatNum(data.vix)}</div></div></div><div class="text-[10px] text-slate-500 text-center">EMAs: ${formatNum(data.wema5)} / ${formatNum(data.wema12)} / ${formatNum(data.wema20)}</div>${data.ibitWema50 ? `<div class="text-[10px] text-pink-400 text-center mt-2">IBIT 50MA: ${formatNum(data.ibitWema50)}</div>` : ''}</div><div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-blue-300 font-bold uppercase mb-3">庫存快照</h4><div class="space-y-2 text-slate-300 text-sm"><div class="flex justify-between border-b border-slate-700 pb-2"><span>UPRO</span><span>${data.uproShares || 0}股 @ ${data.uproPrice || 0}</span></div><div class="flex justify-between border-b border-slate-700 pb-2"><span>SGOV</span><span>${data.sgovShares || 0}股 @ ${data.sgovPrice || 0}</span></div><div class="flex justify-between border-b border-slate-700 pb-2"><span>IBIT</span><span>${data.ibitShares || 0}股 @ ${data.ibitPrice || 0}</span></div><div class="flex justify-between pt-1 font-bold text-white text-base"><span>總資產 (含信貸)</span><span>${formatMoney(data.totalValue)}</span></div><div class="text-xs text-right text-slate-500">現金: ${formatMoney(data.cashAmount)}</div>
+            <!-- Added Liability View in History -->
+            ${data.activeLoanAmount ? `<div class="flex justify-between border-t border-slate-700 pt-2 text-red-300 font-bold"><span>負債</span><span>-${formatMoney(data.activeLoanAmount)}</span></div>` : ''}
+            <div class="flex justify-between pt-1 font-black text-yellow-400 text-base"><span>真實淨值</span><span>${formatMoney(data.netEquity)}</span></div>
+            </div></div>${data.optType ? `<div class="bg-slate-800 p-4 rounded-xl border border-slate-700"><h4 class="text-xs text-green-300 font-bold uppercase mb-2">選擇權收益</h4><div class="flex justify-between text-white font-bold text-base"><span>${data.optType}</span><span class="${data.optionsIncome > 0 ? 'text-green-400' : 'text-red-400'}">${data.optionsIncome > 0 ? '+' : ''}$${data.optionsIncome}</span></div></div>` : ''}${data.note ? `<div class="p-4 bg-slate-900 rounded-xl border border-slate-700 text-slate-300 italic">"${data.note}"</div>` : ''}`;
             $('editBtnFromModal').onclick = () => loadRecordForEdit(data); openModal('detailsModal');
         }
 
-        function loadRecordForEdit(data) { closeDetails(); const fields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50']; setVal('recordDate', data.manualDate); fields.forEach(f => { const dataKey = f === 'vixIndex' ? 'vix' : f; setVal(f, data[dataKey]); }); setVal('optType', data.optType); setVal('optPremium', data.optPremium ? Math.abs(data.optPremium) : ''); setVal('recordNote', data.note); setVal('optionStatus', data.optionStatus || 'Open'); updateOptUi(); setVal('editDocId', data.id); setTxt('saveTitle', "編輯紀錄"); $('cancelEditBtn').classList.remove('hidden'); const btn = $('saveBtn'); btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6 mr-2"></i> <span>更新紀錄</span>`; btn.classList.add('btn-edit'); switchView('inputs'); alert("資料已帶入，請修改後點擊「更新」"); }
-        function cancelEdit() { setVal('editDocId', ''); setTxt('saveTitle', "選擇權與儲存"); $('cancelEditBtn').classList.add('hidden'); setVal('optionStatus', 'Open'); const btn = $('saveBtn'); btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`; btn.classList.remove('btn-edit'); document.querySelectorAll('input, select, textarea').forEach(e => { if(!['importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput', 'n_income', 'n_family', 'n_living', 'n_rate', 'n_years', 'n_strategy_type', 'n_sgov_yield'].includes(e.id)) e.value = ''; }); updateOptUi(); lucide.createIcons(); }
+        function loadRecordForEdit(data) { closeDetails(); const fields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50', 'activeLoanAmount', 'loanEntryPrice']; setVal('recordDate', data.manualDate); fields.forEach(f => { const dataKey = f === 'vixIndex' ? 'vix' : f; setVal(f, data[dataKey]); }); setVal('optType', data.optType); setVal('optPremium', data.optPremium ? Math.abs(data.optPremium) : ''); setVal('recordNote', data.note); setVal('optionStatus', data.optionStatus || 'Open'); 
+        if(data.activeLoanAmount > 0) $('loanActive').checked = true;
+        updateOptUi(); setVal('editDocId', data.id); setTxt('saveTitle', "編輯紀錄"); $('cancelEditBtn').classList.remove('hidden'); const btn = $('saveBtn'); btn.innerHTML = `<i data-lucide="check-circle" class="w-6 h-6 mr-2"></i> <span>更新紀錄</span>`; btn.classList.add('btn-edit'); switchView('inputs'); alert("資料已帶入，請修改後點擊「更新」"); }
+        function cancelEdit() { setVal('editDocId', ''); setTxt('saveTitle', "選擇權與儲存"); $('cancelEditBtn').classList.add('hidden'); setVal('optionStatus', 'Open'); const btn = $('saveBtn'); btn.innerHTML = `<i data-lucide="save" class="w-6 h-6 mr-2"></i> <span>儲存紀錄</span>`; btn.classList.remove('btn-edit'); document.querySelectorAll('input, select, textarea').forEach(e => { if(!['importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput', 'n_income', 'n_family', 'n_living', 'n_rate', 'n_years', 'n_strategy_type', 'n_sgov_yield'].includes(e.id)) e.value = ''; }); 
+        $('loanActive').checked = false;
+        updateOptUi(); lucide.createIcons(); }
 
         function getAssetTotal() { const u = sf('uproShares') * sf('uproPrice'); const s = sf('sgovShares') * sf('sgovPrice'); const i = sf('ibitShares') * sf('ibitPrice'); const c = sf('cashAmount'); return u + s + i + c; }
+        
+        function getNetEquity() { return getAssetTotal() - sf('activeLoanAmount'); }
+
         function updateSimulation() { try { const vooPrice = sf('vooClose'); const uproPrice = sf('uproPrice'); const uproShares = sf('uproShares'); const currentTotal = getAssetTotal(); const errorEl = $('simError'); if(!vooPrice || !uproPrice) { if(errorEl) errorEl.classList.remove('hidden'); setTxt('simAssetResult', "--"); $('emaSimBody').innerHTML = '<tr><td colspan="4" class="text-center py-2 text-xs text-slate-500">等待資料...</td></tr>'; return; } else { if(errorEl) errorEl.classList.add('hidden'); } const pct = parseFloat(getVal('simPercent')) || 0; const leverage = pct < 0 ? 2.8 : 3.0; const calculateSim = (pChange) => { const newUproPrice = uproPrice * (1 + (pChange * leverage / 100)); const newIbitPrice = sf('ibitPrice') * (1 + (pChange * 1.5 / 100)); const newUproVal = newUproPrice * uproShares; const newIbitVal = newIbitPrice * sf('ibitShares'); const fixedVal = (sf('sgovShares') * sf('sgovPrice')) + sf('cashAmount'); return (newUproVal + newIbitVal + fixedVal) - currentTotal; }; const pl = calculateSim(pct); const el = $('simAssetResult'); el.innerText = `${pl >= 0 ? '+' : ''}$${Math.round(pl).toLocaleString()}`; el.className = `text-lg font-black ${pl >= 0 ? 'text-green-400' : 'text-red-400'}`; $('simPercent').style.color = pct > 0 ? '#4ade80' : (pct < 0 ? '#f87171' : '#ffffff'); const emas = [{ label: '5MA', val: sf('wema5') }, { label: '12MA', val: sf('wema12') }, { label: '20MA', val: sf('wema20') }]; const tbody = $('emaSimBody'); tbody.innerHTML = ''; emas.forEach(ema => { if(ema.val > 0) { const emaPct = ((ema.val - vooPrice) / vooPrice) * 100; const emaPl = calculateSim(emaPct); const row = document.createElement('tr'); const distClass = emaPct >= 0 ? 'text-green-400' : 'text-red-400'; const plClass = emaPl >= 0 ? 'text-green-400 font-bold' : 'text-red-400 font-bold'; row.innerHTML = `<td>${ema.label}</td><td>${ema.val.toFixed(2)}</td><td class="${distClass}">${emaPct > 0 ? '+' : ''}${emaPct.toFixed(2)}%</td><td class="${plClass}">${emaPl > 0 ? '+' : ''}$${Math.round(emaPl).toLocaleString()}</td>`; tbody.appendChild(row); } else { tbody.innerHTML += `<tr><td>${ema.label}</td><td colspan="3" class="text-xs text-slate-600">--</td></tr>`; } }); } catch(e) { console.warn("Sim Error", e); } }
 
-        function calculateStrategy() { try { const totalValue = getAssetTotal(); if($('totalValueDisplay')) setTxt('totalValueDisplay', `$${Math.round(totalValue).toLocaleString()}`); const vooClose = sf('vooClose'); const wema20 = sf('wema20'); const dailyRsi = sf('dailyRsi'); const ibitPrice = sf('ibitPrice'); const ibitWema50 = sf('ibitWema50'); let ibitAllocPct = 0.1; let ibitReason = "Satellite 10%"; if (ibitWema50 > 0) { if (ibitPrice > ibitWema50) { ibitReason = "Risk ON (>50MA)"; } else { ibitAllocPct = 0; ibitReason = "Risk OFF (<50MA) -> SGOV"; } } else { ibitReason = "No 50MA (Default 10%)"; } setTxt('ibitPctDisplay', `${(ibitAllocPct*100).toFixed(0)}%`); setTxt('ibitReason', ibitReason); if(vooClose && wema20) { const riskStatus = vooClose > wema20 ? 'ON' : 'OFF'; const card = $('statusCard'); const riskEl = $('riskState'); card.className = `card p-6 transition-all relative overflow-hidden ${riskStatus === 'ON' ? 'status-on' : 'status-off'}`; setTxt('riskState', `RISK ${riskStatus}`); riskEl.className = `text-5xl font-black tracking-tighter ${riskStatus === 'ON' ? 'text-green-400' : 'text-red-400'}`; const bias = ((vooClose - wema20)/wema20)*100; setTxt('biasText', `Bias ${bias.toFixed(2)}%`); setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}${dailyRsi < 30 ? ' (BUY!)' : ''}`); let biasLimit = bias > 12 ? 50 : (bias > 8 ? 60 : (bias > 4 ? 80 : 100)); let tacticalLimit = (sf('wema12') && vooClose < sf('wema12')) ? 50 : ((sf('wema5') && vooClose < sf('wema5')) ? 70 : 100); let finalUproPct = 0; let reason = ""; if (riskStatus === 'OFF') { finalUproPct = 0; reason = "Risk OFF (破 20MA)"; } else if (dailyRsi < 30) { finalUproPct = 100; reason = "暴利濾網 (RSI<30) 強制滿倉"; } else { finalUproPct = Math.min(biasLimit, tacticalLimit); reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`; } setTxt('targetUproPct', `${finalUproPct}%`); setTxt('uproReason', reason); const targetUproVal = (totalValue * 0.9) * (finalUproPct / 100); const targetIbitVal = totalValue * ibitAllocPct; const targetSgovVal = totalValue - targetUproVal - targetIbitVal; setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`); setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`); setTxt('targetIbitVal', `($${Math.round(targetIbitVal).toLocaleString()})`); const sgovPct = totalValue > 0 ? ((targetSgovVal/totalValue)*100).toFixed(0) : '0'; setTxt('targetSgovPct', `${sgovPct}%`); const diffU = (sf('uproShares') * sf('uproPrice')) - targetUproVal; const diffS = (sf('sgovShares') * sf('sgovPrice')) - targetSgovVal; const diffI = (sf('ibitShares') * sf('ibitPrice')) - targetIbitVal; const getAction = (diff, price) => { if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`; const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0; return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()} (${shares}股)` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()} (${shares}股)`; }; setTxt('uproAction', getAction(diffU, sf('uproPrice'))); setTxt('sgovAction', getAction(diffS, sf('sgovPrice'))); setTxt('ibitAction', getAction(diffI, sf('ibitPrice'))); const vix = sf('vixIndex'); const coreCapital = totalValue * 0.9; const targetUproShares = sf('uproPrice') > 0 ? Math.round(targetUproVal / sf('uproPrice')) : 0; let vixText = "無"; let vixClass = "text-slate-500"; if (riskStatus === 'ON') { if (vix < 13.5 || (vix >= 13.5 && vix <= 17)) { const denom = vix < 13.5 ? 10000 : 15000; const count = Math.round(coreCapital / denom); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = vix < 13.5 ? "text-emerald-400 font-black" : "text-purple-400 font-bold"; } } const vixEl = $('vixSuggestion'); vixEl.innerText = vixText; vixEl.className = `suggestion-val ${vixClass}`; let callText = "觀望"; let callClass = "text-slate-500"; if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) { callText = bias > 12 ? "Sell Call Delta 0.30 (積極)" : (bias > 8 ? "Sell Call Delta 0.20-0.25 (標準)" : (bias > 4 ? "Sell Call Delta 0.15-0.20 (防守)" : callText)); if (bias > 4) callClass = "text-green-400 font-bold"; } const callEl = $('callSuggestion'); callEl.innerText = callText; callEl.className = `suggestion-val ${callClass}`; document.querySelectorAll('.strategy-item').forEach(e => e.classList.remove('active')); let activeId = riskStatus === 'OFF' ? 'gps-risk-off' : (dailyRsi < 30 ? 'gps-rsi-buy' : (bias > 12 ? 'gps-bias-extreme' : (bias > 8 ? 'gps-bias-high' : (bias > 4 ? 'gps-bias-med' : 'gps-bias-low')))); if($(activeId)) $(activeId).classList.add('active'); updateSimulation(); updateNuclearDashboard(); } } catch(e) { console.warn("Calc Error", e); } }
+        function calculateStrategy() { try { const totalValue = getAssetTotal(); const netEquity = getNetEquity(); 
+        
+        // VISUAL FIX: Switch Logic
+        // If loan is active (>0), show "Total Assets (-Loan)"
+        // If loan is 0, show "Net Equity"
+        const loanAmt = sf('activeLoanAmount');
+        
+        if($('netEquityLabel')) {
+            if(loanAmt > 0) {
+                 $('netEquityLabel').innerText = "真實淨值 (含信貸)";
+                 $('netEquityDisplay').innerHTML = `$${Math.round(totalValue).toLocaleString()} <span class="text-lg text-red-400 font-bold block sm:inline">(-$${Math.round(loanAmt).toLocaleString()})</span>`;
+                 if($('totalExposureDisplay')) {
+                     // In this mode, maybe show "Net Equity" in small text
+                     $('exposureLabel').innerText = "淨值";
+                     $('totalExposureDisplay').innerText = `$${Math.round(netEquity).toLocaleString()}`;
+                 }
+            } else {
+                 $('netEquityLabel').innerText = "真實淨值 (Equity)";
+                 $('netEquityDisplay').innerText = `$${Math.round(netEquity).toLocaleString()}`;
+                 if($('totalExposureDisplay')) {
+                     $('exposureLabel').innerText = "總曝險";
+                     $('totalExposureDisplay').innerText = `$${Math.round(totalValue).toLocaleString()}`;
+                 }
+            }
+        }
+        
+        
+        // Loan Monitor Logic
+        const loanActive = $('loanActive').checked;
+        const loanEl = $('loanMonitor');
+        if(loanActive) {
+            loanEl.classList.remove('hidden');
+            const entry = sf('loanEntryPrice');
+            const current = sf('uproPrice');
+            if(entry > 0 && current > 0) {
+                const gain = ((current - entry) / entry) * 100;
+                const target = entry * 1.2;
+                const gainEl = $('loanPnLDisplay');
+                if(gainEl) {
+                    gainEl.innerText = `${gain >= 0 ? '+' : ''}${gain.toFixed(2)}%`;
+                    gainEl.className = `text-xl font-black ${gain >= 20 ? 'text-emerald-400 animate-pulse' : (gain >= 0 ? 'text-green-400' : 'text-red-400')}`;
+                }
+                
+                // Alert if target reached
+                if($('loanTargetPrice')) $('loanTargetPrice').innerText = `$${target.toFixed(2)} (+20%)`;
+                if(gain >= 20) {
+                    if($('nuclearStatus')) {
+                        $('nuclearStatus').innerText = "🎉 任務達成 (還款)";
+                        $('nuclearStatus').className = "text-lg font-black text-emerald-400 animate-bounce";
+                    }
+                }
+            }
+        } else {
+            loanEl.classList.add('hidden');
+            if($('loanPnLDisplay')) $('loanPnLDisplay').innerText = "--";
+        }
 
-        function fillStrategyNote() { const date = getVal('recordDate'); const upro = $('uproAction').innerText; const sgov = $('sgovAction').innerText; const ibit = $('ibitAction').innerText; const vix = $('vixSuggestion').innerText; const nuclear = $('nuclearStatus').innerText; setVal('recordNote', `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}\n核武器: ${nuclear}`); switchView('inputs'); showToast("✅ 策略指令已寫入備註", "success"); }
+        const vooClose = sf('vooClose'); const wema20 = sf('wema20'); const dailyRsi = sf('dailyRsi'); const ibitPrice = sf('ibitPrice'); const ibitWema50 = sf('ibitWema50'); let ibitAllocPct = 0.1; let ibitReason = "Satellite 10%"; if (ibitWema50 > 0) { if (ibitPrice > ibitWema50) { ibitReason = "Risk ON (>50MA)"; } else { ibitAllocPct = 0; ibitReason = "Risk OFF (<50MA) -> SGOV"; } } else { ibitReason = "No 50MA (Default 10%)"; } setTxt('ibitPctDisplay', `${(ibitAllocPct*100).toFixed(0)}%`); setTxt('ibitReason', ibitReason); if(vooClose && wema20) { const riskStatus = vooClose > wema20 ? 'ON' : 'OFF'; const card = $('statusCard'); const riskEl = $('riskState'); card.className = `card p-6 transition-all relative overflow-hidden ${riskStatus === 'ON' ? 'status-on' : 'status-off'}`; setTxt('riskState', `RISK ${riskStatus}`); riskEl.className = `text-5xl font-black tracking-tighter ${riskStatus === 'ON' ? 'text-green-400' : 'text-red-400'}`; const bias = ((vooClose - wema20)/wema20)*100; setTxt('biasText', `Bias ${bias.toFixed(2)}%`); setTxt('rsiBadge', `RSI ${dailyRsi.toFixed(0)}${dailyRsi < 30 ? ' (BUY!)' : ''}`); let biasLimit = bias > 12 ? 50 : (bias > 8 ? 60 : (bias > 4 ? 80 : 100)); let tacticalLimit = (sf('wema12') && vooClose < sf('wema12')) ? 50 : ((sf('wema5') && vooClose < sf('wema5')) ? 70 : 100); let finalUproPct = 0; let reason = ""; if (riskStatus === 'OFF') { finalUproPct = 0; reason = "Risk OFF (破 20MA)"; } else if (dailyRsi < 30) { finalUproPct = 100; reason = "暴利濾網 (RSI<30) 強制滿倉"; } else { finalUproPct = Math.min(biasLimit, tacticalLimit); reason = `Min(Bias:${biasLimit}%, MA:${tacticalLimit}%)`; } setTxt('targetUproPct', `${finalUproPct}%`); setTxt('uproReason', reason); const targetUproVal = (totalValue * 0.9) * (finalUproPct / 100); const targetIbitVal = totalValue * ibitAllocPct; const targetSgovVal = totalValue - targetUproVal - targetIbitVal; setTxt('targetUproVal', `($${Math.round(targetUproVal).toLocaleString()})`); setTxt('targetSgovVal', `($${Math.round(targetSgovVal).toLocaleString()})`); setTxt('targetIbitVal', `($${Math.round(targetIbitVal).toLocaleString()})`); const sgovPct = totalValue > 0 ? ((targetSgovVal/totalValue)*100).toFixed(0) : '0'; setTxt('targetSgovPct', `${sgovPct}%`); const diffU = (sf('uproShares') * sf('uproPrice')) - targetUproVal; const diffS = (sf('sgovShares') * sf('sgovPrice')) - targetSgovVal; const diffI = (sf('ibitShares') * sf('ibitPrice')) - targetIbitVal; const getAction = (diff, price) => { if (Math.abs(diff) < totalValue * 0.01) return `⚪ 續抱`; const shares = price > 0 ? Math.round(Math.abs(diff) / price) : 0; return diff > 0 ? `🔴 賣出 $${Math.round(diff).toLocaleString()} (${shares}股)` : `🟢 買入 $${Math.round(Math.abs(diff)).toLocaleString()} (${shares}股)`; }; setTxt('uproAction', getAction(diffU, sf('uproPrice'))); setTxt('sgovAction', getAction(diffS, sf('sgovPrice'))); setTxt('ibitAction', getAction(diffI, sf('ibitPrice'))); const vix = sf('vixIndex'); const coreCapital = totalValue * 0.9; const targetUproShares = sf('uproPrice') > 0 ? Math.round(targetUproVal / sf('uproPrice')) : 0; let vixText = "無"; let vixClass = "text-slate-500"; if (riskStatus === 'ON') { if (vix < 13.5 || (vix >= 13.5 && vix <= 17)) { const denom = vix < 13.5 ? 10000 : 15000; const count = Math.round(coreCapital / denom); vixText = `Buy ${count} 組 Spread (Core 90%) (建議 ${targetUproShares} 股)`; vixClass = vix < 13.5 ? "text-emerald-400 font-black" : "text-purple-400 font-bold"; } } const vixEl = $('vixSuggestion'); vixEl.innerText = vixText; vixEl.className = `suggestion-val ${vixClass}`; let callText = "觀望"; let callClass = "text-slate-500"; if (riskStatus === 'ON' && dailyRsi >= 65 && dailyRsi <= 75) { callText = bias > 12 ? "Sell Call Delta 0.30 (積極)" : (bias > 8 ? "Sell Call Delta 0.20-0.25 (標準)" : (bias > 4 ? "Sell Call Delta 0.15-0.20 (防守)" : callText)); if (bias > 4) callClass = "text-green-400 font-bold"; } const callEl = $('callSuggestion'); callEl.innerText = callText; callEl.className = `suggestion-val ${callClass}`; document.querySelectorAll('.strategy-item').forEach(e => e.classList.remove('active')); let activeId = riskStatus === 'OFF' ? 'gps-risk-off' : (dailyRsi < 30 ? 'gps-rsi-buy' : (bias > 12 ? 'gps-bias-extreme' : (bias > 8 ? 'gps-bias-high' : (bias > 4 ? 'gps-bias-med' : 'gps-bias-low')))); if($(activeId)) $(activeId).classList.add('active'); updateSimulation(); updateNuclearDashboard(); } } catch(e) { console.warn("Calc Error", e); } }
+
+        function fillStrategyNote() { const date = getVal('recordDate'); const upro = $('uproAction').innerText; const sgov = $('sgovAction').innerText; const ibit = $('ibitAction').innerText; const vix = $('vixSuggestion').innerText; const nuclear = $('nuclearStatus') ? $('nuclearStatus').innerText : ""; setVal('recordNote', `📅 ${date} 策略筆記\n------------------\nUPRO: ${upro}\nSGOV: ${sgov}\nIBIT: ${ibit}\nVIX: ${vix}\n核武器: ${nuclear}`); switchView('inputs'); showToast("✅ 策略指令已寫入備註", "success"); }
 
         function toggleHistoryExpansion() { isHistoryExpanded = !isHistoryExpanded; renderHistoryTable(); }
         function toggleAnnualExpansion() { isAnnualExpanded = !isAnnualExpanded; const container = $('annualSummaryContainer'); if(isAnnualExpanded) { container.classList.remove('hidden'); setTxt('annualToggleIcon', "⬆️ 收合"); renderSummaryTable('annual'); } else { container.classList.add('hidden'); setTxt('annualToggleIcon', "⬇️ 展開"); } }
         function toggleMonthlyExpansion() { isMonthlyExpanded = !isMonthlyExpanded; const container = $('monthlySummaryContainer'); if(isMonthlyExpanded) { container.classList.remove('hidden'); setTxt('monthlyToggleIcon', "⬆️ 收合"); renderSummaryTable('monthly'); } else { container.classList.add('hidden'); setTxt('monthlyToggleIcon', "⬇️ 展開"); } }
 
-        function renderSummaryTable(mode) { if (globalHistoryData.length === 0) return; const groups = {}; globalHistoryData.forEach(d => { const key = mode === 'annual' ? d.manualDate.slice(0,4) : d.manualDate.slice(0,7); if (!groups[key]) groups[key] = []; groups[key].push(d); }); const sortedKeys = Object.keys(groups).sort((a,b) => b.localeCompare(a)); const tbody = $(mode === 'annual' ? 'annualSummaryBody' : 'monthlySummaryBody'); tbody.innerHTML = ''; sortedKeys.forEach(key => { const records = groups[key].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); if(records.length === 0) return; const lastRecord = records[records.length - 1]; const endNav = lastRecord.totalValue; const totalPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0); let startNav; const firstRecord = records[0]; startNav = firstRecord.totalValue; const prevRecord = globalHistoryData.find(d => d.manualDate < firstRecord.manualDate); if(prevRecord) startNav = prevRecord.totalValue; let returnPct = 0; let gain = 0; if (startNav > 0) { gain = endNav - startNav; returnPct = (gain / startNav) * 100; } let mddStr = ''; if(mode === 'annual') { let peak = -Infinity; let maxDrawdown = 0; records.forEach(r => { if (r.totalValue > peak) peak = r.totalValue; const dd = (peak - r.totalValue) / peak; if (dd > maxDrawdown) maxDrawdown = dd; }); mddStr = `<td class="text-red-400">-${(maxDrawdown * 100).toFixed(2)}%</td>`; } const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400'; const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`; let extraInfo = ''; if(mode === 'annual') { const premRatio = gain > 0 ? (totalPremium / gain) * 100 : 0; const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(totalPremium)})`; extraInfo = ` <span class="text-[10px] text-slate-500">${premStr}</span>`; } const tr = document.createElement('tr'); tr.innerHTML = `<td class="pl-4">${key}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td><span class="${returnClass} font-bold">${returnStr}</span>${extraInfo}</td>${mddStr}<td class="pr-4 text-slate-300 font-bold">$${Math.round(totalPremium).toLocaleString()}</td>`; tbody.appendChild(tr); }); }
-        function fillLatestData(force) { window.vibrate(); if(globalHistoryData.length) { const l = globalHistoryData[0]; if(force) setVal('recordDate',l.manualDate); ['vooClose', 'wema20', 'wema12', 'wema5', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50'].forEach(id => { const key = id === 'vixIndex' ? 'vix' : id; setVal(id, l[key]); }); calculateStrategy(); if(force) { switchView('inputs'); showToast("✅ 最新資料已帶入", "success"); } } else { showToast("⚠️ 無歷史資料可帶入", "normal"); } }
-        function handleInput() { clearTimeout(calculationTimer); calculationTimer = setTimeout(calculateStrategy, 300); const d={}; document.querySelectorAll('input, select, textarea').forEach(e => { if(!['editDocId','importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput', 'n_income', 'n_family', 'n_living', 'n_rate', 'n_years', 'n_strategy_type', 'n_sgov_yield'].includes(e.id)) d[e.id] = e.value; }); localStorage.setItem('upro_v9_draft', JSON.stringify(d)); }
-        function restoreDraft() { const d = JSON.parse(localStorage.getItem('upro_v9_draft')); if(d) { Object.keys(d).forEach(k => { const e=$(k); if(e) e.value=d[k]; }); updateOptUi(); calculateStrategy(); } updateNuclearDashboard(); }
-        function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); $(`view-${v}`).classList.add('active'); $(`btn-${v}`).classList.add('active'); window.scrollTo({top:0}); }
+        function renderSummaryTable(mode) { if (globalHistoryData.length === 0) return; 
+            const container = $(mode === 'annual' ? 'annualSummaryBody' : 'monthlySummaryBody');
+            if(!container) return;
+            const groups = {}; globalHistoryData.forEach(d => { const key = mode === 'annual' ? d.manualDate.slice(0,4) : d.manualDate.slice(0,7); if (!groups[key]) groups[key] = []; groups[key].push(d); }); const sortedKeys = Object.keys(groups).sort((a,b) => b.localeCompare(a)); 
+            container.innerHTML = ''; 
+            sortedKeys.forEach(key => { const records = groups[key].sort((a,b) => new Date(a.manualDate) - new Date(b.manualDate)); if(records.length === 0) return; const lastRecord = records[records.length - 1]; const endNav = lastRecord.totalValue; const totalPremium = records.reduce((sum, r) => sum + (parseFloat(r.optionsIncome) || 0), 0); let startNav; const firstRecord = records[0]; startNav = firstRecord.totalValue; const prevRecord = globalHistoryData.find(d => d.manualDate < firstRecord.manualDate); if(prevRecord) startNav = prevRecord.totalValue; let returnPct = 0; let gain = 0; if (startNav > 0) { gain = endNav - startNav; returnPct = (gain / startNav) * 100; } let mddStr = ''; if(mode === 'annual') { let peak = -Infinity; let maxDrawdown = 0; records.forEach(r => { if (r.totalValue > peak) peak = r.totalValue; const dd = (peak - r.totalValue) / peak; if (dd > maxDrawdown) maxDrawdown = dd; }); mddStr = `<td class="text-red-400">-${(maxDrawdown * 100).toFixed(2)}%</td>`; } const returnClass = returnPct >= 0 ? 'text-green-400' : 'text-red-400'; const returnStr = `${returnPct >= 0 ? '+' : ''}${returnPct.toFixed(2)}%`; let extraInfo = ''; if(mode === 'annual') { const premRatio = gain > 0 ? (totalPremium / gain) * 100 : 0; const premStr = gain > 0 ? `(${Math.round(premRatio)}%)` : `($${Math.round(totalPremium)})`; extraInfo = ` <span class="text-[10px] text-slate-500">${premStr}</span>`; } const tr = document.createElement('tr'); tr.innerHTML = `<td class="pl-4">${key}</td><td>$${Math.round(endNav/1000).toLocaleString()}k</td><td><span class="${returnClass} font-bold">${returnStr}</span>${extraInfo}</td>${mddStr}<td class="pr-4 text-slate-300 font-bold">$${Math.round(totalPremium).toLocaleString()}</td>`; container.appendChild(tr); }); }
+        function fillLatestData(force) { window.vibrate(); if(globalHistoryData.length) { const l = globalHistoryData[0]; if(force) setVal('recordDate',l.manualDate); ['vooClose', 'wema20', 'wema12', 'wema5', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'ibitWema50', 'activeLoanAmount', 'loanEntryPrice'].forEach(id => { const key = id === 'vixIndex' ? 'vix' : id; setVal(id, l[key]); }); 
+        if(l.activeLoanAmount > 0) $('loanActive').checked = true;
+        calculateStrategy(); if(force) { switchView('inputs'); showToast("✅ 最新資料已帶入", "success"); } } else { showToast("⚠️ 無歷史資料可帶入", "normal"); } }
+        function handleInput() { clearTimeout(calculationTimer); calculationTimer = setTimeout(calculateStrategy, 300); const d={}; document.querySelectorAll('input, select, textarea').forEach(e => { if(!['editDocId','importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput', 'n_income', 'n_family', 'n_living', 'n_rate', 'n_years', 'n_strategy_type', 'n_sgov_yield'].includes(e.id)) d[e.id] = e.value; }); 
+        d.loanActive = $('loanActive').checked;
+        localStorage.setItem('upro_v9_draft', JSON.stringify(d)); }
+        function restoreDraft() { const d = JSON.parse(localStorage.getItem('upro_v9_draft')); if(d) { Object.keys(d).forEach(k => { const e=$(k); if(e) { if(e.type === 'checkbox') e.checked = d[k]; else e.value=d[k]; } }); updateOptUi(); calculateStrategy(); } updateNuclearDashboard(); }
+        function switchView(v) { window.vibrate(); document.querySelectorAll('.mobile-view, .bottom-nav-btn').forEach(e => e.classList.remove('active')); $(`view-${v}`).classList.add('active'); $(`btn-${v}`).classList.add('active'); 
+        document.querySelectorAll('.bottom-nav-btn').forEach(b => {
+             b.classList.remove('active-nuclear', 'active-rules');
+        });
+        
+        if(v === 'nuclear') $(`btn-${v}`).classList.add('active-nuclear');
+        if(v === 'rules') $(`btn-${v}`).classList.add('active-rules');
+        
+        window.scrollTo({top:0}); }
         function openSettings() { openModal('settingsModal'); const k = localStorage.getItem('finnhub_key'); if(k) setVal('finnHubKeyInput', k); if(realUserId) setVal('myUserIdDisplay', realUserId); const t = localStorage.getItem('upro_target_uid'); if(t) setVal('targetUserIdInput', t); }
         function closeSettings() { closeModal('settingsModal'); }
         function closeDetails() { closeModal('detailsModal'); }
@@ -698,10 +922,11 @@
             const btn = $('saveBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-6 h-6 mr-2 animate-spin"></i> <span>處理中...</span>'; btn.disabled = true;
             try {
                 const docId = getVal('editDocId'); const recordDate = getVal('recordDate'); if(!recordDate) throw new Error("日期為必填");
-                const numFields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'optPremium', 'ibitWema50'];
+                const numFields = ['vooClose', 'wema5', 'wema12', 'wema20', 'vixIndex', 'dailyRsi', 'uproShares', 'uproPrice', 'sgovShares', 'sgovPrice', 'ibitShares', 'ibitPrice', 'cashAmount', 'optPremium', 'ibitWema50', 'activeLoanAmount', 'loanEntryPrice'];
                 const data = { manualDate: recordDate, note: getVal('recordNote'), optType: getVal('optType'), optionStatus: getVal('optionStatus') || 'Open' };
                 numFields.forEach(f => { const key = f === 'vixIndex' ? 'vix' : f; data[key] = sf(f); });
                 data.totalValue = (data.uproShares * data.uproPrice) + (data.sgovShares * data.sgovPrice) + (data.ibitShares * data.ibitPrice) + data.cashAmount;
+                data.netEquity = data.totalValue - (data.activeLoanAmount || 0); // Calculate Net Equity
                 data.optionsIncome = data.optType.startsWith('Sell') ? data.optPremium : -data.optPremium;
                 if (docId) { await updateDoc(doc(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`, docId), data); showToast("✅ 紀錄已更新", "success"); cancelEdit(); } 
                 else { await addDoc(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), { ...data, timestamp: serverTimestamp() }); showToast("✅ 紀錄已儲存", "success"); document.querySelectorAll('input, select, textarea').forEach(e => { if(!['importFile','targetUserIdInput','simPercent','optionStatus','finnHubKeyInput', 'n_income', 'n_family', 'n_living', 'n_rate', 'n_years', 'n_strategy_type', 'n_sgov_yield'].includes(e.id)) e.value = ''; }); setVal('recordDate', new Date().toISOString().slice(0,10)); updateOptUi(); }
@@ -710,9 +935,9 @@
 
         function loadHistory() { if(!currentDataUserId) return; const q = query(collection(db, `artifacts/${appId}/users/${currentDataUserId}/full_records`), orderBy('manualDate', 'desc')); onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => { globalHistoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderHistoryTable(); calculateTotals(); renderAssetHistoryChart(); if(isAnnualExpanded) renderSummaryTable('annual'); if(isMonthlyExpanded) renderSummaryTable('monthly'); if(globalHistoryData.length > 0) setTxt('totalValueDisplay', `$${Math.round(globalHistoryData[0].totalValue).toLocaleString()}`); }, (error) => { console.error("Error loading history:", error); $('historyList').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-400">無法載入資料</td></tr>'; }); }
 
-        function renderHistoryTable() { const tbody = $('historyList'); tbody.innerHTML = ''; if (globalHistoryData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>'; return; } const displayData = isHistoryExpanded ? globalHistoryData : globalHistoryData.slice(0, 5); displayData.forEach(item => { const tr = document.createElement('tr'); tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors'; let statusBadge = ''; if (item.optType) { const status = item.optionStatus || 'Open'; let badgeClass = status === 'Open' ? 'badge-open' : (status === 'Exercised' ? 'badge-exercised' : 'badge-closed'); let label = status === 'Open' ? '持倉' : (status === 'Exercised' ? '行權' : '平倉'); statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`; } const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500'); const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : ''; tr.innerHTML = `<td class="py-3 pl-2"><div class="font-bold text-slate-200 text-sm">${item.manualDate.slice(5)}</div><div class="text-[10px] text-slate-500">${item.manualDate.slice(0,4)}</div></td><td class="py-3"><div class="flex items-center">${statusBadge || '<span class="text-slate-600 text-[10px]">-</span>'}</div></td><td class="py-3 text-right"><div class="font-bold text-slate-200 text-sm">$${Math.round(item.totalValue/1000)}k</div></td><td class="py-3 text-right"><div class="text-xs font-bold">${incomeStr}</div>${item.optType ? `<div class="text-[10px] text-indigo-300">${item.optType}</div>` : ''}</td><td class="py-3 pr-2 text-right"><button onclick="showDetails('${item.id}')" class="p-2 text-slate-400 hover:text-white"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button><button onclick="showDeleteModal('${item.id}', event)" class="p-2 text-red-400/50 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`; tbody.appendChild(tr); }); if (globalHistoryData.length > 5) { const btnRow = document.createElement('tr'); const btnText = isHistoryExpanded ? '⬆️ 收合 (只看最近 5 筆)' : `⬇️ 展開完整紀錄 (還有 ${globalHistoryData.length - 5} 筆)`; btnRow.id = 'historyToggleBtnRow'; btnRow.innerHTML = `<td colspan="5" class="p-3 text-center"><button id="historyToggleBtn" onclick="toggleHistoryExpansion()" class="text-xs font-bold text-blue-400 hover:text-blue-300 py-2 w-full border border-blue-500/30 rounded-lg bg-blue-500/10 transition-colors">${btnText}</button></td>`; tbody.appendChild(btnRow); } lucide.createIcons(); }
-        function calculateTotals() { const currentYear = new Date().getFullYear().toString(); const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear)); const ytdIncome = currentYearData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0); setTxt('totalIncomeDisplay', `$${ytdIncome.toLocaleString()}`); let mddPct = 0; if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); let peak = -Infinity; let maxDrawdown = 0; sortedData.forEach(d => { if (d.totalValue > peak) peak = d.totalValue; const drawdown = (peak - d.totalValue) / peak; if (drawdown > maxDrawdown) maxDrawdown = drawdown; }); mddPct = maxDrawdown * 100; } const mddEl = $('mddDisplay'); setTxt('mddDisplay', `-${mddPct.toFixed(2)}%`); mddEl.className = `text-lg font-black ${mddPct > 20 ? 'text-red-500' : (mddPct > 10 ? 'text-orange-400' : 'text-green-400')}`; const ytdEl = $('ytdDisplay'); if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const currentVal = sortedData[sortedData.length - 1].totalValue; let startVal = sortedData[0].totalValue; const prevYearRec = globalHistoryData.find(d => d.manualDate.startsWith((new Date().getFullYear()-1).toString()) && d.manualDate < sortedData[0].manualDate); if(prevYearRec) startVal = prevYearRec.totalValue; const gainVal = currentVal - startVal; const ytd = startVal > 0 ? (gainVal / startVal) * 100 : 0; ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`; const premPctStr = gainVal > 0 ? `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round((ytdIncome / gainVal) * 100)}%)</span>` : `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`; ytdEl.innerHTML = `${(ytd >= 0 ? '+' : '')}${ytd.toFixed(2)}%${premPctStr}`; } else { setTxt('ytdDisplay', "--%"); } }
-        function renderAssetHistoryChart() { const ctx = $('assetChart').getContext('2d'); if (assetChartInstance) assetChartInstance.destroy(); const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const labels = chartData.map(d => d.manualDate.slice(5)); let dataset = {}; if (chartMode === 'line') { dataset = { type: 'line', label: '總資產淨值', data: chartData.map(d => d.totalValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } else { let runningTotal = 0; const incomeData = chartData.map(d => { runningTotal += (parseFloat(d.optionsIncome) || 0); return runningTotal; }); dataset = { type: 'line', label: '累計權利金收益', data: incomeData, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } assetChartInstance = new Chart(ctx, { data: { labels: labels, datasets: [dataset] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#94a3b8', bodyColor: '#f8fafc', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { display: false }, y: { display: true, position: 'right', grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' } } }, interaction: { mode: 'nearest', axis: 'x', intersect: false } } }); }
+        function renderHistoryTable() { const tbody = $('historyList'); if(!tbody) return; tbody.innerHTML = ''; if (globalHistoryData.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-500">尚無紀錄</td></tr>'; return; } const displayData = isHistoryExpanded ? globalHistoryData : globalHistoryData.slice(0, 5); displayData.forEach(item => { const tr = document.createElement('tr'); tr.className = 'border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors'; let statusBadge = ''; if (item.optType) { const status = item.optionStatus || 'Open'; let badgeClass = status === 'Open' ? 'badge-open' : (status === 'Exercised' ? 'badge-exercised' : 'badge-closed'); let label = status === 'Open' ? '持倉' : (status === 'Exercised' ? '行權' : '平倉'); statusBadge = `<span onclick="openStatusModal('${item.id}', '${status}')" class="status-badge ${badgeClass} ml-2">${label}</span>`; } const incomeClass = item.optionsIncome > 0 ? 'text-green-400' : (item.optionsIncome < 0 ? 'text-red-400' : 'text-slate-500'); const incomeStr = item.optionsIncome ? `<span class="${incomeClass}">${item.optionsIncome > 0 ? '+' : ''}$${item.optionsIncome}</span>` : ''; tr.innerHTML = `<td class="py-3 pl-2"><div class="font-bold text-slate-200 text-sm">${item.manualDate.slice(5)}</div><div class="text-[10px] text-slate-500">${item.manualDate.slice(0,4)}</div></td><td class="py-3"><div class="flex items-center">${statusBadge || '<span class="text-slate-600 text-[10px]">-</span>'}</div></td><td class="py-3 text-right"><div class="font-bold text-slate-200 text-sm">$${Math.round(item.totalValue/1000)}k</div></td><td class="py-3 text-right"><div class="text-xs font-bold">${incomeStr}</div>${item.optType ? `<div class="text-[10px] text-indigo-300">${item.optType}</div>` : ''}</td><td class="py-3 pr-2 text-right"><button onclick="showDetails('${item.id}')" class="p-2 text-slate-400 hover:text-white"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button><button onclick="showDeleteModal('${item.id}', event)" class="p-2 text-red-400/50 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`; tbody.appendChild(tr); }); if (globalHistoryData.length > 5) { const btnRow = document.createElement('tr'); const btnText = isHistoryExpanded ? '⬆️ 收合 (只看最近 5 筆)' : `⬇️ 展開完整紀錄 (還有 ${globalHistoryData.length - 5} 筆)`; btnRow.id = 'historyToggleBtnRow'; btnRow.innerHTML = `<td colspan="5" class="p-3 text-center"><button id="historyToggleBtn" onclick="toggleHistoryExpansion()" class="text-xs font-bold text-blue-400 hover:text-blue-300 py-2 w-full border border-blue-500/30 rounded-lg bg-blue-500/10 transition-colors">${btnText}</button></td>`; tbody.appendChild(btnRow); } lucide.createIcons(); }
+        function calculateTotals() { const currentYear = new Date().getFullYear().toString(); const currentYearData = globalHistoryData.filter(d => d.manualDate.startsWith(currentYear)); const ytdIncome = currentYearData.reduce((sum, item) => sum + (parseFloat(item.optionsIncome) || 0), 0); setTxt('totalIncomeDisplay', `$${ytdIncome.toLocaleString()}`); let mddPct = 0; if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); let peak = -Infinity; let maxDrawdown = 0; sortedData.forEach(d => { if (d.totalValue > peak) peak = d.totalValue; const drawdown = (peak - d.totalValue) / peak; if (drawdown > maxDrawdown) maxDrawdown = drawdown; }); mddPct = maxDrawdown * 100; } const mddEl = $('mddDisplay'); if(mddEl) { setTxt('mddDisplay', `-${mddPct.toFixed(2)}%`); mddEl.className = `text-lg font-black ${mddPct > 20 ? 'text-red-500' : (mddPct > 10 ? 'text-orange-400' : 'text-green-400')}`; } const ytdEl = $('ytdDisplay'); if (currentYearData.length > 0) { const sortedData = [...currentYearData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const currentVal = sortedData[sortedData.length - 1].totalValue; let startVal = sortedData[0].totalValue; const prevYearRec = globalHistoryData.find(d => d.manualDate.startsWith((new Date().getFullYear()-1).toString()) && d.manualDate < sortedData[0].manualDate); if(prevYearRec) startVal = prevYearRec.totalValue; const gainVal = currentVal - startVal; const ytd = startVal > 0 ? (gainVal / startVal) * 100 : 0; if(ytdEl) { ytdEl.className = `text-lg font-black ${ytd >= 0 ? 'text-green-400' : 'text-red-400'}`; const premPctStr = gainVal > 0 ? `<span class="text-xs text-slate-400 font-normal block">(權利金佔 ${Math.round((ytdIncome / gainVal) * 100)}%)</span>` : `<span class="text-xs text-slate-400 font-normal block">(權利金 $${Math.round(ytdIncome)})</span>`; ytdEl.innerHTML = `${(ytd >= 0 ? '+' : '')}${ytd.toFixed(2)}%${premPctStr}`; } } else { setTxt('ytdDisplay', "--%"); } }
+        function renderAssetHistoryChart() { const ctx = $('assetChart') ? $('assetChart').getContext('2d') : null; if(!ctx) return; if (assetChartInstance) assetChartInstance.destroy(); const chartData = [...globalHistoryData].sort((a, b) => new Date(a.manualDate) - new Date(b.manualDate)); const labels = chartData.map(d => d.manualDate.slice(5)); let dataset = {}; if (chartMode === 'line') { dataset = { type: 'line', label: '總資產淨值', data: chartData.map(d => d.totalValue), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } else { let runningTotal = 0; const incomeData = chartData.map(d => { runningTotal += (parseFloat(d.optionsIncome) || 0); return runningTotal; }); dataset = { type: 'line', label: '累計權利金收益', data: incomeData, borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0 }; } assetChartInstance = new Chart(ctx, { data: { labels: labels, datasets: [dataset] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#94a3b8', bodyColor: '#f8fafc', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { display: false }, y: { display: true, position: 'right', grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#64748b', font: { size: 10 }, callback: (v) => '$' + v/1000 + 'k' } } }, interaction: { mode: 'nearest', axis: 'x', intersect: false } } }); }
 
         window.handleInput = handleInput; window.fillLatestData = fillLatestData; window.calculateStrategy = calculateStrategy; window.updateSimulation = updateSimulation; window.cancelEdit = cancelEdit; window.loadRecordForEdit = loadRecordForEdit; window.showDetails = showDetails; window.confirmDelete = confirmDelete; window.saveOptionStatus = saveOptionStatus; window.closeStatusModal = closeStatusModal; window.openStatusModal = openStatusModal; window.updateOptUi = updateOptUi; window.selectOpt = selectOpt; window.showDeleteModal = showDeleteModal; window.closeDeleteModal = closeDeleteModal; window.saveTargetUserId = saveTargetUserId; window.copyUserId = copyUserId; window.showToast = showToast; window.openSettings = openSettings; window.closeSettings = closeSettings; window.closeDetails = closeDetails; window.importJson = importJson; window.exportJson = exportJson; window.saveRecord = saveRecord; window.switchView = switchView; window.toggleChartType = toggleChartType; window.fillStrategyNote = fillStrategyNote; window.toggleHistoryExpansion = toggleHistoryExpansion; window.toggleAnnualExpansion = toggleAnnualExpansion; window.toggleMonthlyExpansion = toggleMonthlyExpansion; window.fetchLivePrices = fetchLivePrices; window.saveApiKey = saveApiKey;
         // Nuclear Exports
